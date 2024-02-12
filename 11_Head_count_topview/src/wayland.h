@@ -30,7 +30,7 @@ class Wayland
         Wayland();
         ~Wayland();
 
-        uint8_t init(uint32_t idx, uint32_t w, uint32_t h, uint32_t c, bool overlay = false);  
+        uint8_t init(uint32_t w, uint32_t h, uint32_t c, bool overlay = false);  
         uint8_t exit();
         uint8_t commit(uint8_t* cam_buffer, uint8_t* ol_buffer);
 

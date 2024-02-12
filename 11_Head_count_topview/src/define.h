@@ -61,7 +61,7 @@
 * YOLOv3
 ******************************************/
 /* Model Binary */
-const static std::string model_dir = "topview_headcount_yolov3";
+const static std::string model_dir = "topview_head_count_yolov3";
 /* Pre-processing Runtime Object */
 const static std::string pre_dir = model_dir + "/preprocess";
 
@@ -112,13 +112,15 @@ const static double anchors[] =
 #define MODEL_IN_H                  (416)
 
 /*DRP-AI Input image information*/
-#define IMAGE_WIDTH                 (1920)
-#define IMAGE_HEIGHT                (1080)
+#define IMAGE_WIDTH                 (640)
+#define IMAGE_HEIGHT                (480)
 #define DRPAI_IN_WIDTH              (IMAGE_WIDTH)
 #define DRPAI_IN_HEIGHT             (IMAGE_HEIGHT)
-
+#define BGRA_CHANNEL                (4)
 #define DISP_OUTPUT_WIDTH           (1920)
 #define DISP_OUTPUT_HEIGHT          (1080)
+#define DISP_INF_WIDTH              (1280)
+#define DISP_INF_HEIGHT             (960)
 // /*Total Display out*/
 // #define DISP_OUTPUT_WIDTH          (1280)
 // #define DISP_OUTPUT_HEIGHT         (720)
@@ -130,18 +132,18 @@ const static double anchors[] =
 
 /*Image:: Text information to be drawn on image*/
 
-#define HEAD_COUNT_STR_X            (60)
+#define HEAD_COUNT_STR_X            (645)
 #define HEAD_COUNT_STR_Y            (30)
-#define FPS_STR_X                   (1580)
-#define FPS_STR_Y                   (300)
-#define PRE_TIME_STR_X              (1580)
-#define PRE_TIME_STR_Y              (130)
-#define P_TIME_STR_X                (1580)
-#define P_TIME_STR_Y                (230)
-#define I_TIME_STR_X                (1580)
-#define I_TIME_STR_Y                (180)
-#define T_TIME_STR_X                (1580)
-#define T_TIME_STR_Y                (80)
+#define FPS_STR_X                   (645)
+#define FPS_STR_Y                   (360)
+#define PRE_TIME_STR_X              (645)
+#define PRE_TIME_STR_Y              (170)
+#define P_TIME_STR_X                (645)
+#define P_TIME_STR_Y                (270)
+#define I_TIME_STR_X                (645)
+#define I_TIME_STR_Y                (220)
+#define T_TIME_STR_X                (645)
+#define T_TIME_STR_Y                (120)
 #define CHAR_SCALE_LARGE            (1.6)
 #define CHAR_SCALE_SMALL            (1.2)
 #define CHAR_SCALE_XS               (1.0)
@@ -153,6 +155,14 @@ const static double anchors[] =
 
 #define LINE_HEIGHT                 (30) 
 #define LINE_HEIGHT_OFFSET          (20) 
+
+/*Waiting Time*/
+#define WAIT_TIME                   (1000) /* microseconds */
+#define AI_THREAD_TIMEOUT           (20)  /* seconds */
+#define KEY_THREAD_TIMEOUT          (5)   /* seconds */
+#define CAPTURE_TIMEOUT             (20)  /* seconds */
+#define DISPLAY_THREAD_TIMEOUT      (20)  /* seconds */
+#define TIME_COEF  
 
 /* DRP_MAX_FREQ and DRPAI_FREQ are the   */
 /* frequency settings for DRP-AI.        */

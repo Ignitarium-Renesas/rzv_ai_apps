@@ -313,7 +313,7 @@ static int8_t initWindow(GLint width, GLint height, struct wl_display** wlDispla
  * Return value  : 0 if Success
  *                 not 0 otherwise
  ******************************************/
-uint8_t Wayland::init(uint32_t idx, uint32_t w, uint32_t h, uint32_t c, bool overlay)
+uint8_t Wayland::init(uint32_t w, uint32_t h, uint32_t c, bool overlay)
 {
     int8_t ret = 0;
     img_w = w;

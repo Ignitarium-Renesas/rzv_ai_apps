@@ -1,9 +1,9 @@
-set(CMAKE_HOST_SYSTEM "Linux-5.15.0-91-generic")
+set(CMAKE_HOST_SYSTEM "Linux-5.15.0-94-generic")
 set(CMAKE_HOST_SYSTEM_NAME "Linux")
-set(CMAKE_HOST_SYSTEM_VERSION "5.15.0-91-generic")
+set(CMAKE_HOST_SYSTEM_VERSION "5.15.0-94-generic")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
 
-include("/home/11_Head_count_topview/src/toolchain/runtime.cmake")
+include("/home/sharady/ai_sdk_work/drp-ai_tvm/11_Head_count_topview_wayland_VGA/11_Head_count_topview/src/toolchain/runtime.cmake")
 
 set(CMAKE_SYSTEM "Linux")
 set(CMAKE_SYSTEM_NAME "Linux")
