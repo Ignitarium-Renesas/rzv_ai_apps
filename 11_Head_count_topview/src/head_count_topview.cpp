@@ -36,9 +36,11 @@
 #include "box.h"
 #include "MeraDrpRuntimeWrapper.h"
 #include <linux/drpai.h>
+#include <linux/input.h>
 #include <builtin_fp16.h>
 #include <opencv2/opencv.hpp>
 #include "wayland.h"
+
 
 using namespace std;
 using namespace cv;
@@ -49,6 +51,22 @@ MeraDrpRuntimeWrapper runtime;
 /*Global Variables*/
 static float drpai_output_buf[INF_OUT_SIZE];
 static Wayland wayland;
+static pthread_t ai_inf_thread;
+static pthread_t kbhit_thread;
+static sem_t terminate_req_sem;
+static int32_t drp_max_freq;
+static int32_t drp_freq;
+
+
+
+
+// static Camera* capture = NULL;
+static atomic<uint8_t> hdmi_obj_ready   (0);
+
+static uint32_t disp_time = 0;
+
+std::string media_port;
+std::string gstreamer_pipeline;
 
 std::vector<float> floatarr(1);
 
@@ -62,6 +80,7 @@ float INF_TIME= 0;
 float POST_PROC_TIME = 0;
 float PRE_PROC_TIME = 0;
 int32_t HEAD_COUNT= 0;
+int fd;
 
 
 /*Global frame */
@@ -165,6 +184,20 @@ int32_t yolo_offset(uint8_t n, int32_t b, int32_t y, int32_t x)
         prev_layer_num += NUM_BB * (NUM_CLASS + 5) * num_grids[i] * num_grids[i];
     }
     return prev_layer_num + b * (NUM_CLASS + 5) * num * num + y * num + x;
+}
+
+
+static int8_t wait_join(pthread_t *p_join_thread, uint32_t join_time)
+{
+    int8_t ret_err;
+    struct timespec join_timeout;
+    ret_err = clock_gettime(CLOCK_REALTIME, &join_timeout);
+    if ( 0 == ret_err )
+    {
+        join_timeout.tv_sec += join_time;
+        ret_err = pthread_timedjoin_np(*p_join_thread, NULL, &join_timeout);
+    }
+    return ret_err;
 }
 
 
@@ -491,7 +524,6 @@ int Head_Detection()
     float total_time = float(inf_duration) + float(post_duration) + float(pre_proc_time);
     TOTAL_TIME = total_time;
     /*Calculating the fps*/
-    // fps = (1000.0/float(total_time));
     return 0;
 }
 
@@ -512,8 +544,11 @@ void click_event(int event, int x, int y, int flags, void* userdata)
 void capture_frame(std::string gstreamer_pipeline )
 {
     stringstream stream;
+    int32_t inf_sem_check = 0;
     string str = "";
+    int32_t ret = 0;
     int32_t baseline = 10;
+    uint8_t * img_buffer0;
 
     int wait_key;
     /* Capture stream of frames from camera using Gstreamer pipeline */
@@ -523,14 +558,25 @@ void capture_frame(std::string gstreamer_pipeline )
         std::cerr << "[ERROR] Error opening video stream or camera !" << std::endl;
         return;
     }
-uint8_t * img_buffer0;
-    img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*4));
+    
     
     while (true)
     {
         cap >> g_frame;
         cv::Mat output_image(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3, cv::Scalar(0, 0, 0));
         fps = cap.get(CAP_PROP_FPS);
+        ret = sem_getvalue(&terminate_req_sem, &inf_sem_check);
+        if (0 != ret)
+        {
+            fprintf(stderr, "[ERROR] Failed to get Semaphore Value: errno=%d\n", errno);
+            goto err;
+        }
+        
+        /*Checks the semaphore value*/
+        if (1 != inf_sem_check)
+        {
+            goto ai_inf_end;
+        }
         if (g_frame.empty())
         {
             std::cout << "[INFO] Video ended or corrupted frame !\n";
@@ -551,61 +597,85 @@ uint8_t * img_buffer0;
             stream << "Camera Frame Rate : "<<fps <<" fps ";
             str = stream.str();
             Size camera_rate_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
 
             stream.str("");
             stream << "Head Count: " << HEAD_COUNT;
             str = stream.str();
-            Size count_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(g_frame, str,Point(HEAD_COUNT_STR_X, (HEAD_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
+            Size count_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_LARGE, HC_CHAR_THICKNESS, &baseline);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - count_size.width - RIGHT_ALIGN_OFFSET), (HEAD_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(g_frame, str,Point(HEAD_COUNT_STR_X, (HEAD_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - count_size.width - RIGHT_ALIGN_OFFSET), (HEAD_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_LARGE, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
 
             stream.str("");
             stream << "Total Time: " << TOTAL_TIME <<" ms";
             str = stream.str();
             Size tot_time_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_LARGE, HC_CHAR_THICKNESS, &baseline);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_LARGE, Scalar(0, 255, 0), HC_CHAR_THICKNESS);
             stream.str("");
             stream << "Pre-Proc: " << PRE_PROC_TIME<<" ms";
             str = stream.str();
             Size pre_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
             stream << "Inference: " << INF_TIME<<" ms";
             str = stream.str();
             Size inf_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
             stream << "Post-Proc: " << POST_PROC_TIME<<" ms";
             str = stream.str();
             Size post_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
-cv::Mat bgra_image;
-            cv::cvtColor(g_frame, bgra_image, cv::COLOR_RGB2RGBA);
-            memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * 4);
+            
+            Size size(DISP_INF_WIDTH, DISP_INF_HEIGHT);
+            /*resize the image to the keep ratio size*/
+            resize(g_frame, g_frame, size);            
+            g_frame.copyTo(output_image(Rect(0, 60, DISP_INF_WIDTH, DISP_INF_HEIGHT)));
+            namedWindow("Output Image", WND_PROP_FULLSCREEN);
+            setWindowProperty("Output Image", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+            string click_req = "Output Image";
+            setMouseCallback(click_req,click_event,NULL);
+            cv::Mat bgra_image;
+            cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
+           
+            
+            img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
+            memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);
             wayland.commit(img_buffer0, NULL);
+
+            free(img_buffer0);
         }
     }
+    
     cap.release(); 
     destroyAllWindows();
-    return;
+    err:
+    /*Set Termination Request Semaphore to 0*/
+    sem_trywait(&terminate_req_sem);
+    goto ai_inf_end;
+    /*AI Thread Termination*/
+    ai_inf_end:
+        /*To terminate the loop in Capture Thread.*/
+        printf("AI Inference Thread Terminated\n");
+        pthread_exit(NULL);
+        return;
 }
 
 /*****************************************
@@ -647,7 +717,7 @@ int set_drpai_freq(int drpai_fd)
     uint32_t data;
 
     errno = 0;
-    data = DRP_MAX_FREQ;
+    data = drp_max_freq;
     ret = ioctl(drpai_fd , DRPAI_SET_DRP_MAX_FREQ, &data);
     if (-1 == ret)
     {
@@ -656,7 +726,7 @@ int set_drpai_freq(int drpai_fd)
     }
 
     errno = 0;
-    data = DRPAI_FREQ;
+    data = drp_freq;
     ret = ioctl(drpai_fd , DRPAI_SET_DRPAI_FREQ, &data);
     if (-1 == ret)
     {
@@ -699,6 +769,72 @@ uint64_t init_drpai(int drpai_fd)
     return drpai_addr;
 }
 
+void *R_Kbhit_Thread(void *threadid)
+{
+    /*Semaphore Variable*/
+    int32_t kh_sem_check = 0;
+    /*Variable to store the getchar() value*/
+    int32_t c = 0;
+    /*Variable for checking return value*/
+    int8_t ret = 0;
+
+    printf("Key Hit Thread Starting\n");
+
+    printf("************************************************\n");
+    printf("* Press ENTER key to quit. *\n");
+    printf("************************************************\n");
+
+    /*Set Standard Input to Non Blocking*/
+    errno = 0;
+    ret = fcntl(0, F_SETFL, O_NONBLOCK);
+    if (-1 == ret)
+    {
+        fprintf(stderr, "[ERROR] Failed to run fctnl(): errno=%d\n", errno);
+        goto err;
+    }
+
+    while(1)
+    {
+        /*Gets the Termination request semaphore value. If different then 1 Termination was requested*/
+        /*Checks if sem_getvalue is executed wihtout issue*/
+        errno = 0;
+        ret = sem_getvalue(&terminate_req_sem, &kh_sem_check);
+        if (0 != ret)
+        {
+            fprintf(stderr, "[ERROR] Failed to get Semaphore Value: errno=%d\n", errno);
+            goto err;
+        }
+        /*Checks the semaphore value*/
+        if (1 != kh_sem_check)
+        {
+            goto key_hit_end;
+        }
+
+        c = getchar();
+        if (EOF != c)
+        {
+            /* When key is pressed. */
+            printf("key Detected.\n");
+            goto err;
+        }
+        else
+        {
+            /* When nothing is pressed. */
+            usleep(WAIT_TIME);
+        }
+    }
+
+/*Error Processing*/
+err:
+    /*Set Termination Request Semaphore to 0*/
+    sem_trywait(&terminate_req_sem);
+    goto key_hit_end;
+
+key_hit_end:
+    printf("Key Hit Thread Terminated\n");
+    pthread_exit(NULL);
+}
+
 /*****************************************
  * Function Name : query_device_status
  * Description   : function to check USB device is connected.
@@ -739,11 +875,99 @@ std::string query_device_status(std::string device_type)
     return media_port;
 }
 
+void *R_Inf_Thread(void *threadid)
+{
+    int8_t ret = 0;
+    ret = wayland.init(DISP_OUTPUT_WIDTH, DISP_OUTPUT_HEIGHT, BGRA_CHANNEL);
+    if(0 != ret)
+    {
+        fprintf(stderr, "[ERROR] Failed to initialize Image for Wayland\n");
+        goto err;
+    }
+    capture_frame(gstreamer_pipeline);
+
+/*Error Processing*/
+err:
+    /*Set Termination Request Semaphore to 0*/
+    sem_trywait(&terminate_req_sem);
+    goto ai_inf_end;
+/*AI Thread Termination*/
+ai_inf_end:
+    /*To terminate the loop in Capture Thread.*/
+    printf("AI Inference Thread Terminated\n");
+    pthread_exit(NULL);
+}
+
+int8_t R_Main_Process()
+{
+    /*Main Process Variables*/
+    int8_t main_ret = 0;
+    /*Semaphore Related*/
+    int32_t sem_check = 0;
+    /*Variable for checking return value*/
+    int8_t ret = 0;
+
+    printf("Main Loop Starts\n");
+    while(1)
+    {
+        /*Gets the Termination request semaphore value. If different then 1 Termination was requested*/
+        errno = 0;
+        ret = sem_getvalue(&terminate_req_sem, &sem_check);
+        if (0 != ret)
+        {
+            fprintf(stderr, "[ERROR] Failed to get Semaphore Value: errno=%d\n", errno);
+            goto err;
+        }
+        /*Checks the semaphore value*/
+        if (1 != sem_check)
+        {
+            goto main_proc_end;
+        }
+        /*Wait for 1 TICK.*/
+        usleep(WAIT_TIME);
+    }
+
+/*Error Processing*/
+err:
+    sem_trywait(&terminate_req_sem);
+    main_ret = 1;
+    goto main_proc_end;
+/*Main Processing Termination*/
+main_proc_end:
+    printf("Main Process Terminated\n");
+    return main_ret;
+}
+
 int main(int argc, char *argv[])
 {
+    int32_t create_thread_ai = -1;
+    int32_t create_thread_key = -1;
+    int8_t ret_main = 0;
+    int32_t ret = 0;
+    int8_t main_proc = 0;
+    int32_t sem_create = -1;
+     std::string input_source = argv[1];
     std::cout << "Starting Head Count Top View Application" << std::endl;
     
-    if (argc>3)
+    if (argc >= 3 )
+    {
+        drp_max_freq = atoi(argv[2]);
+    }
+    else
+    {
+        drp_max_freq = DRP_MAX_FREQ;
+    }
+
+    if (argc >= 4)
+    {
+        drp_freq = atoi(argv[3]);
+    }
+    else
+    {
+        drp_freq = DRPAI_FREQ;
+    }
+
+    if (argc>6)
     {
         std::cerr << "[ERROR] Wrong number Arguments are passed " << std::endl;
         return 1;
@@ -756,14 +980,7 @@ int main(int argc, char *argv[])
         std::cerr << "[ERROR] Failed to open DRP-AI Driver : errno=" << errno << std::endl;
         return -1;
     }
-  
-/* Initialize waylad */
-    int ret = wayland.init(0, DISP_OUTPUT_WIDTH, DISP_OUTPUT_HEIGHT, 4);
-    if(0 != ret)
-    {
-        fprintf(stderr, "[ERROR] Failed to initialize Image for Wayland\n");
-        return -1;
-    }
+
     /*Load Label from label_list file*/
     label_file_map = load_label_file(label_list);
 
@@ -786,19 +1003,19 @@ int main(int argc, char *argv[])
         close(drpai_fd);
         return -1;
     }    
-
+ 
     std::cout << "[INFO] loaded runtime model :" << model_dir << "\n\n";
     /* Get input Source IMAGE/VIDEO/CAMERA */
-    std::string input_source = argv[1];
+
 
     switch (input_source_map[input_source])
     {
         /* Input Source : IMAGE*/
         case 1:
         {
-            std::cout << "Image_path: " << argv[2] << std::endl;
+            std::cout << "Image_path: " << argv[4] << std::endl;
             // read frame
-            g_frame = imread(argv[2]);
+            g_frame = imread(argv[4]);
             stringstream stream;
             string str = "";
             int32_t baseline = 10;
@@ -845,14 +1062,71 @@ int main(int argc, char *argv[])
         /* Input Source : USB*/
         case 2:{
             std::cout << "[INFO] USB CAMERA \n";
-            std::string media_port = query_device_status("usb");
-            std::string gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw, width=1920, height=1080 ! videoconvert ! appsink";
-            capture_frame(gstreamer_pipeline);
+            media_port = query_device_status("usb");
+            gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink";
+            sem_create = sem_init(&terminate_req_sem, 0, 1);
+            if (0 != sem_create)
+            {
+                fprintf(stderr, "[ERROR] Failed to Initialize Termination Request Semaphore.\n");
+                ret_main = -1;
+                goto end_threads;
+            }
+
+            create_thread_key = pthread_create(&kbhit_thread, NULL, R_Kbhit_Thread, NULL);
+            if (0 != create_thread_key)
+            {
+                fprintf(stderr, "[ERROR] Failed to create Key Hit Thread.\n");
+                ret_main = -1;
+                goto end_threads;
+            }
+
+            create_thread_ai = pthread_create(&ai_inf_thread, NULL, R_Inf_Thread, NULL);
+            if (0 != create_thread_ai)
+            {
+                sem_trywait(&terminate_req_sem);
+                fprintf(stderr, "[ERROR] Failed to create AI Inference Thread.\n");
+                ret_main = -1;
+                goto end_threads;
+    }
         }
         break;
 
     }
+    main_proc = R_Main_Process();
+        if (0 != main_proc)
+        {
+            fprintf(stderr, "[ERROR] Error during Main Process\n");
+            ret_main = -1;
+        }
+        goto end_threads;
+
+end_threads:
+
+    if (0 == create_thread_ai)
+    {
+        ret = wait_join(&ai_inf_thread, AI_THREAD_TIMEOUT);
+        if (0 != ret)
+        {
+            fprintf(stderr, "[ERROR] Failed to exit AI Inference Thread on time.\n");
+            ret_main = -1;
+        }
+    }
+    if (0 == create_thread_key)
+    {
+        ret = wait_join(&kbhit_thread, KEY_THREAD_TIMEOUT);
+        if (0 != ret)
+        {
+            fprintf(stderr, "[ERROR] Failed to exit Key Hit Thread on time.\n");
+            ret_main = -1;
+        }
+    }
+
+    if (0 == sem_create)
+    {
+        sem_destroy(&terminate_req_sem);
+    }
     /* Exit the program */
+    wayland.exit();
     close(drpai_fd);
     return 0;
 

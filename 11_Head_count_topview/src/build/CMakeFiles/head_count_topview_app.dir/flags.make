@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=gnu++17
 
 CXX_DEFINES = -DIMAGE_MODE
 
-CXX_INCLUDES = -I/home/drp-tvm_dev-v2.1.0_231227/tvm/include -I/home/drp-tvm_dev-v2.1.0_231227/tvm/3rdparty/dlpack/include -I/home/drp-tvm_dev-v2.1.0_231227/tvm/3rdparty/dmlc-core/include -I/home/drp-tvm_dev-v2.1.0_231227/tvm/3rdparty/compiler-rt -isystem /opt/poky/3.1.21/sysroots/aarch64-poky-linux/usr/include/opencv4 
+CXX_INCLUDES = -I/home/sharady/ai_sdk_work/drp-ai_tvm/tvm/include -I/home/sharady/ai_sdk_work/drp-ai_tvm/tvm/3rdparty/dlpack/include -I/home/sharady/ai_sdk_work/drp-ai_tvm/tvm/3rdparty/dmlc-core/include -I/home/sharady/ai_sdk_work/drp-ai_tvm/tvm/3rdparty/compiler-rt -isystem /opt/poky/3.1.21/sysroots/aarch64-poky-linux/usr/include/opencv4 
 

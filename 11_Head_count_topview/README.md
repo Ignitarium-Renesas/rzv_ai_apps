@@ -90,7 +90,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 |head_count_topview_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `11_Head_count_topview_deploy_tvm-v220.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v11_topview_weights/11_Head_count_topview_deploy_tvm-v220.so)
+    1. Run the commands below to download the `11_Head_count_topview_deploy_tvm-v220.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00/)
     ```
     cd ${PROJECT_PATH}/11_Head_count_topview/exe/topview_headcount_yolov3
     wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/11_Head_count_topview_deploy_tvm-v220.so
@@ -133,11 +133,11 @@ cd /home/root/tvm/11_Head_count_topview/exe
    - Application with image input. <br>
    Please use an image in `test_images` folder.
     ```sh
-    ./head_count_topview_app IMAGE <an image file>
+    ./head_count_topview_app 2 5 IMAGE <an image file>
     ```
    - Application with USB camera input
     ```sh
-    ./head_count_topview_app USB
+    ./head_count_topview_app 2 5 USB
     ```
 3. Following window shows up on HDMI screen.  
    sample images 
@@ -151,6 +151,13 @@ cd /home/root/tvm/11_Head_count_topview/exe
 - YOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/)  
 - Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/) *[Head_data](https://www.kaggle.com/datasets/houssad/head-data) *[RGBD_Indoor_Dataset](https://drive.google.com/file/d/1fOub9LcNqfDlr-mEcdnenAJWw-rqWGmG/view)
 
+
 ### AI total time
 The AI total time is around 100 msec, which includes 
 pre processig, post processing and inference time.
+
+## Reference
+- For RZ/V2H  EVK, this application supports USB camera only with 640*480 resolution.
+To use FHD, please use MIPI camera.
+Please refer to the following URL for how to change camera input to MIPI camera.
+[https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi).  
