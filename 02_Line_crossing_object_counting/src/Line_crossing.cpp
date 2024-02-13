@@ -1072,6 +1072,11 @@ int main(int argc, char *argv[])
     int8_t main_proc = 0;
     int32_t sem_create = -1;
     std::string input_source = argv[1];
+    if (strcmp(argv[1],"IMAGE")==0)
+    {
+        std::cout<<"Not support for IMAGE mode"<<std::endl;
+        return -1;
+    }
     if(argc>2)
     {
         class_name = argv[2];

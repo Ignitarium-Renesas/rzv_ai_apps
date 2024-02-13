@@ -1,4 +1,4 @@
-# Install script for directory: /home/sharady/ai_sdk_work/drp-ai_tvm/02_Line_crossing_yolov3_wayland_02_feb_working/02_Line_crossing_yolov3_wayland_02_feb/02_Line_crossing/src
+# Install script for directory: /home/sharady/ai_sdk_work/drp-ai_tvm/02_Line_crossing_13feb_vga/02_Line_crossing/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/sharady/ai_sdk_work/drp-ai_tvm/02_Line_crossing_yolov3_wayland_02_feb_working/02_Line_crossing_yolov3_wayland_02_feb/02_Line_crossing/src/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/sharady/ai_sdk_work/drp-ai_tvm/02_Line_crossing_13feb_vga/02_Line_crossing/src/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

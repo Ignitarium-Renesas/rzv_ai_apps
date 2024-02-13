@@ -141,7 +141,7 @@ const static double anchors[] =
 #define T_TIME_STR_Y                (120)
 #define CHAR_SCALE_LARGE            (1.6)
 #define CHAR_SCALE_SMALL            (1.2)
-#define CHAR_SCALE_XS               (1.0)
+#define CHAR_SCALE_XS               (0.5)
 #define BOX_THICKNESS               (2)
 #define BOX_CHAR_THICKNESS          (2)
 #define HC_CHAR_THICKNESS           (4)
