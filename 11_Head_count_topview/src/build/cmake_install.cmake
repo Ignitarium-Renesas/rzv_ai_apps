@@ -1,4 +1,4 @@
-# Install script for directory: /home/sharady/ai_sdk_work/drp-ai_tvm/11_Head_count_topview_wayland_VGA/11_Head_count_topview/src
+# Install script for directory: /home/sharady/ai_sdk_work/drp-ai_tvm/11_Head_count_topview_wayland_VGA_12_feb/11_Head_count_topview_wayland_VGA/11_Head_count_topview/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/sharady/ai_sdk_work/drp-ai_tvm/11_Head_count_topview_wayland_VGA/11_Head_count_topview/src/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/sharady/ai_sdk_work/drp-ai_tvm/11_Head_count_topview_wayland_VGA_12_feb/11_Head_count_topview_wayland_VGA/11_Head_count_topview/src/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
