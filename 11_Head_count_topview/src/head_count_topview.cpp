@@ -57,9 +57,6 @@ static sem_t terminate_req_sem;
 static int32_t drp_max_freq;
 static int32_t drp_freq;
 
-
-
-
 // static Camera* capture = NULL;
 static atomic<uint8_t> hdmi_obj_ready   (0);
 
@@ -550,7 +547,7 @@ void capture_frame(std::string gstreamer_pipeline )
     int32_t baseline = 10;
     uint8_t * img_buffer0;
 
-    int wait_key;
+    img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
     /* Capture stream of frames from camera using Gstreamer pipeline */
     cap.open(gstreamer_pipeline, CAP_GSTREAMER);
     if (!cap.isOpened())
@@ -558,8 +555,6 @@ void capture_frame(std::string gstreamer_pipeline )
         std::cerr << "[ERROR] Error opening video stream or camera !" << std::endl;
         return;
     }
-    
-    
     while (true)
     {
         cap >> g_frame;
@@ -656,13 +651,14 @@ void capture_frame(std::string gstreamer_pipeline )
             cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
            
             
-            img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
+            // img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
             memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);
             wayland.commit(img_buffer0, NULL);
 
-            free(img_buffer0);
+            // free(img_buffer0);
         }
     }
+    free(img_buffer0);
     
     cap.release(); 
     destroyAllWindows();
@@ -940,6 +936,7 @@ main_proc_end:
 
 int main(int argc, char *argv[])
 {
+
     int32_t create_thread_ai = -1;
     int32_t create_thread_key = -1;
     int8_t ret_main = 0;
@@ -948,23 +945,47 @@ int main(int argc, char *argv[])
     int32_t sem_create = -1;
      std::string input_source = argv[1];
     std::cout << "Starting Head Count Top View Application" << std::endl;
-    
-    if (argc >= 3 )
-    {
-        drp_max_freq = atoi(argv[2]);
-    }
-    else
-    {
-        drp_max_freq = DRP_MAX_FREQ;
-    }
 
-    if (argc >= 4)
-    {
-        drp_freq = atoi(argv[3]);
+    if (strcmp(argv[1],"USB")==0)
+    {   
+        if (argc >= 3 )
+        {
+            drp_max_freq = atoi(argv[2]);
+        }
+        else
+        {
+            drp_max_freq = DRP_MAX_FREQ;
+        }
+
+        if (argc >= 4)
+        {
+            drp_freq = atoi(argv[3]);
+        }
+        else
+        {
+            drp_freq = DRPAI_FREQ;
+        }
     }
     else
     {
-        drp_freq = DRPAI_FREQ;
+        if (argc >= 4 )
+        {
+            drp_max_freq = atoi(argv[3]);
+        }
+        else
+        {
+            drp_max_freq = DRP_MAX_FREQ;
+        }
+
+        if (argc >= 5)
+        {
+            drp_freq = atoi(argv[4]);
+        }
+        else
+        {
+            drp_freq = DRPAI_FREQ;
+        }
+
     }
 
     if (argc>6)
@@ -1005,17 +1026,15 @@ int main(int argc, char *argv[])
     }    
  
     std::cout << "[INFO] loaded runtime model :" << model_dir << "\n\n";
-    /* Get input Source IMAGE/VIDEO/CAMERA */
-
 
     switch (input_source_map[input_source])
     {
         /* Input Source : IMAGE*/
         case 1:
         {
-            std::cout << "Image_path: " << argv[4] << std::endl;
+            std::cout << "Image_path: " << argv[2] << std::endl;
             // read frame
-            g_frame = imread(argv[4]);
+            g_frame = imread(argv[2]);
             stringstream stream;
             string str = "";
             int32_t baseline = 10;
