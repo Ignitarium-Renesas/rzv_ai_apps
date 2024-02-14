@@ -450,7 +450,7 @@ void draw_bounding_box(void)
         rectangle(g_frame, topLeft, bottomRight, Scalar(0, 0, 0), BOX_THICKNESS);
         rectangle(g_frame, topLeft2, bottomRight2, Scalar(255, 255, 255), BOX_THICKNESS);
         putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 0, 0), 2*BOX_CHAR_THICKNESS);
-        putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 255, 0), BOX_CHAR_THICKNESS);
+        putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 0, 0), BOX_CHAR_THICKNESS);
     }
     HEAD_COUNT = result_cnt++;
     return;
@@ -664,12 +664,14 @@ void capture_frame(std::string gstreamer_pipeline )
     destroyAllWindows();
     err:
     /*Set Termination Request Semaphore to 0*/
+    free(img_buffer0);
     sem_trywait(&terminate_req_sem);
     goto ai_inf_end;
     /*AI Thread Termination*/
     ai_inf_end:
         /*To terminate the loop in Capture Thread.*/
         printf("AI Inference Thread Terminated\n");
+        free(img_buffer0);
         pthread_exit(NULL);
         return;
 }
