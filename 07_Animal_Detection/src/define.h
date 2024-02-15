@@ -148,13 +148,16 @@ const static double anchors[] =
 #define CHAR_SCALE_SMALL            (1.2)
 #define CHAR_SCALE_XS               (0.5)
 #define BOX_THICKNESS               (2)
-#define BOX_CHAR_THICKNESS          (2)
+#define BOX_CHAR_THICKNESS          (0.5)
 #define HC_CHAR_THICKNESS           (4)
 #define FPS_CHAR_THICKNESS          (4)
 #define RIGHT_ALIGN_OFFSET          (20)
 
 #define LINE_HEIGHT                 (30) 
 #define LINE_HEIGHT_OFFSET          (20) 
+
+#define CLASS_LABEL_HEIGHT           (10)
+#define CLASS_LABEL_WIDTH           (90)
 
 /*Waiting Time*/
 #define WAIT_TIME                   (1000) /* microseconds */
