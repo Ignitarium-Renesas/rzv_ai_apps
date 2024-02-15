@@ -82,8 +82,8 @@ cv::Mat output_image;
 
 /* Map to store input source list */
 std::map<std::string, int> input_source_map ={    
-    {"IMAGE", 1},
-    {"USB", 2}  } ;
+    {"USB", 1}
+     } ;
 
 //  std::string input_source;
 /*****************************************
@@ -398,15 +398,7 @@ void draw_bounding_box(void)
     int32_t result_cnt =0;
     uint32_t x;
     uint32_t y;
-    // if (input_source =="IMAGE"){
-    //     x = ANIMAL_STR_X;
-    //     y = ANIMAL_STR_Y;
-    // }
-    // else if (input_source == 'USB')
-    // {
-    //     x = 1580;
-    //     y = 350;
-    // }
+
     int32_t baseline = 10;
 
     /* Draw bounding box on RGB image. */
@@ -453,10 +445,15 @@ void draw_bounding_box(void)
         Point bottomRight2(x2_max, y2_max);
 
         /* Creating bounding box and class labels */
+        /*cordinates for solid rectangle*/
+        Point textleft(x_min,y_min+CLASS_LABEL_HEIGHT);
+        Point textright(x_min+CLASS_LABEL_WIDTH,y_min);
+
         rectangle(g_frame, topLeft, bottomRight, Scalar(0, 0, 0), BOX_THICKNESS);
         rectangle(g_frame, topLeft2, bottomRight2, Scalar(255, 255, 255), BOX_THICKNESS);
-        putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 0, 0), 2*BOX_CHAR_THICKNESS);
-        putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 255, 0), BOX_CHAR_THICKNESS);
+        /*solid rectangle over class name */
+        rectangle(g_frame, textleft, textright, Scalar(59, 94, 53), -1);
+        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(255, 255, 255), BOX_CHAR_THICKNESS);
      
         stream.str("");
         stream << "Class: " << label_file_map[det[i].c].c_str() << " " << fixed << setprecision(2)<< (det[i].prob*100)<<"%";
@@ -538,15 +535,6 @@ int Animal_Detection()
     return 0;
 }
 
-void click_event(int event, int x, int y, int flags, void* userdata)
-{
-    if (event == EVENT_LBUTTONDBLCLK)
-    {
-        std::cout<<"Exiting the event "<<std::endl;
-        exit(0);
-    }
-}
-
 /*****************************************
  * Function Name : capture_frame
  * Description   : function to open camera gstreamer pipeline.
@@ -561,7 +549,8 @@ void capture_frame(std::string gstreamer_pipeline )
     int32_t baseline = 10;
     uint8_t * img_buffer0;
 
-    int wait_key;
+    img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
+    
     /* Capture stream of frames from camera using Gstreamer pipeline */
     cap.open(gstreamer_pipeline, CAP_GSTREAMER);
     if (!cap.isOpened())
@@ -650,29 +639,27 @@ void capture_frame(std::string gstreamer_pipeline )
             g_frame.copyTo(output_image(Rect(0, 60, DISP_INF_WIDTH, DISP_INF_HEIGHT)));
             namedWindow("Output Image", WND_PROP_FULLSCREEN);
             setWindowProperty("Output Image", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-            string click_req = "Output Image";
-            setMouseCallback(click_req,click_event,NULL);
             cv::Mat bgra_image;
             cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
            
-            
-            img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
             memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);
             wayland.commit(img_buffer0, NULL);
 
-            free(img_buffer0);
         }
     }
+    free(img_buffer0);
     cap.release(); 
     destroyAllWindows();
 err:
     /*Set Termination Request Semaphore to 0*/
+    free(img_buffer0);
     sem_trywait(&terminate_req_sem);
     goto ai_inf_end;
     /*AI Thread Termination*/
     ai_inf_end:
         /*To terminate the loop in Capture Thread.*/
         printf("AI Inference Thread Terminated\n");
+        free(img_buffer0);
         pthread_exit(NULL);
     return;
 }
@@ -943,24 +930,32 @@ int main(int argc, char *argv[])
     std::string input_source = argv[1];
     std::cout << "Starting Animal Detection Application" << std::endl;
     
-    if (argc >= 3 )
+    if (strcmp(argv[1],"IMAGE")==0)
     {
-        drp_max_freq = atoi(argv[2]);
+        std::cout<<"Support for USB mode only"<<std::endl;
+        return -1;
     }
-    else
-    {
-        drp_max_freq = DRP_MAX_FREQ;
+    if (strcmp(argv[1],"USB")==0)
+    {   
+        if (argc >= 3 )
+        {
+            drp_max_freq = atoi(argv[2]);
+        }
+        else
+        {
+            drp_max_freq = DRP_MAX_FREQ;
+        }
+        if (argc >= 4)
+        {
+            drp_freq = atoi(argv[3]);
+        }
+        else
+        {
+            drp_freq = DRPAI_FREQ;
+        }
     }
 
-    if (argc >= 4)
-    {
-        drp_freq = atoi(argv[3]);
-    }
-    else
-    {
-        drp_freq = DRPAI_FREQ;
-    }
-    if (argc>5)
+    if (argc>6)
     {
         std::cerr << "[ERROR] Wrong number Arguments are passed " << std::endl;
         return 1;
@@ -1003,43 +998,8 @@ int main(int argc, char *argv[])
 
     switch (input_source_map[input_source])
     {
-        /* Input Source : IMAGE*/
-        case 1:
-        {
-            std::cout << "Image_path: " << argv[4] << std::endl;
-            // read frame
-            g_frame = imread(argv[4]);
-            /* If empty frame */
-            if (g_frame.empty())
-            {
-                std::cout << "Failed to load image!" << std::endl;
-                close(drpai_fd);
-                return -1;
-            }
-
-            resize(g_frame, g_frame, Size(IMAGE_WIDTH, IMAGE_HEIGHT));
-
-            int ret = Animal_Detection();
-
-            if (ret != 0)    
-
-            {
-                std::cerr << "[ERROR] Inference Not working !!! " << std::endl;
-                close(drpai_fd);
-                return -1;
-            }
-            draw_bounding_box();
-            namedWindow("Output Image", WND_PROP_FULLSCREEN);
-            setWindowProperty("Output Image", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-            string click_req = "Output Image";
-            setMouseCallback(click_req,click_event,NULL);
-            imshow("Output Image", g_frame);
-            waitKey(0);
-            destroyAllWindows();
-        }
-        break;
         /* Input Source : USB*/
-        case 2:{
+        case 1:{
             std::cout << "[INFO] USB CAMERA \n";
             media_port = query_device_status("usb");
             gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink";
