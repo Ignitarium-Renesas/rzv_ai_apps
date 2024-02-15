@@ -116,8 +116,8 @@ cv::Mat output_image;
 
 /* Map to store input source list */
 std::map<std::string, int> input_source_map ={    
-    {"IMAGE", 1},
-    {"USB", 2}  } ;
+    {"USB", 1}
+      } ;
 
 
 /*****************************************
@@ -484,18 +484,25 @@ void draw_bounding_box(void)
         Point topLeft2(x2_min, y2_min);
         Point bottomRight2(x2_max, y2_max);
 
+        /*cordinates for solid rectangle*/
+        Point textleft(x_min,y_min+CLASS_LABEL_HEIGHT);
+        Point textright(x_min+CLASS_LABEL_WIDTH,y_min);
+
         /* Creating bounding box and class labels */
         rectangle(g_frame, topLeft, bottomRight, Scalar(0, 0, 0), BOX_THICKNESS);
         rectangle(g_frame, topLeft2, bottomRight2, Scalar(255, 255, 255), BOX_THICKNESS);
-        putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 0, 0), 2*HC_CHAR_THICKNESS);
-        putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 255, 0), HC_CHAR_THICKNESS);
+        /*solid rectangle over class name */
+        rectangle(g_frame, textleft, textright, Scalar(59, 94, 53), -1);
+
+        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 255, 0), BOX_CHAR_THICKNESS);
         boxes.push_back({(int)det[i].bbox.x, (int)det[i].bbox.y, (int)det[i].bbox.w, (int)det[i].bbox.h});
 
     }
    
     tracker.Run(boxes);
     const auto tracks = tracker.GetTracks();
-    for (auto &trk : tracks) {
+    for (auto &trk : tracks) 
+    {
         const auto &box_trk = trk.second.GetStateAsBbox();
         std::string ID = std::to_string(trk.first);
         float x = box_trk.tl().x;
@@ -643,6 +650,7 @@ void capture_frame(std::string gstreamer_pipeline )
     int32_t baseline = 10;
     uint8_t * img_buffer0;
 
+    img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
     cap.open(gstreamer_pipeline, CAP_GSTREAMER);
     if (!cap.isOpened())
     {
@@ -744,22 +752,23 @@ void capture_frame(std::string gstreamer_pipeline )
             cv::Mat bgra_image;
             cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
 
-            img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
             memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);
             wayland.commit(img_buffer0, NULL);
-            free(img_buffer0);
         }
     }
+    free(img_buffer0);
     cap.release(); 
     destroyAllWindows();
 err:
     /*Set Termination Request Semaphore to 0*/
+    free(img_buffer0);
     sem_trywait(&terminate_req_sem);
     goto ai_inf_end;
 /*AI Thread Termination*/
 ai_inf_end:
     /*To terminate the loop in Capture Thread.*/
     printf("AI Inference Thread Terminated\n");
+    free(img_buffer0);
     pthread_exit(NULL);
     return;
 }
@@ -1074,7 +1083,7 @@ int main(int argc, char *argv[])
     std::string input_source = argv[1];
     if (strcmp(argv[1],"IMAGE")==0)
     {
-        std::cout<<"Not support for IMAGE mode"<<std::endl;
+        std::cout<<"Support for USB mode only"<<std::endl;
         return -1;
     }
     if(argc>2)
@@ -1147,55 +1156,8 @@ int main(int argc, char *argv[])
 
     switch (input_source_map[input_source])
     {
-        /* Input Source : IMAGE*/
-        case 1:
-        {
-            std::cout << "Image_path: " << argv[2] << std::endl;
-            // read frame
-            g_frame = imread(argv[2]);
-            stringstream stream;
-            string str = "";
-            int32_t baseline = 10;
-            /* If empty frame */
-            if (g_frame.empty())
-            {
-                std::cout << "Failed to load image!" << std::endl;
-                close(drpai_fd);
-                return -1;
-            }
-
-            resize(g_frame, g_frame, Size(IMAGE_WIDTH, IMAGE_HEIGHT));
-
-            int ret = Line_Crossing();
-
-            if (ret != 0)
-            {
-                std::cerr << "[ERROR] Inference Not working !!! " << std::endl;
-                close(drpai_fd);
-                return -1;
-            }
-            draw_bounding_box();
-
-            stream.str("");
-            stream << "Linecross Count: " << COUNT;
-            str = stream.str();
-            Size count_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(g_frame, str,Point(LINE_COUNT_STR_X, (LINE_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(g_frame, str,Point(LINE_COUNT_STR_X, (LINE_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_LARGE, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
-            namedWindow("Output Image", WND_PROP_FULLSCREEN);
-            setWindowProperty("Output Image", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-            string click_req = "Output Image";
-            setMouseCallback(click_req,click_event,NULL);
-            imshow("Output Image", g_frame);
-            waitKey(0);
-            destroyAllWindows();
-        }
-        break;
-
        /* Input Source : USB*/
-        case 2:{
+        case 1:{
             std::cout << "[INFO] USB CAMERA \n";
             media_port = query_device_status("usb");
             gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink";
@@ -1261,9 +1223,7 @@ end_threads:
         sem_destroy(&terminate_req_sem);
     }
     /* Exit the program */
-wayland.exit();
+    wayland.exit();
     close(drpai_fd);
     return 0;
-
-
 }

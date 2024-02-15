@@ -1,3 +1,0 @@
-/home/sharady/ai_sdk_work/drp-ai_tvm/02_Line_crossing_13feb_vga/02_Line_crossing/src/build/CMakeFiles/rebuild_cache.dir
-/home/sharady/ai_sdk_work/drp-ai_tvm/02_Line_crossing_13feb_vga/02_Line_crossing/src/build/CMakeFiles/edit_cache.dir
-/home/sharady/ai_sdk_work/drp-ai_tvm/02_Line_crossing_13feb_vga/02_Line_crossing/src/build/CMakeFiles/line_crossing_app.dir

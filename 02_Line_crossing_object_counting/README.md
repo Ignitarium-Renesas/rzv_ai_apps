@@ -8,7 +8,7 @@ Line crossing object counting is a sample application that demonstrates counting
 
 ### Targeted product
 
- - RZ/V2H
+ - RZ/V2H EVK
 
 ## Application: Requirements
 
@@ -16,10 +16,10 @@ Line crossing object counting is a sample application that demonstrates counting
 Prepare the following equipments referring to [Getting Started](https://renesas-rz.github.io/rzv_ai_sdk/getting_started).
 | Equipment	Details | Details |
 | ---- | ---- |
-| RZ/V2H Evaluation Board Kit | - |
+| RZ/V2H EVK Evaluation Board Kit | - |
 | USB camera | - |
 | HDMI monitor | Display the application. |
-| micro HDMI to HDMI cable | Connect HDMI monitor and RZ/V2H Board. |
+| micro HDMI to HDMI cable | Connect HDMI monitor and RZ/V2H EVK Board. |
 | SD Card | Used as filesystem. |
 | USB Hub | Used for connecting USB Mouse and USB Keyboard to the board. |
 | USB Mouse | Used for HDMI screen control. |
@@ -27,12 +27,7 @@ Prepare the following equipments referring to [Getting Started](https://renesas-
 >**Note:**
 All external devices will be attached to the board and does not require any driver installation (Plug n Play Type).
 
-Connect the hardware as shown below.  
-
-<img src=./img/hw_img.jpg width=550>   
-
-
-When using the keyboard connected to RZ/V2H Evaluation Board, the keyboard layout and language are fixed to English.
+When using the keyboard connected to RZ/V2H EVK Evaluation Board, the keyboard layout and language are fixed to English.
 
 ## Application: Build Stage
 
@@ -91,15 +86,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 |line_crossing_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `02_Line_crossing_deploy_tvm-v220.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files_line_crossing_object_counting_wayland/line_crossing_yolov3_deploy.so
-https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files_line_crossing_object_counting_wayland/line_crossing_yolov3_fhddeploy.so)
+    1. Run the commands below to download the `02_Line_crossing_deploy_tvm-v220.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00/)
     ```
     cd ${PROJECT_PATH}/02_Line_crossing/exe/line_crossing_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/02_Line_crossing_deploy_tvm-v220.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/02_Line_crossing_deploy_tvm-v210.so
     ```
-    2. Rename the `02_Line_crossing_deploy_tvm-v220.so` to `deploy.so`.
+    2. Rename the `02_Line_crossing_deploy_tvm-v210.so` to `deploy.so`.
     ```
-    mv 02_Line_crossing_deploy_tvm-v220.so deploy.so
+    mv 02_Line_crossing_deploy_tvm-v210.so deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe](./exe) directory. (Including `deploy.so` file.)
@@ -115,10 +109,6 @@ https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files
     └── root/
         └── tvm/ 
             ├── line_crossing_yolov3/
-            │   ├── deploy.json
-            │   ├── deploy.params
-            │   └── deploy.so
-            ├── line_crossing_yolov3_fhd/
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
@@ -138,6 +128,12 @@ https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files
      width=600px;
      height=334px />
 
+## Hardware Image 
+<img src="./hw_conf_v2h.png" alt="Sample application output"
+     margin-right=10px; 
+     width=600px;
+     height=334px />
+
 ## Application: Run Stage
 
 1. On the board terminal, go to the `tvm` directory of the rootfs.
@@ -148,12 +144,11 @@ cd /home/root/tvm/02_Line_crossing/exe
 
    - Application with USB camera input
     ```sh
-    ./line_crossing_app USB person 150 0 950 1050 1 2 5
+    ./line_crossing_app USB person 150 0 950 1050 1
     ```
 3. Following window shows up on HDMI screen.  
    
-        
-4. To terminate the application, use enter key on the application.
+4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
 
 
@@ -167,7 +162,7 @@ The AI total time is around 100 msec, which includes
 pre processig, post processing and inference time.
 
 ## Reference
-- For RZ/V2H  EVK, this application supports USB camera only with 640*480 resolution.
+- For RZ/V2H EVK, this application supports USB camera only with 640*480 resolution.
 To use FHD, please use MIPI camera.
 Please refer to the following URL for how to change camera input to MIPI camera.
 [https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 
