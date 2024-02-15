@@ -155,7 +155,8 @@ const static double anchors[] =
 
 #define LINE_HEIGHT                 (30) 
 #define LINE_HEIGHT_OFFSET          (20) 
-
+#define CLASS_LABEL_HEIGHT           (10)
+#define CLASS_LABEL_WIDTH           (90)
 /*Waiting Time*/
 #define WAIT_TIME                   (1000) /* microseconds */
 #define AI_THREAD_TIMEOUT           (20)  /* seconds */

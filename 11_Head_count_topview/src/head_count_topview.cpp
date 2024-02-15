@@ -88,8 +88,8 @@ cv::Mat output_image;
 
 /* Map to store input source list */
 std::map<std::string, int> input_source_map ={    
-    {"IMAGE", 1},
-    {"USB", 2}  } ;
+    {"USB", 1}
+     } ;
 
 
 /*****************************************
@@ -447,10 +447,15 @@ void draw_bounding_box(void)
         Point bottomRight2(x2_max, y2_max);
 
         /* Creating bounding box and class labels */
+        /*cordinates for solid rectangle*/
+        Point textleft(x_min,y_min+CLASS_LABEL_HEIGHT);
+        Point textright(x_min+CLASS_LABEL_WIDTH,y_min);
+
         rectangle(g_frame, topLeft, bottomRight, Scalar(0, 0, 0), BOX_THICKNESS);
         rectangle(g_frame, topLeft2, bottomRight2, Scalar(255, 255, 255), BOX_THICKNESS);
-        putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 0, 0), 2*BOX_CHAR_THICKNESS);
-        putText(g_frame, result_str, topLeft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 0, 0), BOX_CHAR_THICKNESS);
+        /*solid rectangle over class name */
+        rectangle(g_frame, textleft, textright, Scalar(59, 94, 53), -1);
+        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(255, 255, 255), BOX_CHAR_THICKNESS);
     }
     HEAD_COUNT = result_cnt++;
     return;
@@ -650,12 +655,8 @@ void capture_frame(std::string gstreamer_pipeline )
             cv::Mat bgra_image;
             cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
            
-            
-            // img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
             memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);
             wayland.commit(img_buffer0, NULL);
-
-            // free(img_buffer0);
         }
     }
     free(img_buffer0);
@@ -945,52 +946,37 @@ int main(int argc, char *argv[])
     int32_t ret = 0;
     int8_t main_proc = 0;
     int32_t sem_create = -1;
-     std::string input_source = argv[1];
+    std::string input_source = argv[3];
     std::cout << "Starting Head Count Top View Application" << std::endl;
 
-    if (strcmp(argv[1],"USB")==0)
-    {   
-        if (argc >= 3 )
-        {
-            drp_max_freq = atoi(argv[2]);
-        }
-        else
-        {
-            drp_max_freq = DRP_MAX_FREQ;
-        }
-
-        if (argc >= 4)
-        {
-            drp_freq = atoi(argv[3]);
-        }
-        else
-        {
-            drp_freq = DRPAI_FREQ;
-        }
-    }
-    else
+    if (strcmp(argv[3],"IMAGE")==0)
     {
-        if (argc >= 4 )
+        std::cout<<"Support for USB mode only."<<std::endl;
+        return -1;
+    }
+
+    else if (strcmp(argv[3],"USB")==0)
+    {   
+        if (argc >= 2 )
         {
-            drp_max_freq = atoi(argv[3]);
+            drp_max_freq = atoi(argv[1]);
         }
         else
         {
             drp_max_freq = DRP_MAX_FREQ;
         }
 
-        if (argc >= 5)
+        if (argc >= 3)
         {
-            drp_freq = atoi(argv[4]);
+            drp_freq = atoi(argv[2]);
         }
         else
         {
             drp_freq = DRPAI_FREQ;
         }
-
     }
 
-    if (argc>6)
+    if (argc>5)
     {
         std::cerr << "[ERROR] Wrong number Arguments are passed " << std::endl;
         return 1;
@@ -1016,10 +1002,8 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-   
     /*Load model_dir structure and its weight to runtime object */
     runtime_status = runtime.LoadModel(model_dir, drpaimem_addr_start + DRPAI_MEM_OFFSET);
-    
     if(!runtime_status)
     {
         std::cerr << "[ERROR] Failed to load model. " << std::endl;
@@ -1028,60 +1012,10 @@ int main(int argc, char *argv[])
     }    
  
     std::cout << "[INFO] loaded runtime model :" << model_dir << "\n\n";
-
     switch (input_source_map[input_source])
-    {
-        /* Input Source : IMAGE*/
-        case 1:
-        {
-            std::cout << "Image_path: " << argv[2] << std::endl;
-            // read frame
-            g_frame = imread(argv[2]);
-            stringstream stream;
-            string str = "";
-            int32_t baseline = 10;
-            /* If empty frame */
-            if (g_frame.empty())
-            {
-                std::cout << "Failed to load image!" << std::endl;
-                close(drpai_fd);
-                return -1;
-            }
-
-            resize(g_frame, g_frame, Size(IMAGE_WIDTH, IMAGE_HEIGHT));
-
-            int ret = Head_Detection();
-
-            if (ret != 0)
-            {
-                std::cerr << "[ERROR] Inference Not working !!! " << std::endl;
-                close(drpai_fd);
-                return -1;
-            }
-            draw_bounding_box();
-
-            stream.str("");
-            stream << "Head Count: " << HEAD_COUNT;
-            str = stream.str();
-            Size count_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(g_frame, str,Point(HEAD_COUNT_STR_X, (HEAD_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(g_frame, str,Point(HEAD_COUNT_STR_X, (HEAD_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_LARGE, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
-            namedWindow("Output Image", WND_PROP_FULLSCREEN);
-            setWindowProperty("Output Image", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-            string click_req = "Output Image";
-            setMouseCallback(click_req,click_event,NULL);
-            imshow("Output Image", g_frame);
-            waitKey(0);
-            destroyAllWindows();
-        }
-        break;
-
-        /* MIPI source not supported*/
-    
+    { 
         /* Input Source : USB*/
-        case 2:{
+        case 1:{
             std::cout << "[INFO] USB CAMERA \n";
             media_port = query_device_status("usb");
             gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink";
