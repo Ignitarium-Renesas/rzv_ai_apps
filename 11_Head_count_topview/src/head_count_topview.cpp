@@ -946,29 +946,29 @@ int main(int argc, char *argv[])
     int32_t ret = 0;
     int8_t main_proc = 0;
     int32_t sem_create = -1;
-    std::string input_source = argv[3];
+    std::string input_source = argv[1];
     std::cout << "Starting Head Count Top View Application" << std::endl;
 
-    if (strcmp(argv[3],"IMAGE")==0)
+    if (strcmp(argv[1],"IMAGE")==0)
     {
         std::cout<<"Support for USB mode only."<<std::endl;
         return -1;
     }
 
-    else if (strcmp(argv[3],"USB")==0)
+    else if (strcmp(argv[1],"USB")==0)
     {   
-        if (argc >= 2 )
+        if (argc >= 3 )
         {
-            drp_max_freq = atoi(argv[1]);
+            drp_max_freq = atoi(argv[2]);
         }
         else
         {
             drp_max_freq = DRP_MAX_FREQ;
         }
 
-        if (argc >= 3)
+        if (argc >= 4)
         {
-            drp_freq = atoi(argv[2]);
+            drp_freq = atoi(argv[3]);
         }
         else
         {
