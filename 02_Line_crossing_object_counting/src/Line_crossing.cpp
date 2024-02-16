@@ -1081,47 +1081,51 @@ int main(int argc, char *argv[])
     int8_t main_proc = 0;
     int32_t sem_create = -1;
     std::string input_source = argv[1];
-    if (strcmp(argv[1],"IMAGE")==0)
-    {
-        std::cout<<"Support for USB mode only"<<std::endl;
-        return -1;
-    }
+    std::cout << "Starting Line Crossing Application" << std::endl;
+    if (strcmp(argv[1],"USB")==0)
+    {        
     if(argc>2)
-    {
-        class_name = argv[2];
-    }
-    else{
-        class_name = "person";
-    }
-    if(argc>6)
-    {
-        set_all_line_params(std::atoi(argv[3]),std::atoi(argv[4]),std::atoi(argv[5]),std::atoi(argv[6]));
+        {
+            class_name = argv[2];
+        }
+        else{
+            class_name = "person";
+        }
+        if(argc>6)
+        {
+            set_all_line_params(std::atoi(argv[3]),std::atoi(argv[4]),std::atoi(argv[5]),std::atoi(argv[6]));
+        }
+        else
+        {
+            std::cout<<"Enter All the arguments!"<<std::endl;
+            return -1;
+        }
+        if(argc>7)
+        {
+            DIRECTION = std::atoi(argv[7]);
+        }
+        else{
+            DIRECTION = 1; /* 1 for down 0 for up*/;
+        }
+        if(argc>8)
+        {
+            drp_max_freq = std::atoi(argv[8]);
+        }
+        else{
+            drp_max_freq = DRP_MAX_FREQ;
+        }
+        if(argc>9)
+        {
+            drpai_freq = std::atoi(argv[9]);
+        }
+        else{
+            drpai_freq = DRPAI_FREQ;
+        }
     }
     else
     {
-        std::cout<<"Enter All the arguments!"<<std::endl;
+        std::cout<<"Support for USB mode only"<<std::endl;
         return -1;
-    }
-    if(argc>7)
-    {
-        DIRECTION = std::atoi(argv[7]);
-    }
-    else{
-        DIRECTION = 1; /* 1 for down 0 for up*/;
-    }
-    if(argc>8)
-    {
-        drp_max_freq = std::atoi(argv[8]);
-    }
-    else{
-        drp_max_freq = DRP_MAX_FREQ;
-    }
-    if(argc>9)
-    {
-        drpai_freq = std::atoi(argv[9]);
-    }
-    else{
-        drpai_freq = DRPAI_FREQ;
     }
     errno = 0;
     int drpai_fd = open("/dev/drpai0", O_RDWR);

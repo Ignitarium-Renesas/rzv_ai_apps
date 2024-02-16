@@ -307,8 +307,8 @@ static int8_t initWindow(GLint width, GLint height, struct wl_display** wlDispla
  * Function Name : init
  * Description   : wayland client init
  *                 create buffer.
- * Arguments     : idx = index of the display buffer
- *                 w  = width
+ * Arguments     : w  = width
+ *                 h = height
  *                 c  = color
  * Return value  : 0 if Success
  *                 not 0 otherwise
