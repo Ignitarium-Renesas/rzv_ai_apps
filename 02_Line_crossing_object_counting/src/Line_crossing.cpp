@@ -494,7 +494,7 @@ void draw_bounding_box(void)
         /*solid rectangle over class name */
         rectangle(g_frame, textleft, textright, Scalar(59, 94, 53), -1);
 
-        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(0, 255, 0), BOX_CHAR_THICKNESS);
+        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(255, 255, 255), BOX_CHAR_THICKNESS);
         boxes.push_back({(int)det[i].bbox.x, (int)det[i].bbox.y, (int)det[i].bbox.w, (int)det[i].bbox.h});
 
     }
