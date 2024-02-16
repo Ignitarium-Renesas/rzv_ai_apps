@@ -394,7 +394,7 @@ void draw_bounding_box(void)
     stringstream stream;
     string str = "";
     string result_str;
-    int32_t offset  = 50;
+    // int32_t offset  = 50;
     int32_t result_cnt =0;
     uint32_t x;
     uint32_t y;
@@ -453,16 +453,7 @@ void draw_bounding_box(void)
         rectangle(g_frame, topLeft2, bottomRight2, Scalar(255, 255, 255), BOX_THICKNESS);
         /*solid rectangle over class name */
         rectangle(g_frame, textleft, textright, Scalar(59, 94, 53), -1);
-        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(255, 255, 255), BOX_CHAR_THICKNESS);
-     
-        stream.str("");
-        stream << "Class: " << label_file_map[det[i].c].c_str() << " " << fixed << setprecision(2)<< (det[i].prob*100)<<"%";
-        str = stream.str();
-        Size count_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-        putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - count_size.width - RIGHT_ALIGN_OFFSET), (y + offset*(result_cnt -1) +count_size.height)), FONT_HERSHEY_SIMPLEX, 
-                    CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-        putText(g_frame, str,Point((DISP_OUTPUT_WIDTH - count_size.width - RIGHT_ALIGN_OFFSET), (y + offset*(result_cnt -1) + count_size.height)), FONT_HERSHEY_SIMPLEX, 
-                    CHAR_SCALE_LARGE, Scalar(155, 255, 255), HC_CHAR_THICKNESS);
+        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(255, 255, 255), BOX_CHAR_THICKNESS);            
     }
     return;
 }
@@ -470,7 +461,7 @@ void draw_bounding_box(void)
 
 /*****************************************
  * Function Name : Animal Detection
- * Description   : Function to perform over all detection
+ * Description   : Function to perform over all detectiooutput_imagen
  * Arguments     : -
  * Return value  : 0 if succeeded
  *               not 0 otherwise
@@ -548,6 +539,10 @@ void capture_frame(std::string gstreamer_pipeline )
     int32_t ret = 0;
     int32_t baseline = 10;
     uint8_t * img_buffer0;
+    // int32_t i = 0;
+    // int32_t offset  = 50;
+    // string result_str;
+    // int32_t result_cnt =0;
 
     img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
     
@@ -560,6 +555,10 @@ void capture_frame(std::string gstreamer_pipeline )
     }
     while (true)
     {
+        int32_t i = 0;  
+        int32_t offset  = 50;
+        string result_str;
+        int32_t result_cnt =0;
         cap >> g_frame;
         cv::Mat output_image(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3, cv::Scalar(0, 0, 0));
         double fps = cap.get(CAP_PROP_FPS);
@@ -592,12 +591,12 @@ void capture_frame(std::string gstreamer_pipeline )
             draw_bounding_box();
             /*Display frame */
             stream.str("");
-            stream << "Camera Frame Rate : "<<fps<<" fps ";
+            stream << "Camera Frame Rate: "<<fps<<" fps ";
             str = stream.str();
             Size camera_rate_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width + FRAME_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - FRAME_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
 
             stream.str("");
@@ -632,6 +631,27 @@ void capture_frame(std::string gstreamer_pipeline )
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+
+            for (i = 0; i < det.size(); i++)
+            {
+                /* Skip the overlapped bounding boxes */
+                if (det[i].prob == 0)
+                {
+                    continue;
+                }
+                result_cnt++;
+                /* Clear string stream for bounding box labels */
+                stream.str("");
+                /* Draw the bounding box on the image */
+                stream << fixed << setprecision(2) << det[i].prob;
+                result_str = label_file_map[det[i].c] + " " + stream.str();
+                stream.str("");
+                stream << "Class: " << label_file_map[det[i].c].c_str() << " " << fixed << setprecision(2)<< (det[i].prob*100)<<"%";
+                str = stream.str();
+                Size count_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
+                putText(output_image, str,Point((DISP_OUTPUT_WIDTH - count_size.width - RIGHT_ALIGN_OFFSET), (LABEL_STR_Y +offset*(result_cnt -1)+ count_size.height)), FONT_HERSHEY_SIMPLEX, 
+                            CHAR_SCALE_SMALL, Scalar(0, 255, 255), CLASS_CHAR_THICKNESS);
+            }
 
             Size size(DISP_INF_WIDTH, DISP_INF_HEIGHT);
             /*resize the image to the keep ratio size*/
@@ -929,12 +949,7 @@ int main(int argc, char *argv[])
     int32_t sem_create = -1;
     std::string input_source = argv[1];
     std::cout << "Starting Animal Detection Application" << std::endl;
-    
-    if (strcmp(argv[1],"IMAGE")==0)
-    {
-        std::cout<<"Support for USB mode only"<<std::endl;
-        return -1;
-    }
+
     if (strcmp(argv[1],"USB")==0)
     {   
         if (argc >= 3 )
@@ -953,6 +968,12 @@ int main(int argc, char *argv[])
         {
             drp_freq = DRPAI_FREQ;
         }
+    }
+        
+    else
+    {
+        std::cout<<"Support for USB mode only"<<std::endl;
+        return -1;
     }
 
     if (argc>6)
