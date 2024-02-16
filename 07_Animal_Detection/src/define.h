@@ -106,7 +106,7 @@ const static double anchors[] =
 
 /* Thresholds */
 #define TH_PROB                     (0.2f)
-#define TH_NMS                      (0.5f)
+#define TH_NMS                      (0.7f)
 /* Size of input image to the model */
 #define MODEL_IN_W                  (416)
 #define MODEL_IN_H                  (416)
@@ -144,6 +144,8 @@ const static double anchors[] =
 #define I_TIME_STR_Y                (220)
 #define T_TIME_STR_X                (645)
 #define T_TIME_STR_Y                (120)
+#define LABEL_STR_X                 (645)
+#define LABEL_STR_Y                 (420)
 #define CHAR_SCALE_LARGE            (1.6)
 #define CHAR_SCALE_SMALL            (1.2)
 #define CHAR_SCALE_XS               (0.5)
@@ -151,13 +153,14 @@ const static double anchors[] =
 #define BOX_CHAR_THICKNESS          (0.5)
 #define HC_CHAR_THICKNESS           (4)
 #define FPS_CHAR_THICKNESS          (4)
+#define CLASS_CHAR_THICKNESS        (2)
 #define RIGHT_ALIGN_OFFSET          (20)
-
+#define FRAME_OFFSET                (10)
 #define LINE_HEIGHT                 (30) 
 #define LINE_HEIGHT_OFFSET          (20) 
 
 #define CLASS_LABEL_HEIGHT           (10)
-#define CLASS_LABEL_WIDTH           (90)
+#define CLASS_LABEL_WIDTH           (100)
 
 /*Waiting Time*/
 #define WAIT_TIME                   (1000) /* microseconds */
