@@ -1138,8 +1138,6 @@ main_proc_end:
     return main_ret;
 }
 
-
-
 int main(int argc, char *argv[])
 {
     int32_t create_thread_ai = -1;
@@ -1151,13 +1149,7 @@ int main(int argc, char *argv[])
     std::string input_source = argv[1];
     std::cout << "Starting Human gaze Application" << std::endl;
 
-    if (strcmp(argv[1],"IMAGE")==0)
-    {
-        std::cout<<"Support for USB mode only."<<std::endl;
-        return -1;
-    }
-
-    else if (strcmp(argv[1],"USB")==0)
+    if (strcmp(argv[1],"USB")==0)
     {   
         if (argc >= 3 )
         {
@@ -1177,7 +1169,11 @@ int main(int argc, char *argv[])
             drp_freq = DRPAI_FREQ;
         }
     }
-
+    else
+    {
+        std::cout<<"Support for USB mode only."<<std::endl;
+        return -1;
+    }
     if (argc>5)
     {
         std::cerr << "[ERROR] Wrong number Arguments are passed " << std::endl;
@@ -1204,7 +1200,6 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-   
     /*Load model_dir structure and its weight to runtime object */
     runtime_status = runtime.LoadModel(model_dir, drpaimem_addr_start + DRPAI_MEM_OFFSET1);
     
