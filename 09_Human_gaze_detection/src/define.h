@@ -146,16 +146,33 @@ const static std::string pre_dir1 = model_dir1 + "/preprocess";
 #define CLASS_LABEL_WIDTH           (90)
 #define HEAD_COUNT_STR_X            (645)
 #define HEAD_COUNT_STR_Y            (30)
-#define FPS_STR_X                   (645)
-#define FPS_STR_Y                   (360)
-#define PRE_TIME_STR_X              (645)
-#define PRE_TIME_STR_Y              (170)
-#define P_TIME_STR_X                (645)
-#define P_TIME_STR_Y                (270)
-#define I_TIME_STR_X                (645)
-#define I_TIME_STR_Y                (220)
+
 #define T_TIME_STR_X                (645)
 #define T_TIME_STR_Y                (120)
+
+#define MODEL_NAME_1_X              (645)
+#define MODEL_NAME_1_Y              (190)
+
+#define PRE_TIME_STR_X              (645)
+#define PRE_TIME_STR_Y              (240)
+#define I_TIME_STR_X                (645)
+#define I_TIME_STR_Y                (290)
+#define P_TIME_STR_X                (645)
+#define P_TIME_STR_Y                (340)
+
+#define MODEL_NAME_2_X              (645)
+#define MODEL_NAME_2_Y              (410)
+
+#define PRE_TIME_STR_X_GAZE         (645)
+#define PRE_TIME_STR_Y_GAZE         (460)
+#define I_TIME_STR_X_GAZE           (645)
+#define I_TIME_STR_Y_GAZE           (510)
+#define P_TIME_STR_X_GAZE           (645)
+#define P_TIME_STR_Y_GAZE           (560)
+
+#define FPS_STR_X                   (645)
+#define FPS_STR_Y                   (630)
+
 #define CHAR_SCALE_LARGE            (1.6)
 #define CHAR_SCALE_SMALL            (1.2)
 #define CHAR_SCALE_XS               (0.5)

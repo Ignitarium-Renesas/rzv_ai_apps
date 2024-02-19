@@ -109,7 +109,7 @@ bool MeraDrpRuntimeWrapper::LoadModel(const std::string& model_dir, uint64_t sta
 
 template <typename T>
 void MeraDrpRuntimeWrapper::SetInput(int input_index, const T* data_ptr) {
-    LOG(INFO) << "Loading input...";
+    // LOG(INFO) << "Loading input...";
 
     tvm::runtime::PackedFunc get_input = mod.GetFunction("get_input");
     tvm::runtime::NDArray xx = get_input(input_index);
