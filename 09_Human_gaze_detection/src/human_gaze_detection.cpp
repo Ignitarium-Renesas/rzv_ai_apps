@@ -78,13 +78,19 @@ static vector<detection> det;
 
 float fps = 0;
 float TOTAL_TIME = 0;
+float TOTAL_TIME_GAZE = 0;
 float INF_TIME= 0;
 float POST_PROC_TIME = 0;
 float PRE_PROC_TIME = 0;
 int32_t HEAD_COUNT= 0;
 int fd;
 
-
+float POST_PROC_TIME_TINYYOLO =0;
+float POST_PROC_TIME_GAZE =0;
+float PRE_PROC_TIME_TINYYOLO =0;
+float PRE_PROC_TIME_GAZE =0;
+float INF_TIME_GAZE = 0;
+float INF_TIME_TINYYOLO = 0;
 
 // Cropping parameters
 static int16_t cropx1[NUM_MAX_FACE];
@@ -573,6 +579,14 @@ void draw_bounding_box(void)
         int32_t x2_max = cropx2[i] - BOX_THICKNESS;
         int32_t y2_max = cropy2[i] - BOX_THICKNESS;
 
+        int32_t height = (y2_max - y2_min)*1.6;
+        int32_t width = (x2_max - x2_min)*1.6;
+
+        x2_min = (x2_min + x2_max)/2 - width/2;
+        x2_max = (x2_min + x2_max)/2 + width/2;
+        y2_max = (y2_min + y2_max)/2 + height/2;
+        y2_min = (y2_min + y2_max)/2 - height/2;
+        
         x2_min = ((DRPAI_IN_WIDTH - 2) < x2_min) ? (DRPAI_IN_WIDTH - 2) : x2_min;
         x2_max = x2_max < 1 ? 1 : x2_max;
         y2_min = ((DRPAI_IN_HEIGHT - 2) < y2_min) ? (DRPAI_IN_HEIGHT - 2) : y2_min;
@@ -589,11 +603,10 @@ void draw_bounding_box(void)
         Point textleft(cropx1[i],cropy1[i]+CLASS_LABEL_HEIGHT);
         Point textright(cropx1[i]+CLASS_LABEL_WIDTH,cropy1[i]);
 
-        rectangle(g_frame, topLeft, bottomRight, Scalar(0, 0, 0), BOX_THICKNESS);
-        rectangle(g_frame, topLeft2, bottomRight2, Scalar(255, 255, 255), BOX_THICKNESS);
+        // rectangle(g_frame, topLeft, bottomRight, Scalar(0, 0, 0), BOX_THICKNESS);
+        rectangle(g_frame, topLeft2, bottomRight2, Scalar(50, 255, 154), BOX_THICKNESS);
         /*solid rectangle over class name */
-        rectangle(g_frame, textleft, textright, Scalar(59, 94, 53), -1);
-        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(255, 255, 255), BOX_CHAR_THICKNESS);
+        // rectangle(g_frame, textleft, textright, Scalar(59, 94, 53), -1);
         
         //gaze
         Point topLeftgaze(id_x[0][i],id_y[0][i]);
@@ -621,6 +634,7 @@ int Gaze_Detection()
     Mat frame1;
 
     Size size(MODEL_IN_H, MODEL_IN_W);
+    //Pre process start time for tinyyolo model
     auto t0 = std::chrono::high_resolution_clock::now();
     /*resize the image to the model input size*/
     resize(g_frame, frame1, size);
@@ -647,7 +661,7 @@ int Gaze_Detection()
     Mat frame = frameCHW;
     int ret = 0;
 
-    /* Inference start time */
+    /* Inference start time for tinyyolo model*/
     auto t1 = std::chrono::high_resolution_clock::now();
     
     ret = tvm_inference(frame);
@@ -657,12 +671,14 @@ int Gaze_Detection()
         std::cerr << "[ERROR] DRP Inference Not working !!! " << std::endl;
         return -1;
     }
-
+    /* Post process start time for tinyyolo model*/
     auto t2 = std::chrono::high_resolution_clock::now();
-    auto inf_duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
-    INF_TIME = inf_duration;
+    auto inf_duration_tinyyolo = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+    INF_TIME_TINYYOLO = inf_duration_tinyyolo;
    /* Do post process to get bounding boxes */
     R_Post_Proc(drpai_output_buf);
+    /*Pre process start time for gaze model*/
+    auto t3 = std::chrono::high_resolution_clock::now();
 
     if (HEAD_COUNT > 0){
         
@@ -685,7 +701,7 @@ int Gaze_Detection()
 
         Size size(224, 224);
 
-        auto t0 = std::chrono::high_resolution_clock::now();
+        // auto t0 = std::chrono::high_resolution_clock::now();
         /*resize the image to the model input size*/
         resize(cropped_image, frame1res, size);
         vector<Mat> rgb_imagesres;
@@ -707,6 +723,8 @@ int Gaze_Detection()
             frameCHWres = frameCHWres.clone();
 
         Mat frameres = frameCHWres;
+        /*inference start time for gaze model*/
+        auto t1_gaze = std::chrono::high_resolution_clock::now();
         ret = tvm_inferenceres(frameres);
 
         if (ret != 0)
@@ -714,19 +732,28 @@ int Gaze_Detection()
             std::cerr << "[ERROR] DRP Inference Not working !!! " << std::endl;
             return -1;
         }
+        /*Post process start time for gaze model*/
+        auto t2_gaze = std::chrono::high_resolution_clock::now();
+        auto inf_duration_gaze = std::chrono::duration_cast<std::chrono::milliseconds>(t2_gaze - t1_gaze).count();
+        INF_TIME_GAZE = inf_duration_gaze;
         R_Post_Proc_ResNet18(drpai_output_buf1, i);
         R_ResNet18_Coord_Convert(i);
+        auto pre_proc_time_gaze = std::chrono::duration_cast<std::chrono::milliseconds>(t1_gaze - t3).count();
+        PRE_PROC_TIME_GAZE = pre_proc_time_gaze;
+        auto t3_gaze = std::chrono::high_resolution_clock::now();
+        auto post_duration_gaze = std::chrono::duration_cast<std::chrono::microseconds>(t3_gaze - t2_gaze).count();
+        POST_PROC_TIME_GAZE = post_duration_gaze/1000.0;
+        float total_time_gaze = float(inf_duration_gaze) + float(post_duration_gaze)/1000.0 + float(pre_proc_time_gaze);
+        TOTAL_TIME_GAZE = total_time_gaze;
         }
-        
-        
     }
-    auto t3 = std::chrono::high_resolution_clock::now();
-    auto post_duration = std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2).count();
-    auto pre_proc_time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-    POST_PROC_TIME = post_duration;
-    PRE_PROC_TIME = pre_proc_time;
-    float total_time = float(inf_duration) + float(post_duration) + float(pre_proc_time);
-    TOTAL_TIME = total_time;
+    auto pre_proc_time_tinyyolo = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+    auto post_duration_tinyyolo = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count();
+    POST_PROC_TIME_TINYYOLO = post_duration_tinyyolo/1000.0;
+    PRE_PROC_TIME_TINYYOLO = pre_proc_time_tinyyolo;
+    float total_time_tinyyolo = float(inf_duration_tinyyolo) + float(post_duration_tinyyolo)/1000.0 + float(pre_proc_time_tinyyolo);
+    TOTAL_TIME = TOTAL_TIME_GAZE + total_time_tinyyolo;
+
     /*Calculating the fps*/
     return 0;
 }
@@ -814,8 +841,18 @@ void capture_frame(std::string gstreamer_pipeline )
                         CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_LARGE, Scalar(0, 255, 0), HC_CHAR_THICKNESS);
+
             stream.str("");
-            stream << "Pre-Proc: " << PRE_PROC_TIME<<" ms";
+            stream << "TinyYolov2";
+            str = stream.str();
+            Size tinyyolov2_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tinyyolov2_size.width - RIGHT_ALIGN_OFFSET), (MODEL_NAME_1_Y + tinyyolov2_size.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tinyyolov2_size.width - RIGHT_ALIGN_OFFSET), (MODEL_NAME_1_Y + tinyyolov2_size.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+
+            stream.str("");
+            stream << "Pre-Proc: " << PRE_PROC_TIME_TINYYOLO<<" ms";
             str = stream.str();
             Size pre_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -823,7 +860,7 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Inference: " << INF_TIME<<" ms";
+            stream << "Inference: " << INF_TIME_TINYYOLO<<" ms";
             str = stream.str();
             Size inf_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -831,12 +868,47 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Post-Proc: " << POST_PROC_TIME<<" ms";
+            stream << "Post-Proc: " << POST_PROC_TIME_TINYYOLO<<setprecision(3)<<"ms";
             str = stream.str();
             Size post_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+            
+            /*Gaze model Timings*/
+            stream.str("");
+            stream << "Resnet18";
+            str = stream.str();
+            Size resnet18_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - resnet18_size.width - RIGHT_ALIGN_OFFSET), (MODEL_NAME_2_Y + resnet18_size.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - resnet18_size.width - RIGHT_ALIGN_OFFSET), (MODEL_NAME_2_Y + resnet18_size.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+
+            stream.str("");
+            stream << "Pre-Proc: " << PRE_PROC_TIME_GAZE<<" ms";
+            str = stream.str();
+            Size pre_proc_size_gaze = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size_gaze.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y_GAZE + pre_proc_size_gaze.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size_gaze.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y_GAZE + pre_proc_size_gaze.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+            stream.str("");
+            stream << "Inference: " << INF_TIME_GAZE<<" ms";
+            str = stream.str();
+            Size inf_size_gaze = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size_gaze.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y_GAZE + inf_size_gaze.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size_gaze.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y_GAZE + inf_size_gaze.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+            stream.str("");
+            stream << "Post-Proc: " << POST_PROC_TIME_GAZE<<setprecision(3)<<" ms";
+            str = stream.str();
+            Size post_proc_size_gaze = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size_gaze.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y_GAZE + post_proc_size_gaze.height)), FONT_HERSHEY_SIMPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size_gaze.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y_GAZE + post_proc_size_gaze.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
 
             Size size(DISP_INF_WIDTH, DISP_INF_HEIGHT);
