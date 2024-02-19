@@ -7,7 +7,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 
 ### Targeted product
 
- -RZ/V2H EVK
+ - RZ/V2H EVK
 
 ## Application: Requirements
 
@@ -18,8 +18,8 @@ Prepare the following equipments referring to [Getting Started](https://renesas-
 | RZ/V2H EVK Evaluation Board Kit | - |
 | USB camera | - |
 | HDMI monitor | Display the application. |
-| micro HDMI to HDMI cable | Connect HDMI monitor and RZ/V2H EVK Board. |
-| SD Card | Used as filesystem. |
+| HDMI cable | Connect HDMI monitor and RZ/V2H Board. |
+| microSD Card | Used as filesystem. |
 | USB Hub | Used for connecting USB Mouse and USB Keyboard to the board. |
 | USB Mouse | Used for HDMI screen control. |
 | USB Keyboard | Used for terminal input. |
@@ -81,7 +81,7 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
 - head_count_topview_app
 
 ## Hardware Image 
-<img src="./hw_conf_v2h.png" alt="Sample application output"
+<img src="./img/hw_conf_v2h.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
      height=334px />
@@ -91,18 +91,18 @@ For the ease of deployment all the deployables file and folders are provided on 
 
 |File | Details |
 |:---|:---|
-|topview_headcount_yolov3 | Model object files for deployment.<br>Pre-processing Runtime Object files included. |
+|topview_headcount_yolov3 | Model object files for deployment.|
 |head_count_topview_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `11_Head_count_topview_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00/)
+    1. Run the commands below to download the `11_Head_count_topview_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files_head_count_topview_wayland/11_Head_count_topview_deploy_tvm-v210.so)
     ```
     cd ${PROJECT_PATH}/11_Head_count_topview/exe/topview_headcount_yolov3
     wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/11_Head_count_topview_deploy_tvm-v220.so
     ```
     2. Rename the `11_Head_count_topview_deploy_tvm-v210.so` to `deploy.so`.
     ```
-    mv 11_Head_count_topview_deploy_tvm-v220.so deploy.so
+    mv 11_Head_count_topview_deploy_tvm-v210.so deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe](./exe) directory. (Including `deploy.so` file.)
@@ -132,25 +132,36 @@ For the ease of deployment all the deployables file and folders are provided on 
 
 1. On the board terminal, go to the `tvm` directory of the rootfs.
 ```sh
-cd /home/root/tvm/11_Head_count_topview/exe
+cd /home/root/tvm
 ```
 2. Run the application.
    - Application with USB camera input
     ```sh
-    ./head_count_topview_app 2 5 USB
+    ./head_count_topview_app USB
     ```
 3. Following window shows up on HDMI screen.  
    sample images 
         
-4. To terninate the application, switch the application window to the terminal by using Super(windows key)+Tab and press ENTER key on the terminal of the board..
+4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
-
+## Sample Image 
+<img src="./img/app_run.png" alt="Sample application output"
+     margin-right=10px; 
+     width=600px;
+     height=334px />
 
 ## Application: Configuration 
 ### AI Model
 - YOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/)  
 - Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/) *[Head_data](https://www.kaggle.com/datasets/houssad/head-data) *[RGBD_Indoor_Dataset](https://drive.google.com/file/d/1fOub9LcNqfDlr-mEcdnenAJWw-rqWGmG/view)
 
+
 ### AI total time
 The AI total time is around 100 msec, which includes 
 pre processig, post processing and inference time.
+
+## Reference
+- For RZ/V2H  EVK, this application supports USB camera only with 640*480 resolution.
+To use FHD, please use MIPI camera.
+Please refer to the following URL for how to change camera input to MIPI camera.
+[https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi).  
