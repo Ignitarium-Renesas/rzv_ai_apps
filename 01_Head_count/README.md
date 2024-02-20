@@ -93,7 +93,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 |head_count_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `01_Head_count_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00/)
+    1. Run the commands below to download the `01_Head_count_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files_head_count_wayland/01_Head_count_deploy_tvm-v210.so)
     ```
     cd ${PROJECT_PATH}/01_Head_count/exe/head_count_yolov3
     wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/01_Head_count_deploy_tvm-v210.so
