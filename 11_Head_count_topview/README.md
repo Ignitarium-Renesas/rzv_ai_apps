@@ -28,7 +28,10 @@ All external devices will be attached to the board and does not require any driv
 
 Connect the hardware as shown below.  
 
-<img src=./img/hw_img.jpg width=550>   
+<img src="./img/hw_conf_v2h.png" alt="Connected Hardware"
+     margin-right=10px; 
+     width=600px;
+     height=334px />
 
 
 When using the keyboard connected to RZ/V2H EVK Evaluation Board, the keyboard layout and language are fixed to English.
@@ -79,12 +82,6 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
     ```
 5. The following application file would be genarated in the `${PROJECT_PATH}/11_Head_count_topview/src/build` directory
 - head_count_topview_app
-
-## Hardware Image 
-<img src="./img/hw_conf_v2h.png" alt="Sample application output"
-     margin-right=10px; 
-     width=600px;
-     height=334px />
 
 ## Application: Deploy Stage
 For the ease of deployment all the deployables file and folders are provided on the [exe](./exe) folder.
