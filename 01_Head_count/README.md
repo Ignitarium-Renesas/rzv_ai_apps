@@ -96,7 +96,7 @@ For the ease of deployment all the deployables file and folders are provided on 
     1. Run the commands below to download the `01_Head_count_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00/)
     ```
     cd ${PROJECT_PATH}/01_Head_count/exe/head_count_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/01_Head_count_deploy_tvm-v220.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/01_Head_count_deploy_tvm-v210.so
     ```
     2. Rename the `01_Head_count_deploy_tvm-v210.so` to `deploy.so`.
     ```
