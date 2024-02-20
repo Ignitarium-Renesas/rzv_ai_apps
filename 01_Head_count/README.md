@@ -15,11 +15,11 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 Prepare the following equipments referring to [Getting Started](https://renesas-rz.github.io/rzv_ai_sdk/getting_started).
 | Equipment	Details | Details |
 | ---- | ---- |
-| RZ/V2H EVK Evaluation Board Kit | - |
+| RZ/V2H Evaluation Board Kit | - |
 | USB camera | - |
 | HDMI monitor | Display the application. |
-| micro HDMI to HDMI cable | Connect HDMI monitor and RZ/V2H Board. |
-| SD Card | Used as filesystem. |
+| HDMI cable | Connect HDMI monitor and RZ/V2H Board. |
+| microSD Card | Used as filesystem. |
 | USB Hub | Used for connecting USB Mouse and USB Keyboard to the board. |
 | USB Mouse | Used for HDMI screen control. |
 | USB Keyboard | Used for terminal input. |
@@ -28,10 +28,13 @@ All external devices will be attached to the board and does not require any driv
 
 Connect the hardware as shown below.  
 
-<img src=./img/hw_img.jpg width=550>   
+<img src="./img/hw_conf_v2h.png" alt="Connected Hardware"
+     margin-right=10px; 
+     width=600px;
+     height=334px />
 
 
-When using the keyboard connected to RZ/V2H EVK Evaluation Board, the keyboard layout and language are fixed to English.
+When using the keyboard connected to RZ/V2H Evaluation Board, the keyboard layout and language are fixed to English.
 
 ## Application: Build Stage
 
@@ -80,29 +83,24 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
 5. The following application file would be genarated in the `${PROJECT_PATH}/01_Head_count/src/build` directory
 - head_count_app
 
-## Hardware Image 
-<img src="./hw_conf_v2h.png" alt="Sample application output"
-     margin-right=10px; 
-     width=600px;
-     height=334px />
 
 ## Application: Deploy Stage
 For the ease of deployment all the deployables file and folders are provided on the [exe](./exe) folder.
 
 |File | Details |
 |:---|:---|
-|head_count_yolov3 | Model object files for deployment.<br>Pre-processing Runtime Object files included. |
+|head_count_yolov3 | Model object files for deployment.|
 |head_count_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `01_Head_count_deploy_tvm-v220.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00/)
+    1. Run the commands below to download the `01_Head_count_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00/)
     ```
     cd ${PROJECT_PATH}/01_Head_count/exe/head_count_yolov3
     wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/01_Head_count_deploy_tvm-v220.so
     ```
-    2. Rename the `01_Head_count_deploy_tvm-v220.so` to `deploy.so`.
+    2. Rename the `01_Head_count_deploy_tvm-v210.so` to `deploy.so`.
     ```
-    mv 01_Head_count_deploy_tvm-v220.so deploy.so
+    mv 01_Head_count_deploy_tvm-v210.so deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe](./exe) directory. (Including `deploy.so` file.)
@@ -122,6 +120,11 @@ For the ease of deployment all the deployables file and folders are provided on 
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
+            ├── head_count_yolov3_fhd/
+            │   ├── deploy.json
+            │   ├── deploy.params
+            │   └── deploy.so
+            ├── test_images/
             ├── labels.txt
             └── head_count_app
 ```
@@ -131,7 +134,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 
 1. On the board terminal, go to the `tvm` directory of the rootfs.
 ```sh
-cd /home/root/tvm/01_Head_count/exe
+cd /home/root/tvm
 ```
 2. Run the application.
 
@@ -144,6 +147,12 @@ cd /home/root/tvm/01_Head_count/exe
         
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
+## Sample Image 
+<img src="./img/app_run.png" alt="Sample application output"
+     margin-right=10px; 
+     width=600px;
+     height=334px />
+
 ## Application: Configuration 
 ### AI Model
 - YOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/)  
@@ -152,3 +161,9 @@ cd /home/root/tvm/01_Head_count/exe
 ### AI total time
 The AI total time is around 100 msec, which includes 
 pre processig, post processing and inference time.
+
+## Reference
+- For RZ/V2H  EVK, this application supports USB camera only with 640*480 resolution.
+To use FHD, please use MIPI camera.
+Please refer to the following URL for how to change camera input to MIPI camera.
+[https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 

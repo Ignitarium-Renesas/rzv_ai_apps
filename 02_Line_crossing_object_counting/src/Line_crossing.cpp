@@ -86,6 +86,7 @@ float TOTAL_TIME = 0;
 float INF_TIME= 0;
 float POST_PROC_TIME = 0;
 float PRE_PROC_TIME = 0;
+float OUTPUT_BUFFER_TIME =0;
 
 /*Tracker Variables*/
 TRACKER tracker;
@@ -222,68 +223,6 @@ static int8_t wait_join(pthread_t *p_join_thread, uint32_t join_time)
         ret_err = pthread_timedjoin_np(*p_join_thread, NULL, &join_timeout);
     }
     return ret_err;
-}
-
- /*****************************************
- * Function Name : tvm_inference
- * Description   : Function to run tvm inference
- * Arguments     : frame
- * Return value  : 0 if succeeded
- *               not 0 otherwise
- ******************************************/
-int tvm_inference(Mat& frame)
-{
-    /*start inference using drp runtime*/
-    runtime.SetInput(0, frame.ptr<float>());
-    runtime.Run();
-
-    /*load inference out on drpai_out_buffer*/
-    int8_t ret = 0;
-    int32_t i = 0;
-    int32_t output_num = 0;
-    std::tuple<InOutDataType, void *, int64_t> output_buffer;
-    int64_t output_size;
-    uint32_t size_count = 0;
-
-    /* Get the number of output of the target model. */
-    output_num = runtime.GetNumOutput();
-    size_count = 0;
-    /*GetOutput loop*/
-    for (i = 0; i < output_num; i++)
-    {
-        /* output_buffer below is tuple, which is { data type, address of output data, number of elements } */
-        output_buffer = runtime.GetOutput(i);
-        /*Output Data Size = std::get<2>(output_buffer). */
-        output_size = std::get<2>(output_buffer);
-
-        /*Output Data Type = std::get<0>(output_buffer)*/
-        if (InOutDataType::FLOAT16 == std::get<0>(output_buffer))
-        {
-            /*Output Data = std::get<1>(output_buffer)*/
-            uint16_t *data_ptr = reinterpret_cast<uint16_t *>(std::get<1>(output_buffer));
-            for (int j = 0; j < output_size; j++)
-            {
-                /*FP16 to FP32 conversion*/
-                drpai_output_buf[j + size_count] = float16_to_float32(data_ptr[j]);
-            }
-        }
-        else if (InOutDataType::FLOAT32 == std::get<0>(output_buffer))
-        {
-            /*Output Data = std::get<1>(output_buffer)*/
-            float *data_ptr = reinterpret_cast<float *>(std::get<1>(output_buffer));
-            for (int j = 0; j < output_size; j++)
-            {
-                drpai_output_buf[j + size_count] = data_ptr[j];
-            }
-        }
-        else
-        {
-            std::cerr << "[ERROR] Output data type : not floating point." << std::endl;
-            ret = -1;
-            break;
-        }
-        size_count += output_size;
-    }return ret;
 }
 
 /*****************************************
@@ -593,6 +532,9 @@ int Line_Crossing()
 
     /* normailising  pixels */
     divide(frameCHW, 255.0, frameCHW);
+    
+    /* Preprocess time ends*/
+    auto t1 = std::chrono::high_resolution_clock::now();
 
     /* DRP AI input image should be continuous buffer */
     if (!frameCHW.isContinuous())
@@ -601,10 +543,70 @@ int Line_Crossing()
     Mat frame = frameCHW;
     int ret = 0;
 
-    /* Inference start time */
-    auto t1 = std::chrono::high_resolution_clock::now();
+    /*start inference using drp runtime*/
+    runtime.SetInput(0, frame.ptr<float>());
 
-    ret = tvm_inference(frame);
+    auto t2 = std::chrono::high_resolution_clock::now();
+    runtime.Run();
+    auto t3 = std::chrono::high_resolution_clock::now();
+    auto inf_duration = std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2).count();
+
+    /*load inference out on drpai_out_buffer*/
+    int32_t i = 0;
+    int32_t output_num = 0;
+    std::tuple<InOutDataType, void *, int64_t> output_buffer;
+    int64_t output_size;
+    uint32_t size_count = 0;
+
+    /* Get the number of output of the target model. */
+    auto t4 = std::chrono::high_resolution_clock::now();
+    output_num = runtime.GetNumOutput();
+    auto t5 = std::chrono::high_resolution_clock::now();
+    auto output_num_time = std::chrono::duration_cast<std::chrono::milliseconds>(t5 - t4).count();
+
+    size_count = 0;
+    /*GetOutput loop*/
+    for (i = 0; i < output_num; i++)
+    {
+        /* output_buffer below is tuple, which is { data type, address of output data, number of elements } */
+        auto t6 = std::chrono::high_resolution_clock::now();
+        output_buffer = runtime.GetOutput(i);
+        auto t7 = std::chrono::high_resolution_clock::now();
+
+        auto output_buffer_time = std::chrono::duration_cast<std::chrono::milliseconds>(t7 - t6).count();
+        OUTPUT_BUFFER_TIME = output_buffer_time; 
+
+        /*Output Data Size = std::get<2>(output_buffer). */
+        output_size = std::get<2>(output_buffer);
+
+        /*Output Data Type = std::get<0>(output_buffer)*/
+        if (InOutDataType::FLOAT16 == std::get<0>(output_buffer))
+        {
+            /*Output Data = std::get<1>(output_buffer)*/
+            uint16_t *data_ptr = reinterpret_cast<uint16_t *>(std::get<1>(output_buffer));
+            for (int j = 0; j < output_size; j++)
+            {
+                /*FP16 to FP32 conversion*/
+                drpai_output_buf[j + size_count] = float16_to_float32(data_ptr[j]);
+            }
+        }
+        else if (InOutDataType::FLOAT32 == std::get<0>(output_buffer))
+        {
+            /*Output Data = std::get<1>(output_buffer)*/
+            float *data_ptr = reinterpret_cast<float *>(std::get<1>(output_buffer));
+            for (int j = 0; j < output_size; j++)
+            {
+                drpai_output_buf[j + size_count] = data_ptr[j];
+            }
+        }
+        else
+        {
+            std::cerr << "[ERROR] Output data type : not floating point." << std::endl;
+            ret = -1;
+            break;
+        }
+        size_count += output_size;
+    }
 
     if (ret != 0)
     {
@@ -612,17 +614,16 @@ int Line_Crossing()
         return -1;
     }
 
-    auto t2 = std::chrono::high_resolution_clock::now();
-    auto inf_duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
-    INF_TIME = inf_duration;
+    auto t8 = std::chrono::high_resolution_clock::now();
    /* Do post process to get bounding boxes */
     R_Post_Proc(drpai_output_buf);
-    auto t3 = std::chrono::high_resolution_clock::now();
-    auto post_duration = std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2).count();
+    auto t9 = std::chrono::high_resolution_clock::now();
+    INF_TIME = inf_duration;
+    auto r_post_proc_time = std::chrono::duration_cast<std::chrono::milliseconds>(t9 - t8).count();
     auto pre_proc_time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-    POST_PROC_TIME = post_duration;
+    POST_PROC_TIME = r_post_proc_time + OUTPUT_BUFFER_TIME + output_num_time;
     PRE_PROC_TIME = pre_proc_time;
-    float total_time = float(inf_duration) + float(post_duration) + float(pre_proc_time);
+    float total_time = float(inf_duration) + float(POST_PROC_TIME) + float(pre_proc_time);
     TOTAL_TIME = total_time;
     return 0;
 }
