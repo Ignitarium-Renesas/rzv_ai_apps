@@ -121,12 +121,6 @@ const static double anchors[] =
 #define DISP_OUTPUT_HEIGHT          (1080)
 #define DISP_INF_WIDTH              (1280)
 #define DISP_INF_HEIGHT             (960)
-// /*Total Display out*/
-// #define DISP_OUTPUT_WIDTH          (1280)
-// #define DISP_OUTPUT_HEIGHT         (720)
-// /*Image display out*/
-// #define IMAGE_OUTPUT_WIDTH          (960)
-// #define IMAGE_OUTPUT_HEIGHT         (720)
 #define DISP_RESIZE_WIDTH            (1550)
 #define DISP_RESIZE_HEIGHT           (1080)
 
