@@ -64,10 +64,9 @@ static Wayland wayland;
 static pthread_t ai_inf_thread;
 static pthread_t kbhit_thread;
 static sem_t terminate_req_sem;
-int32_t drp_max_freq;
-int32_t drpai_freq;
+static int32_t drp_max_freq;
+static int32_t drp_freq;
 
-// static Camera* capture = NULL;
 static atomic<uint8_t> hdmi_obj_ready   (0);
 
 static uint32_t disp_time = 0;
@@ -86,7 +85,6 @@ float TOTAL_TIME = 0;
 float INF_TIME= 0;
 float POST_PROC_TIME = 0;
 float PRE_PROC_TIME = 0;
-float OUTPUT_BUFFER_TIME =0;
 
 /*Tracker Variables*/
 TRACKER tracker;
@@ -211,6 +209,7 @@ int32_t yolo_offset(uint8_t n, int32_t b, int32_t y, int32_t x)
     }
     return prev_layer_num + b * (NUM_CLASS + 5) * num * num + y * num + x;
 }
+
 
 static int8_t wait_join(pthread_t *p_join_thread, uint32_t join_time)
 {
@@ -514,6 +513,7 @@ int Line_Crossing()
 
     Size size(MODEL_IN_H, MODEL_IN_W);
 
+    /* Preprocess time start */
     auto t0 = std::chrono::high_resolution_clock::now();
     /*resize the image to the model input size*/
     resize(g_frame, frame1, size);
@@ -533,9 +533,6 @@ int Line_Crossing()
     /* normailising  pixels */
     divide(frameCHW, 255.0, frameCHW);
     
-    /* Preprocess time ends*/
-    auto t1 = std::chrono::high_resolution_clock::now();
-
     /* DRP AI input image should be continuous buffer */
     if (!frameCHW.isContinuous())
         frameCHW = frameCHW.clone();
@@ -543,13 +540,21 @@ int Line_Crossing()
     Mat frame = frameCHW;
     int ret = 0;
 
+    /* Preprocess time ends*/
+    auto t1 = std::chrono::high_resolution_clock::now();
+
     /*start inference using drp runtime*/
     runtime.SetInput(0, frame.ptr<float>());
 
+    /* Inference time start */
     auto t2 = std::chrono::high_resolution_clock::now();
     runtime.Run();
+    /* Inference time end */
     auto t3 = std::chrono::high_resolution_clock::now();
-    auto inf_duration = std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2).count();
+    auto inf_duration = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count();
+
+    /* Postprocess time start */
+    auto t4 = std::chrono::high_resolution_clock::now();
 
     /*load inference out on drpai_out_buffer*/
     int32_t i = 0;
@@ -559,23 +564,15 @@ int Line_Crossing()
     uint32_t size_count = 0;
 
     /* Get the number of output of the target model. */
-    auto t4 = std::chrono::high_resolution_clock::now();
     output_num = runtime.GetNumOutput();
-    auto t5 = std::chrono::high_resolution_clock::now();
-    auto output_num_time = std::chrono::duration_cast<std::chrono::milliseconds>(t5 - t4).count();
-
+    
     size_count = 0;
     /*GetOutput loop*/
     for (i = 0; i < output_num; i++)
     {
         /* output_buffer below is tuple, which is { data type, address of output data, number of elements } */
-        auto t6 = std::chrono::high_resolution_clock::now();
-        output_buffer = runtime.GetOutput(i);
-        auto t7 = std::chrono::high_resolution_clock::now();
-
-        auto output_buffer_time = std::chrono::duration_cast<std::chrono::milliseconds>(t7 - t6).count();
-        OUTPUT_BUFFER_TIME = output_buffer_time; 
-
+                output_buffer = runtime.GetOutput(i);
+        
         /*Output Data Size = std::get<2>(output_buffer). */
         output_size = std::get<2>(output_buffer);
 
@@ -614,16 +611,20 @@ int Line_Crossing()
         return -1;
     }
 
-    auto t8 = std::chrono::high_resolution_clock::now();
-   /* Do post process to get bounding boxes */
+       /* Do post process to get bounding boxes */
     R_Post_Proc(drpai_output_buf);
-    auto t9 = std::chrono::high_resolution_clock::now();
-    INF_TIME = inf_duration;
-    auto r_post_proc_time = std::chrono::duration_cast<std::chrono::milliseconds>(t9 - t8).count();
-    auto pre_proc_time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-    POST_PROC_TIME = r_post_proc_time + OUTPUT_BUFFER_TIME + output_num_time;
-    PRE_PROC_TIME = pre_proc_time;
-    float total_time = float(inf_duration) + float(POST_PROC_TIME) + float(pre_proc_time);
+    
+    /* Postprocess time end */
+    auto t5 = std::chrono::high_resolution_clock::now();
+    
+    auto r_post_proc_time = std::chrono::duration_cast<std::chrono::microseconds>(t5 - t4).count();
+    auto pre_proc_time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+    
+    POST_PROC_TIME = r_post_proc_time/1000.0;
+    PRE_PROC_TIME = pre_proc_time/1000.0;
+    INF_TIME = inf_duration/1000.0;
+
+    float total_time = float(inf_duration/1000.0) + float(POST_PROC_TIME) + float(pre_proc_time/1000.0);
     TOTAL_TIME = total_time;
     return 0;
 }
@@ -652,13 +653,13 @@ void capture_frame(std::string gstreamer_pipeline )
     uint8_t * img_buffer0;
 
     img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
+    /* Capture stream of frames from camera using Gstreamer pipeline */
     cap.open(gstreamer_pipeline, CAP_GSTREAMER);
     if (!cap.isOpened())
     {
         std::cerr << "[ERROR] Error opening video stream or camera !" << std::endl;
         return;
     }
-
     while (true)
     {
         cap >> g_frame;
@@ -688,6 +689,7 @@ void capture_frame(std::string gstreamer_pipeline )
             {
                 std::cerr << "[ERROR] Inference Not working !!! " << std::endl;
             }
+
             /* Draw bounding box on the frame */
             draw_bounding_box();
              /*Display frame */
@@ -710,7 +712,7 @@ void capture_frame(std::string gstreamer_pipeline )
                         CHAR_SCALE_LARGE, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             
             stream.str("");
-            stream << "Total Time: " << TOTAL_TIME <<" ms";
+            stream << "Total Time: " << fixed << setprecision(1) << TOTAL_TIME<<" ms";
             str = stream.str();
             Size tot_time_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_LARGE, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -718,7 +720,7 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_LARGE, Scalar(0, 255, 0), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Pre-Proc: " << PRE_PROC_TIME<<" ms";
+            stream << "Pre-Proc: " << fixed << setprecision(1) << PRE_PROC_TIME<<" ms";
             str = stream.str();
             Size pre_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -726,7 +728,7 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Inference: " << INF_TIME<<" ms";
+            stream << "Inference: " << fixed << setprecision(1) << INF_TIME<<" ms";
             str = stream.str();
             Size inf_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -734,7 +736,7 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Post-Proc: " << POST_PROC_TIME<<" ms";
+            stream << "Post-Proc: "<< fixed << setprecision(1) << POST_PROC_TIME<<" ms";
             str = stream.str();
             Size post_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -758,6 +760,7 @@ void capture_frame(std::string gstreamer_pipeline )
         }
     }
     free(img_buffer0);
+
     cap.release(); 
     destroyAllWindows();
 err:
@@ -859,7 +862,7 @@ int set_drpai_freq(int drpai_fd)
     }
 
     errno = 0;
-    data = drpai_freq;
+    data = drp_freq;
     ret = ioctl(drpai_fd , DRPAI_SET_DRPAI_FREQ, &data);
     if (-1 == ret)
     {
@@ -879,11 +882,10 @@ int set_drpai_freq(int drpai_fd)
 *                 0 is failure.
 ******************************************/
 uint64_t init_drpai(int drpai_fd)
+
 {
     int ret = 0;
-
     uint64_t drpai_addr = 0;
-
 
     /*Get DRP-AI memory start address*/
     drpai_addr = get_drpai_start_addr(drpai_fd);
@@ -898,6 +900,7 @@ uint64_t init_drpai(int drpai_fd)
     {
         return 0;
     }
+
 
     return drpai_addr;
 }
@@ -967,8 +970,6 @@ key_hit_end:
     printf("Key Hit Thread Terminated\n");
     pthread_exit(NULL);
 }
-
-
 
 /*****************************************
  * Function Name : query_device_status
@@ -1075,6 +1076,7 @@ main_proc_end:
 
 int main(int argc, char *argv[])
 {
+
     int32_t create_thread_ai = -1;
     int32_t create_thread_key = -1;
     int8_t ret_main = 0;
@@ -1117,10 +1119,10 @@ int main(int argc, char *argv[])
         }
         if(argc>9)
         {
-            drpai_freq = std::atoi(argv[9]);
+            drp_freq = std::atoi(argv[9]);
         }
         else{
-            drpai_freq = DRPAI_FREQ;
+            drp_freq = DRPAI_FREQ;
         }
     }
     else
@@ -1138,8 +1140,10 @@ int main(int argc, char *argv[])
 
     /*Load Label from label_list file*/
     label_file_map = load_label_file(label_list);
+
     /*Initialzie DRP-AI (Get DRP-AI memory address and set DRP-AI frequency)*/
     drpaimem_addr_start = init_drpai(drpai_fd);
+
     if (drpaimem_addr_start == 0)
     {
         close(drpai_fd);
@@ -1148,18 +1152,15 @@ int main(int argc, char *argv[])
 
     /*Load model_dir structure and its weight to runtime object */
     runtime_status = runtime.LoadModel(model_dir, drpaimem_addr_start + DRPAI_MEM_OFFSET);
-    
-    if(!runtime_status)
+        if(!runtime_status)
     {
         std::cerr << "[ERROR] Failed to load model. " << std::endl;
         close(drpai_fd);
         return -1;
     }    
-    std::cout << "[INFO] loaded runtime model :" << model_dir << "\n\n";
-    /* Get input Source IMAGE/VIDEO/CAMERA */
-    
 
-    switch (input_source_map[input_source])
+    std::cout << "[INFO] loaded runtime model :" << model_dir << "\n\n";
+        switch (input_source_map[input_source])
     {
        /* Input Source : USB*/
         case 1:{
@@ -1191,9 +1192,8 @@ int main(int argc, char *argv[])
             }
         }
         break;
-    }
 
-    /*Main Processing*/
+    }
     main_proc = R_Main_Process();
     if (0 != main_proc)
     {
@@ -1231,4 +1231,5 @@ end_threads:
     wayland.exit();
     close(drpai_fd);
     return 0;
+
 }
