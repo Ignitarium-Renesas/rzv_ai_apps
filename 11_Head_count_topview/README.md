@@ -1,21 +1,21 @@
 # 11_Head_count_topview
 
 ## Application: Overview
-This application is used to count the human heads present in an image or a video from camera input.
+This application is used to count the human heads present in a video from camera input.
 
 The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1804.02767.pdf).
 
 ### Targeted product
 
- - RZ/V2H EVK
+ - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
 ## Application: Requirements
 
 #### Hardware Requirements
 Prepare the following equipments referring to [Getting Started](https://renesas-rz.github.io/rzv_ai_sdk/getting_started).
-| Equipment	Details | Details |
+| Equipment | Details |
 | ---- | ---- |
-| RZ/V2H EVK Evaluation Board Kit | - |
+| RZ/V2H EVK | Evaluation Board Kit for RZ/V2H |
 | USB camera | - |
 | HDMI monitor | Display the application. |
 | HDMI cable | Connect HDMI monitor and RZ/V2H Board. |
@@ -84,17 +84,17 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
 - head_count_topview_app
 
 ## Application: Deploy Stage
-For the ease of deployment all the deployables file and folders are provided on the [exe](./exe) folder.
+For the ease of deployment all the deployables file and folders are provided on the [exe_v2h](./exe_v2h) folder.
 
 |File | Details |
 |:---|:---|
-|topview_headcount_yolov3 | Model object files for deployment.|
+|topview_head_count_yolov3 | Model object files for deployment.|
 |head_count_topview_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
     1. Run the commands below to download the `11_Head_count_topview_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files_head_count_topview_wayland/11_Head_count_topview_deploy_tvm-v210.so)
     ```
-    cd ${PROJECT_PATH}/11_Head_count_topview/exe/topview_headcount_yolov3
+    cd ${PROJECT_PATH}/11_Head_count_topview/exe_v2h/topview_head_count_yolov3
     wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/11_Head_count_topview_deploy_tvm-v220.so
     ```
     2. Rename the `11_Head_count_topview_deploy_tvm-v210.so` to `deploy.so`.
@@ -102,9 +102,8 @@ For the ease of deployment all the deployables file and folders are provided on 
     mv 11_Head_count_topview_deploy_tvm-v210.so deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
-        -  All files in [exe](./exe) directory. (Including `deploy.so` file.)
+        -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
         -  `11_Head_count_topview` application file if you generated the file according to [Application File Generation](#application-file-generation)
-        -  `test_images` folder if you use the application with an image input.
     4. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
 
 2. Folder structure in the rootfs (SD Card) would look like:
@@ -115,15 +114,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 └── home/
     └── root/
         └── tvm/ 
-            ├── topview_headcount_yolov3/
+            ├── topview_head_count_yolov3/
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
-            ├── test_images/
             ├── labels.txt
             └── head_count_topview_app
 ```
->**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe` folder on the board. You are not required to rename it `tvm`.
+>**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
 
 ## Application: Run Stage
 
@@ -137,15 +135,12 @@ cd /home/root/tvm
     ./head_count_topview_app USB
     ```
 3. Following window shows up on HDMI screen.  
-   sample images 
-        
-4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
-
-## Sample Image 
-<img src="./img/app_run.png" alt="Sample application output"
+   <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
      height=334px />
+        
+4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
 ## Application: Configuration 
 ### AI Model
@@ -153,12 +148,26 @@ cd /home/root/tvm
 - Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/) *[Head_data](https://www.kaggle.com/datasets/houssad/head-data) *[RGBD_Indoor_Dataset](https://drive.google.com/file/d/1fOub9LcNqfDlr-mEcdnenAJWw-rqWGmG/view)
 
 
-### AI total time
-The AI total time is around 100 msec, which includes 
-pre processig, post processing and inference time.
+Input size: 1x3x416x416  
+Output1 size: 1x13x13x18  
+Output2 size: 1x26x26x18  
+Output3 size: 1x52x52x18   
+ 
+### AI inference time
+|Board | AI inference time|
+|:---|:---|
+|RZ/V2H EVK | Approximately 35ms  |
+ 
+### Processing
+ 
+|Processing | Details |
+|:---|:---|
+|Pre-processing | Processed by CPU. <br> |
+|Inference | Processed by DRP-AI and CPU. |
+|Post-processing | Processed by CPU. |
 
 ## Reference
-- For RZ/V2H  EVK, this application supports USB camera only with 640*480 resolution.
-To use FHD, please use MIPI camera.
-Please refer to the following URL for how to change camera input to MIPI camera.
+- For RZ/V2H EVK, this application supports USB camera only with 640x480 resolution.  
+FHD resolution is supported by e-CAM22_CURZH camera (MIPI).  
+Please refer to following URL for how to change camera input to MIPI camera.  
 [https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi).  

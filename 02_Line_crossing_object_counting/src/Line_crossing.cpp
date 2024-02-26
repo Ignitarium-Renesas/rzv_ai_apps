@@ -1085,6 +1085,15 @@ int main(int argc, char *argv[])
     int32_t sem_create = -1;
     std::string input_source = argv[1];
     std::cout << "Starting Line Crossing Application" << std::endl;
+
+    /*Disable OpenCV Accelerator due to the use of multithreading */
+    unsigned long OCA_list[16];
+    for (int i=0; i < 16; i++)
+    {
+        OCA_list[i] = 0;
+    }
+    OCA_Activate( &OCA_list[0] );
+
     if (strcmp(argv[1],"USB")==0)
     {        
     if(argc>2)
