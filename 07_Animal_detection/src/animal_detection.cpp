@@ -24,7 +24,7 @@
  */
 
 /***********************************************************************************************************************
-* File Name    : head_count.cpp
+* File Name    : animal_detection.cpp
 * Version      : 1.1.0
 * Description  : DRP-AI TVM[*1] Application Example
 ***********************************************************************************************************************/
@@ -57,8 +57,6 @@ static sem_t terminate_req_sem;
 static int32_t drp_max_freq;
 static int32_t drp_freq;
 
-static atomic<uint8_t> hdmi_obj_ready   (0);
-
 static uint32_t disp_time = 0;
 
 std::string media_port;
@@ -75,9 +73,6 @@ float TOTAL_TIME = 0;
 float INF_TIME= 0;
 float POST_PROC_TIME = 0;
 float PRE_PROC_TIME = 0;
-int32_t HEAD_COUNT= 0;
-int fd;
-
 
 /*Global frame */
 Mat g_frame;
@@ -89,7 +84,6 @@ cv::Mat output_image;
 std::map<std::string, int> input_source_map ={    
     {"USB", 1}
      } ;
-
 
 /*****************************************
  * Function Name     : float16_to_float32
@@ -337,8 +331,11 @@ void draw_bounding_box(void)
     string str = "";
     string result_str;
     int32_t result_cnt =0;
-    uint32_t x = HEAD_COUNT_STR_X;
-    uint32_t y = HEAD_COUNT_STR_X;
+    uint32_t x;
+    uint32_t y;
+
+    int32_t baseline = 10;
+
     /* Draw bounding box on RGB image. */
     int32_t i = 0;
     for (i = 0; i < det.size(); i++)
@@ -386,33 +383,32 @@ void draw_bounding_box(void)
         /*cordinates for solid rectangle*/
         Point textleft(x_min,y_min+CLASS_LABEL_HEIGHT);
         Point textright(x_min+CLASS_LABEL_WIDTH,y_min);
- 
+
         rectangle(g_frame, topLeft, bottomRight, Scalar(0, 0, 0), BOX_THICKNESS);
         rectangle(g_frame, topLeft2, bottomRight2, Scalar(255, 255, 255), BOX_THICKNESS);
         /*solid rectangle over class name */
         rectangle(g_frame, textleft, textright, Scalar(59, 94, 53), -1);
-        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(255, 255, 255), BOX_CHAR_THICKNESS);
+        putText(g_frame, result_str, textleft, FONT_HERSHEY_SIMPLEX, CHAR_SCALE_XS, Scalar(255, 255, 255), BOX_CHAR_THICKNESS);            
     }
-    HEAD_COUNT = result_cnt++;
     return;
 }
 
 
 /*****************************************
- * Function Name : Head Detection
- * Description   : Function to perform over all detection
+ * Function Name : Animal Detection
+ * Description   : Function to perform over all detectiooutput_imagen
  * Arguments     : -
  * Return value  : 0 if succeeded
  *               not 0 otherwise
  ******************************************/
-int Head_Detection()
+int Animal_Detection()
 {   
-    /* Temp frame */
+     /* Temp frame */
     Mat frame1;
 
     Size size(MODEL_IN_H, MODEL_IN_W);
 
-/* Preprocess time start */
+    /* Preprocess time start */
     auto t0 = std::chrono::high_resolution_clock::now();
     /*resize the image to the model input size*/
     resize(g_frame, frame1, size);
@@ -431,7 +427,7 @@ int Head_Detection()
 
     /* normailising  pixels */
     divide(frameCHW, 255.0, frameCHW);
-
+    
     /* DRP AI input image should be continuous buffer */
     if (!frameCHW.isContinuous())
         frameCHW = frameCHW.clone();
@@ -463,15 +459,15 @@ int Head_Detection()
     uint32_t size_count = 0;
 
     /* Get the number of output of the target model. */
-    output_num = runtime.GetNumOutput();
-
+        output_num = runtime.GetNumOutput();
+    
     size_count = 0;
     /*GetOutput loop*/
     for (i = 0; i < output_num; i++)
     {
         /* output_buffer below is tuple, which is { data type, address of output data, number of elements } */
         output_buffer = runtime.GetOutput(i);
-
+        
         /*Output Data Size = std::get<2>(output_buffer). */
         output_size = std::get<2>(output_buffer);
 
@@ -510,7 +506,7 @@ int Head_Detection()
         return -1;
     }
 
-   /* Do post process to get bounding boxes */
+       /* Do post process to get bounding boxes */
     R_Post_Proc(drpai_output_buf);
     
     /* Postprocess time end */
@@ -522,19 +518,9 @@ int Head_Detection()
     POST_PROC_TIME = r_post_proc_time/1000.0;
     PRE_PROC_TIME = pre_proc_time/1000.0;
     INF_TIME = inf_duration/1000.0;
-
     float total_time = float(inf_duration/1000.0) + float(POST_PROC_TIME) + float(pre_proc_time/1000.0);
     TOTAL_TIME = total_time;
     return 0;
-}
-
-void click_event(int event, int x, int y, int flags, void* userdata)
-{
-    if (event == EVENT_LBUTTONDBLCLK)
-    {
-        std::cout<<"Exiting the event "<<std::endl;
-        exit(0);
-    }
 }
 
 /*****************************************
@@ -552,6 +538,7 @@ void capture_frame(std::string gstreamer_pipeline )
     uint8_t * img_buffer0;
 
     img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
+    
     /* Capture stream of frames from camera using Gstreamer pipeline */
     cap.open(gstreamer_pipeline, CAP_GSTREAMER);
     if (!cap.isOpened())
@@ -561,9 +548,13 @@ void capture_frame(std::string gstreamer_pipeline )
     }
     while (true)
     {
+        int32_t i = 0;  
+        int32_t offset  = 50;
+        string result_str;
+        int32_t result_cnt =0;
         cap >> g_frame;
         cv::Mat output_image(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3, cv::Scalar(0, 0, 0));
-        fps = cap.get(CAP_PROP_FPS);
+        double fps = cap.get(CAP_PROP_FPS);
         ret = sem_getvalue(&terminate_req_sem, &inf_sem_check);
         if (0 != ret)
         {
@@ -583,7 +574,7 @@ void capture_frame(std::string gstreamer_pipeline )
         }
         else
         {
-            int ret = Head_Detection();
+            int ret = Animal_Detection();
             if (ret != 0)
             {
                 std::cerr << "[ERROR] Inference Not working !!! " << std::endl;
@@ -593,25 +584,16 @@ void capture_frame(std::string gstreamer_pipeline )
             draw_bounding_box();
             /*Display frame */
             stream.str("");
-            stream << "Camera Frame Rate : "<<fps <<" fps ";
+            stream << "Camera Frame Rate: "<<fps<<" fps ";
             str = stream.str();
             Size camera_rate_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width + FRAME_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - FRAME_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
 
             stream.str("");
-            stream << "Head Count: " << HEAD_COUNT;
-            str = stream.str();
-            Size count_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_LARGE, HC_CHAR_THICKNESS, &baseline);
-            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - count_size.width - RIGHT_ALIGN_OFFSET), (HEAD_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - count_size.width - RIGHT_ALIGN_OFFSET), (HEAD_COUNT_STR_Y + count_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_LARGE, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
-
-            stream.str("");
-            stream << "Total Time: " << fixed << setprecision(1) << TOTAL_TIME<<" ms";
+            stream <<"Total Time: " << fixed <<setprecision(1)<< TOTAL_TIME<<" ms";
             str = stream.str();
             Size tot_time_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_LARGE, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -619,7 +601,7 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_LARGE, Scalar(0, 255, 0), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Pre-Proc: " << fixed << setprecision(1)<< PRE_PROC_TIME<<" ms";
+            stream << "Pre-Proc: " <<fixed <<setprecision(1)<< PRE_PROC_TIME<<" ms";
             str = stream.str();
             Size pre_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -627,7 +609,7 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Inference: "<< fixed << setprecision(1) << INF_TIME<<" ms";
+            stream << "Inference: " << fixed <<setprecision(1)<< INF_TIME<<" ms";
             str = stream.str();
             Size inf_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -635,34 +617,53 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Post-Proc: "<< fixed << setprecision(1) << POST_PROC_TIME<<" ms";
+            stream << "Post-Proc: " <<fixed <<setprecision(1)<< POST_PROC_TIME<<" ms";
             str = stream.str();
             Size post_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
-            
+
+            for (i = 0; i < det.size(); i++)
+            {
+                /* Skip the overlapped bounding boxes */
+                if (det[i].prob == 0)
+                {
+                    continue;
+                }
+                result_cnt++;
+                /* Clear string stream for bounding box labels */
+                stream.str("");
+                /* Draw the bounding box on the image */
+                stream << fixed << setprecision(2) << det[i].prob;
+                result_str = label_file_map[det[i].c] + " " + stream.str();
+                stream.str("");
+                stream << "Class: " << label_file_map[det[i].c].c_str() << " " << fixed << setprecision(2)<< (det[i].prob*100)<<"%";
+                str = stream.str();
+                Size count_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
+                putText(output_image, str,Point((DISP_OUTPUT_WIDTH - count_size.width - RIGHT_ALIGN_OFFSET), (LABEL_STR_Y +offset*(result_cnt -1)+ count_size.height)), FONT_HERSHEY_SIMPLEX, 
+                            CHAR_SCALE_SMALL, Scalar(0, 255, 255), CLASS_CHAR_THICKNESS);
+            }
+
             Size size(DISP_INF_WIDTH, DISP_INF_HEIGHT);
             /*resize the image to the keep ratio size*/
             resize(g_frame, g_frame, size);            
             g_frame.copyTo(output_image(Rect(0, 60, DISP_INF_WIDTH, DISP_INF_HEIGHT)));
             namedWindow("Output Image", WND_PROP_FULLSCREEN);
             setWindowProperty("Output Image", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-            string click_req = "Output Image";
-            setMouseCallback(click_req,click_event,NULL);
             cv::Mat bgra_image;
-            cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);            
-            
+            cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
+           
             memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);
-            wayland.commit(img_buffer0, NULL);            
+            wayland.commit(img_buffer0, NULL);
         }
     }
     free(img_buffer0);
-    
+
     cap.release(); 
     destroyAllWindows();
-    err:
+err:
     /*Set Termination Request Semaphore to 0*/
     free(img_buffer0);
     sem_trywait(&terminate_req_sem);
@@ -673,7 +674,7 @@ void capture_frame(std::string gstreamer_pipeline )
         printf("AI Inference Thread Terminated\n");
         free(img_buffer0);
         pthread_exit(NULL);
-        return;
+    return;
 }
 
 /*****************************************
@@ -837,7 +838,7 @@ key_hit_end:
  * Function Name : query_device_status
  * Description   : function to check USB device is connected.
  * Arguments     : device_type: for USB,  specify "usb".
- *                      
+ *                         
  * Return value  : media_port, media port that device is connected. 
  ******************************************/
 std::string query_device_status(std::string device_type)
@@ -938,7 +939,6 @@ main_proc_end:
 
 int main(int argc, char *argv[])
 {
-
     int32_t create_thread_ai = -1;
     int32_t create_thread_key = -1;
     int8_t ret_main = 0;
@@ -946,7 +946,7 @@ int main(int argc, char *argv[])
     int8_t main_proc = 0;
     int32_t sem_create = -1;
     std::string input_source = argv[1];
-    std::cout << "Starting Head Count Application" << std::endl;
+    std::cout << "Starting Animal Detection Application" << std::endl;
 
     /*Disable OpenCV Accelerator due to the use of multithreading */
     unsigned long OCA_list[16];
@@ -966,7 +966,6 @@ int main(int argc, char *argv[])
         {
             drp_max_freq = DRP_MAX_FREQ;
         }
-
         if (argc >= 4)
         {
             drp_freq = atoi(argv[3]);
@@ -976,13 +975,14 @@ int main(int argc, char *argv[])
             drp_freq = DRPAI_FREQ;
         }
     }
+        
     else
     {
-        std::cout<<"Support for USB mode only."<<std::endl;
+        std::cout<<"Support for USB mode only"<<std::endl;
         return -1;
     }
 
-    if (argc>5)
+    if (argc>6)
     {
         std::cerr << "[ERROR] Wrong number Arguments are passed " << std::endl;
         return 1;
@@ -995,7 +995,7 @@ int main(int argc, char *argv[])
         std::cerr << "[ERROR] Failed to open DRP-AI Driver : errno=" << errno << std::endl;
         return -1;
     }
-
+  
     /*Load Label from label_list file*/
     label_file_map = load_label_file(label_list);
 
@@ -1007,18 +1007,20 @@ int main(int argc, char *argv[])
         close(drpai_fd);
         return -1;
     }
+
    
     /*Load model_dir structure and its weight to runtime object */
     runtime_status = runtime.LoadModel(model_dir, drpaimem_addr_start + DRPAI_MEM_OFFSET);
-        if(!runtime_status)
+    
+    if(!runtime_status)
     {
         std::cerr << "[ERROR] Failed to load model. " << std::endl;
         close(drpai_fd);
         return -1;
     }    
- 
+
     std::cout << "[INFO] loaded runtime model :" << model_dir << "\n\n";
-    switch (input_source_map[input_source])
+        switch (input_source_map[input_source])
     {
         /* Input Source : USB*/
         case 1:{
@@ -1048,7 +1050,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "[ERROR] Failed to create AI Inference Thread.\n");
                 ret_main = -1;
                 goto end_threads;
-    }
+            }
         }
         break;
 
@@ -1090,5 +1092,5 @@ end_threads:
     wayland.exit();
     close(drpai_fd);
     return 0;
-  
-  }
+
+}

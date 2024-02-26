@@ -1,9 +1,24 @@
-# 11_Head_count_topview
+# 07_Animal_detection
 
 ## Application: Overview
-This application is used to count the human heads present in a video from camera input.
+
+This application is used to detect specific set of animals in camera inputs.
 
 The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1804.02767.pdf).
+
+| Classes | Animal |
+| :---: | :---: |
+| 1 | Boar |
+| 2 | Deer |
+| 3 | Crow |
+| 4 | Monkey |
+| 5 | Bear |
+| 6 | Racoon |
+| 7 | Fox |
+| 8 | Weasal |
+| 9 | Skunk |
+| 10 | Dog |
+| 11 | Cat |
 
 ### Targeted product
 
@@ -33,8 +48,7 @@ Connect the hardware as shown below.
      width=600px;
      height=334px />
 
-
-When using the keyboard connected to RZ/V2H EVK Evaluation Board, the keyboard layout and language are fixed to English.
+When using the keyboard connected to RZ/V2H Evaluation Board, the keyboard layout and language are fixed to English.
 
 ## Application: Build Stage
 
@@ -72,7 +86,7 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
     ```
 3. Go to the application source code directory.  
     ```sh
-    cd ${PROJECT_PATH}/11_Head_count_topview/src
+    cd ${PROJECT_PATH}/07_Animal_detection/src
     ```
 4. Build the application by following the commands below.  
     ```sh
@@ -80,30 +94,30 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
     cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake -DV2H=ON ..
     make -j$(nproc)
     ```
-5. The following application file would be genarated in the `${PROJECT_PATH}/11_Head_count_topview/src/build` directory
-- head_count_topview_app
+5. The following application file would be genarated in the `${PROJECT_PATH}/07_Animal_detection/src/build` directory
+- animal_detection_app
 
 ## Application: Deploy Stage
 For the ease of deployment all the deployables file and folders are provided on the [exe_v2h](./exe_v2h) folder.
 
 |File | Details |
 |:---|:---|
-|topview_head_count_yolov3 | Model object files for deployment.|
-|head_count_topview_app | application file. |
+|animal_yolov3_onnx | Model object files for deployment.|
+|animal_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `11_Head_count_topview_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files_head_count_topview_wayland/11_Head_count_topview_deploy_tvm-v210.so)
+    1. Run the commands below to download the `07_Animal_detection_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files_Animal_detection_wayland/07_Animal_detection_deploy_tvm-v210.so)
     ```
-    cd ${PROJECT_PATH}/11_Head_count_topview/exe_v2h/topview_head_count_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/11_Head_count_topview_deploy_tvm-v220.so
+    cd ${PROJECT_PATH}/07_Animal_detection/exe_v2h/animal_yolov3_onnx
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/07_Animal_detection_deploy_tvm-v210.so
     ```
-    2. Rename the `11_Head_count_topview_deploy_tvm-v210.so` to `deploy.so`.
+    2. Rename the `07_Animal_detection_deploy_tvm-v210.so` to `deploy.so`.
     ```
-    mv 11_Head_count_topview_deploy_tvm-v210.so deploy.so
+    mv 07_Animal_detection_deploy_tvm-v210.so deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
-        -  `11_Head_count_topview` application file if you generated the file according to [Application File Generation](#application-file-generation)
+        -  `07_Animal_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
     4. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
 
 2. Folder structure in the rootfs (SD Card) would look like:
@@ -114,12 +128,12 @@ For the ease of deployment all the deployables file and folders are provided on 
 └── home/
     └── root/
         └── tvm/ 
-            ├── topview_head_count_yolov3/
+            ├── animal_yolov3_onnx/
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
             ├── labels.txt
-            └── head_count_topview_app
+            └── animal_detection_app
 ```
 >**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
 
@@ -132,7 +146,7 @@ cd /home/root/tvm
 2. Run the application.
    - Application with USB camera input
     ```sh
-    ./head_count_topview_app USB
+    ./animal_detection_app USB
     ```
 3. Following window shows up on HDMI screen.  
    <img src="./img/app_run.png" alt="Sample application output"
@@ -144,14 +158,19 @@ cd /home/root/tvm
 
 ## Application: Configuration 
 ### AI Model
-- YOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/)  
-- Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/) *[Head_data](https://www.kaggle.com/datasets/houssad/head-data) *[RGBD_Indoor_Dataset](https://drive.google.com/file/d/1fOub9LcNqfDlr-mEcdnenAJWw-rqWGmG/view)
+- YOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/) 
+- Datasets : 
 
+| classes | Animals | Dataset |
+| --- | --- | :---: |
+|<p> 1 <p> 2 <p> 3 <p> 4 <p> 5 <p> 6 |<p> Fox <p> Deer <p> Crow <p> Monkey <p> Bear <p> Raccoon | [Animals Detection Images Dataset](https://www.kaggle.com/datasets/antoreepjana/animals-detection-images-dataset) |
+|<p> 7 <p> 8 <p> 9 |<p> Boar <p> Weasal <p> Skunk | [Images.cv](https://images.cv) |
+|<p> 10 <p> 11 |<p> Dog <p> Cat | [Coco Dataset](https://cocodataset.org/#download) |
 
 Input size: 1x3x416x416  
-Output1 size: 1x13x13x18  
-Output2 size: 1x26x26x18  
-Output3 size: 1x52x52x18   
+Output1 size: 1x13x13x48  
+Output2 size: 1x26x26x48  
+Output3 size: 1x52x52x48   
  
 ### AI inference time
 |Board | AI inference time|
@@ -167,7 +186,7 @@ Output3 size: 1x52x52x18
 |Post-processing | Processed by CPU. |
 
 ## Reference
-- For RZ/V2H EVK, this application supports USB camera only with 640x480 resolution.  
-FHD resolution is supported by e-CAM22_CURZH camera (MIPI).  
-Please refer to following URL for how to change camera input to MIPI camera.  
-[https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi).  
+- For RZ/V2H EVK, this application supports USB camera only with 640x480 resolution.
+FHD resolution is supported by e-CAM22_CURZH camera (MIPI).
+Please refer to following URL for how to change camera input to MIPI camera.
+[https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 
