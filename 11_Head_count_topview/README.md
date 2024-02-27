@@ -92,7 +92,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 |head_count_topview_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `11_Head_count_topview_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/weight_files_head_count_topview_wayland/11_Head_count_topview_deploy_tvm-v210.so)
+    1. Run the commands below to download the `11_Head_count_topview_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00)
     ```
     cd ${PROJECT_PATH}/11_Head_count_topview/exe_v2h/topview_head_count_yolov3
     wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/11_Head_count_topview_deploy_tvm-v220.so
