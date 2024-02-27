@@ -186,7 +186,7 @@ Output3 size: 1x52x52x48
 |Post-processing | Processed by CPU. |
 
 ## Reference
-- For RZ/V2H EVK, this application supports USB camera only with 640x480 resolution.
-FHD resolution is supported by e-CAM22_CURZH camera (MIPI).
-Please refer to following URL for how to change camera input to MIPI camera.
-[https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 
+- For RZ/V2H EVK, this application supports USB camera only with 640x480 resolution. \
+  FHD resolution is supported by e-CAM22_CURZH camera (MIPI). \
+  Please refer to following URL for how to change camera input to MIPI camera. \
+  [https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 
