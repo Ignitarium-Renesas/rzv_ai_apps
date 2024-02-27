@@ -160,10 +160,11 @@ cd /home/root/tvm/
 ### AI Model
 - YOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/)  
 - Dataset: [HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/)
-Input size: 1x3x416x416
-Output1 size: 1x13x13x18
-Output2 size: 1x26x26x18
-Output3 size: 1x52x52x18
+
+  Input size: 1x3x416x416 \
+  Output1 size: 1x13x13x18 \
+  Output2 size: 1x26x26x18 \
+  Output3 size: 1x52x52x18
  
 ### AI inference time
 |Board | AI inference time|
