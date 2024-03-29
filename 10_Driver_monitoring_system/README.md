@@ -94,12 +94,22 @@ For the ease of deployment all the deployables file and folders are provided on 
 |driver_monitoring_system_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
+1. Follow the steps below to deploy the project on the board. 
+    1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v210.so` from [Release v1.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v1.00)
+    ```
+    cd ${PROJECT_PATH}/01_Head_count/exe_v2h/head_count_yolov3
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v1.00/10_Driver_monitoring_system_deploy_tvm-v210.so
+    ```
+    2. Rename the `10_Driver_monitoring_system_deploy_tvm-v210.so` to `deploy.so`.
+    ```
+    mv 10_Driver_monitoring_system_deploy_tvm-v210.so deploy.so
+    ```
 
-    1. Verify the presence of `deploy.so` file in {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_Deeppose
-    2. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
+    3. Verify the presence of `deploy.so` file in {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_Deeppose
+    4. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
         -  `10_Driver_monitoring_system` application file if you generated the file according to [Application File Generation](#application-file-generation)
-    3. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
+    5. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
 
 2. Folder structure in the rootfs (SD Card) would look like:
 ```sh
