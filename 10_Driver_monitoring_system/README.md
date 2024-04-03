@@ -1,9 +1,20 @@
 # 10_Driver_monitoring_system
 
 ## Application: Overview
-Driver Monitoring System application identifies attentiveness of a driver. This is a basic variant of the DMS system. This basic variant has features like driver's head pose detection(left, right and center head pose), eye blick detection and yawn detection.
+Driver Monitoring System application identifies attentiveness of a driver. This is a basic variant of the DMS system. This basic variant has features like driver's head pose detection(left, right and center head pose), eye blink detection and yawn detection.
 
-The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1910.01271.pdf) ,[DeepPose](https://mmpose.readthedocs.io/en/latest/topics/face.html#deeppose-resnet-on-wflw).
+- Camera input is fed to object detector (TinyYolov2) to detect faces.
+- Face landmarks are extracted from the detected faces.
+- The face landmarks are used to classify the gaze directions (`CENTER`, `DOWN`, `LEFT` & `RIGHT`) using a Random Forest algorithm.
+
+The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1910.01271.pdf) ,[DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014).
+
+It is recommended to setup the camera as shown in the image below. This application needs user at a particular distance from a camera. 
+
+<img src="./img/DMS_sample_setup.jpeg" alt="DMS setup"
+     margin-right=10px; 
+     width=1277px;
+     height=723px />
 
 ### Targeted product
 
@@ -70,17 +81,17 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
     ```sh
     export PROJECT_PATH=/drp-ai_tvm/data/rzv_ai_apps
     ```
-3. Go to the application source code directory.  
+4. Go to the application source code directory.  
     ```sh
     cd ${PROJECT_PATH}/10_Driver_monitoring_system/src
     ```
-4. Build the application by following the commands below.  
+5. Build the application by following the commands below.  
     ```sh
     mkdir -p build && cd build
     cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake -DV2H=ON ..
     make -j$(nproc)
     ```
-5. The following application file would be genarated in the `${PROJECT_PATH}/10_Driver_monitoring_system/src/build` directory
+6. The following application file would be genarated in the `${PROJECT_PATH}/10_Driver_monitoring_system/src/build` directory
 - driver_monitoring_system_app
 
 
@@ -94,15 +105,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 |driver_monitoring_system_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v210.so` from [Release v1.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v1.00)
+    1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v1.00)
     ```
-    cd ${PROJECT_PATH}/01_Head_count/exe_v2h/head_count_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v1.00/10_Driver_monitoring_system_deploy_tvm-v210.so
+    cd {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_Deeppose
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/10_Driver_monitoring_system_deploy_tvm-v221.so
     ```
-    2. Rename the `10_Driver_monitoring_system_deploy_tvm-v210.so` to `deploy.so`.
+    2. Rename the `10_Driver_monitoring_system_deploy_tvm-v221.so` to `deploy.so`.
     ```
-    mv 10_Driver_monitoring_system_deploy_tvm-v210.so deploy.so
+    mv 10_Driver_monitoring_system_deploy_tvm-v221.so deploy.so
     ```
 
     3. Verify the presence of `deploy.so` file in {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_Deeppose
@@ -166,7 +176,7 @@ Output1 size: 1x13x13x18
 Output2 size: 1x26x26x18
 Output3 size: 1x52x52x18 
  
-- DeepPose: [DeepPose](https://mmpose.readthedocs.io/en/latest/topics/face.html#deeppose-resnet-on-wflw)
+- DeepPose: [DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014)
 - Dataset: *[WFLW](https://wywu.github.io/projects/LAB/WFLW.html)
   
 Input size: 1x3x256x256  
