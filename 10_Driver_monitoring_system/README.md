@@ -3,7 +3,7 @@
 ## Application: Overview
 Driver Monitoring System application identifies attentiveness of a driver. This is a basic variant of the DMS system. This basic variant has features like driver's head pose detection(left, right and center head pose), eye blink detection and yawn detection.
 
-- Camera input is fed to object detector (TinyYolov2) to detect faces.
+- Camera input is fed to object detector (TinyYolov3) to detect faces.
 - Face landmarks are extracted from the detected faces.
 - The face landmarks are used to classify the gaze directions (`CENTER`, `DOWN`, `LEFT` & `RIGHT`) using a Random Forest algorithm.
 
@@ -21,7 +21,7 @@ It is recommended to setup the camera as shown in the image below. This applicat
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
 ## Application: Requirements
-/home/10_Driver_monitoring_system_yolov3
+/home/10_Driver_monitoring_system
 #### Hardware Requirements
 Prepare the following equipments referring to [Getting Started](https://renesas-rz.github.io/rzv_ai_sdk/getting_started).
 | Equipment | Details |
@@ -105,10 +105,10 @@ For the ease of deployment all the deployables file and folders are provided on 
 |driver_monitoring_system_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
+    1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v221.so` from [Release beta1.0](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/beta1.0)
     ```
     cd {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_Deeppose
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/10_Driver_monitoring_system_deploy_tvm-v221.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/beta1.0/10_Driver_monitoring_system_deploy_tvm-v221.so
     ```
     2. Rename the `10_Driver_monitoring_system_deploy_tvm-v221.so` to `deploy.so`.
     ```
