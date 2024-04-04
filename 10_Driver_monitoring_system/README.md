@@ -3,7 +3,7 @@
 ## Application: Overview
 Driver Monitoring System application identifies attentiveness of a driver. This is a basic variant of the DMS system. This basic variant has features like driver's head pose detection(left, right and center head pose), eye blink detection and yawn detection.
 
-- Camera input is fed to object detector (TinyYolov3) to detect faces.
+- Camera input is fed to object detector (Yolov3) to detect faces.
 - Face landmarks are extracted from the detected faces.
 - The face landmarks are used to classify the gaze directions (`CENTER`, `DOWN`, `LEFT` & `RIGHT`) using a Random Forest algorithm.
 
