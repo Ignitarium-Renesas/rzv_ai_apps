@@ -3,9 +3,11 @@
 ## Application: Overview
 Driver Monitoring System application identifies attentiveness of a driver. This is a basic variant of the DMS system. This basic variant has features like driver's head pose detection(left, right and center head pose), eye blink detection and yawn detection.
 
-- Camera input is fed to object detector (Yolov3) to detect faces.
-- Face landmarks are extracted from the detected faces.
-- The face landmarks are used to classify the gaze directions (`CENTER`, `DOWN`, `LEFT` & `RIGHT`) using a Random Forest algorithm.
+## Features
+This application 10_Driver_monitoring_system detects the following
+- Head poses (`CENTER`, `DOWN`, `LEFT` & `RIGHT`).
+- Blink
+- Yawn 
 
 The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1910.01271.pdf) ,[DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014).
 
@@ -21,7 +23,7 @@ It is recommended to setup the camera as shown in the image below. This applicat
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
 ## Application: Requirements
-/home/10_Driver_monitoring_system
+
 #### Hardware Requirements
 Prepare the following equipments referring to [Getting Started](https://renesas-rz.github.io/rzv_ai_sdk/getting_started).
 | Equipment | Details |
@@ -171,9 +173,9 @@ cd /home/root/tvm
 - YOLOV3: [Darknet](https://pjreddie.com/darknet/yolo/)  
 - Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/)
   
-Input size: 1x3x416x416  
-Output1 size: 1x13x13x18 
-Output2 size: 1x26x26x18
+Input size: 1x3x416x416  <br>
+Output1 size: 1x13x13x18  <br>
+Output2 size: 1x26x26x18  <br>
 Output3 size: 1x52x52x18 
  
 - DeepPose: [DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014)
