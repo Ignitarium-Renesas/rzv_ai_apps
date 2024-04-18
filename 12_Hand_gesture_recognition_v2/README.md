@@ -159,7 +159,7 @@ For the ease of deployment all the deployables file and folders are provided on 
     1. Run the commands below to download the `12_Hand_gesture_recognition_v2_deploy_tvm-v210.so` from [Release beta1.0](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/edit/beta1.0)
     ```
     cd {PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx 
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v1.00/12_Hand_gesture_recognition_v2_deploy_tvm-v210.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/beta1.0/12_Hand_gesture_recognition_v2_deploy_tvm-v210.so
     ```
     2. Rename the `12_Hand_gesture_recognition_v2_tvm-v210.so` to `deploy.so`.
     ```
