@@ -105,7 +105,7 @@ const static double anchors[] =
 
 
 /* Thresholds */
-#define TH_PROB                     (0.1f)
+#define TH_PROB                     (0.13f)
 #define TH_NMS                      (0.3f)
 /* Size of input image to the model */
 #define MODEL_IN_W                  (416)
@@ -149,9 +149,9 @@ const static double anchors[] =
 #define FPS_CHAR_THICKNESS          (4)
 #define RIGHT_ALIGN_OFFSET          (20)
 #define HAND_STR_X                  (20)
-#define HAND_STR_Y                  (20)
+#define HAND_STR_Y                  (30)
 #define GESTURE_CHAR_THICKNESS      (1.9)
-#define GESTURE_SCALE_SMALL         (0.5)
+#define GESTURE_SCALE_SMALL         (0.8)
 
 
 

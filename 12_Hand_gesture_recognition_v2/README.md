@@ -1,16 +1,79 @@
-# 12_Hand_gesture_recognition_yolov3
+# 12_Hand_gesture_recognition_v2
+
+This application is not covered with MIT license. This application is licensed with Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license.
+Please have a look at dos and dont's here : [Cretive commons website link](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
+Hand gesture model's reference : [Dataset link](https://github.com/hukenovs/hagrid)
+
+User can :
+Share — copy and redistribute the material in any medium or format
+Adapt — remix, transform, and build upon the material for any purpose, even commercially.
+
+Under these terms:
+Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+ShareAlike — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
 
 ## Application: Overview
 This application showcases the capability of deep neural networks to predict different hand gestures. It detect total of 8 Gestures that includes one, two, three, four, five, thumbs up, thumbs down and rock.
 
-The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1910.01271.pdf).
+The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1804.02767.pdf).
+
+## Features
+This application 12_Hand_gesture_recognition_v2 detects the following
+ - one <br> 
+    <img src="./img/one.png" alt="one gesture output"
+     margin-right=10px; 
+     width=100px;
+     height=134px />
+
+ - two <br> 
+ <img src="./img/two.png" alt="two gesture output"
+     margin-right=10px; 
+     width=100px;
+     height=134px />
+
+ - three <br> 
+ <img src="./img/three.png" alt="three gesture output"
+     margin-right=10px; 
+     width=100px;
+     height=134px />
+
+ - four <br> 
+ <img src="./img/four.png" alt="four gesture output"
+     margin-right=10px; 
+     width=100px;
+     height=134px />
+
+ - five <br> 
+ <img src="./img/five.png" alt="five gesture output"
+     margin-right=10px; 
+     width=100px;
+     height=134px />
+
+ - thumbs_up <br> 
+ <img src="./img/thumbs_up.png" alt="thumbs_up gesture output"
+     margin-right=10px; 
+     width=100px;
+     height=134px />
+
+ - thumbs_down <br> 
+ <img src="./img/thumbs_down.png" alt="thumbs_down gesture output"
+     margin-right=10px; 
+     width=100px;
+     height=134px />
+
+ - rock <br> 
+ <img src="./img/rock.png" alt="rock gesture output"
+     margin-right=10px; 
+     width=100px;
+     height=134px />
 
 ### Targeted product
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
 ## Application: Requirements
-/home/12_Hand_gesture_recognition_yolov3
+
 #### Hardware Requirements
 Prepare the following equipments referring to [Getting Started](https://renesas-rz.github.io/rzv_ai_sdk/getting_started).
 | Equipment | Details |
@@ -72,7 +135,7 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
     ```
 4. Go to the application source code directory.  
     ```sh
-    cd ${PROJECT_PATH}/12_Hand_gesture_recognition_yolov3/src
+    cd ${PROJECT_PATH}/12_Hand_gesture_recognition_v2/src
     ```
 5. Build the application by following the commands below.  
     ```sh
@@ -80,7 +143,7 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
     cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake -DV2H=ON ..
     make -j$(nproc)
     ```
-6. The following application file would be genarated in the `${PROJECT_PATH}/12_Hand_gesture_recognition_yolov3/src/build` directory
+6. The following application file would be genarated in the `${PROJECT_PATH}/12_Hand_gesture_recognition_v2/src/build` directory
 - hand_gesture_recognition_v2_app
 
 
@@ -89,24 +152,24 @@ For the ease of deployment all the deployables file and folders are provided on 
 
 |File | Details |
 |:---|:---|
-|yolov3| Model object files for deployment.|
+|hand_yolov3_onnx| Model object files for deployment.|
 |hand_gesture_recognition_v2_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `12_Hand_gesture_recognition_yolov3_deploy_tvm-v221.so` from [Release beta1.0](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/beta1.0/12_Hand_gesture_recognition_yolov3_tvm-v221.so)
+    1. Run the commands below to download the `12_Hand_gesture_recognition_v2_deploy_tvm-v210.so` from [Release beta1.0](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/edit/beta1.0)
     ```
-    cd {PROJECT_PATH}/12_Hand_gesture_recognition_yolov3/exe_v2h/yolov3 
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v1.00/12_Hand_gesture_recognition_yolov3_deploy_tvm-v210.so
+    cd {PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx 
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v1.00/12_Hand_gesture_recognition_v2_deploy_tvm-v210.so
     ```
-    2. Rename the `12_Hand_gesture_recognition_yolov3_tvm-v221.so` to `deploy.so`.
+    2. Rename the `12_Hand_gesture_recognition_v2_tvm-v210.so` to `deploy.so`.
     ```
-    mv 12_Hand_gesture_recognition_yolov3_deploy_tvm-v221.so deploy.so
+    mv 12_Hand_gesture_recognition_v2_deploy_tvm-v210.so deploy.so
     ```
 
-    3. Verify the presence of `deploy.so` file in {PROJECT_PATH}/12_Hand_gesture_recognition_yolov3/exe_v2h/yolov3 
+    3. Verify the presence of `deploy.so` file in {PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx 
     4. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
-        -  `12_Hand_gesture_recognition_yolov3` application file if you generated the file according to [Application File Generation](#application-file-generation)
+        -  `12_Hand_gesture_recognition_v2` application file if you generated the file according to [Application File Generation](#application-file-generation)
     5. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
 
 2. Folder structure in the rootfs (SD Card) would look like:
@@ -117,7 +180,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 └── home/
     └── root/
         └── tvm/ 
-            ├── yolov3/
+            ├── hand_yolov3_onnx/
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
@@ -156,14 +219,14 @@ cd /home/root/tvm
 - Dataset: [HaGRID (HAnd Gesture Recognition Image Dataset)](https://n-ws-620xz-pd11.s3pd11.sbercloud.ru/b-ws-620xz-pd11-jux/hagrid/hagrid_dataset_new_554800/hagrid_dataset_512.zip)
   
 Input size: 1x3x416x416  
-Output1 size: 1x13x13x39 <br>
-Output2 size: 1x26x26x39 <br>
+Output1 size: 1x13x13x39
+Output2 size: 1x26x26x39
 Output3 size: 1x52x52x39
 
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately <br> Yolov3: 93ms|
+|RZ/V2H EVK | Approximately <br> Yolov3: 53ms|
  
 ### Processing
  
@@ -172,6 +235,10 @@ Output3 size: 1x52x52x39
 |Pre-processing | Processed by CPU. <br> |
 |Inference | Processed by DRP-AI and CPU. |
 |Post-processing | Processed by CPU. |
+
+## Limitation
+1. The prediction works best when the distance between camera and hand is in between 0.5 - 1.0 meter.
+2. The accuracy improves with minimum background noise or movement. 
 
 ## Reference
 - For RZ/V2H EVK, this application supports USB camera only with 640x480 resolution.  
