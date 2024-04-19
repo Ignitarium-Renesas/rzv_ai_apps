@@ -20,53 +20,49 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 
 ## Features
 This application 12_Hand_gesture_recognition_v2 detects the following
- - one <br> 
-    <img src="./img/one.png" alt="one gesture output"
-     margin-right=10px; 
-     width=100px;
-     height=134px />
 
- - two <br> 
- <img src="./img/two.png" alt="two gesture output"
-     margin-right=10px; 
-     width=100px;
-     height=134px />
+<div style="display: flex; align-items: center;">
+    <div style="text-align: center; margin-right: 40px;">
+        <p>one</p>
+        <img src="./img/one.png" alt="one gesture output" width="100px" height="134px">
+    </div>
+        <div style="text-align: center; margin-right: 40px;">
+        <p>two</p>
+        <img src="./img/two.png" alt="two gesture output" width="100px" height="134px">
+    </div>
+    <div style="text-align: center; margin-right: 40px;">
+        <p>three</p>
+        <img src="./img/three.png" alt="three gesture output" width="100px" height="134px">
+    </div>
+        <div style="text-align: center;">
+        <p>four</p>
+        <img src="./img/three.png" alt="four gesture output" width="100px" height="134px">
+    </div>
+</div>
 
- - three <br> 
- <img src="./img/three.png" alt="three gesture output"
-     margin-right=10px; 
-     width=100px;
-     height=134px />
 
- - four <br> 
- <img src="./img/four.png" alt="four gesture output"
-     margin-right=10px; 
-     width=100px;
-     height=134px />
-
- - five <br> 
- <img src="./img/five.png" alt="five gesture output"
-     margin-right=10px; 
-     width=100px;
-     height=134px />
-
- - thumbs_up <br> 
- <img src="./img/thumbs_up.png" alt="thumbs_up gesture output"
-     margin-right=10px; 
-     width=100px;
-     height=134px />
-
- - thumbs_down <br> 
- <img src="./img/thumbs_down.png" alt="thumbs_down gesture output"
-     margin-right=10px; 
-     width=100px;
-     height=134px />
-
- - rock <br> 
- <img src="./img/rock.png" alt="rock gesture output"
-     margin-right=10px; 
-     width=100px;
-     height=134px />
+<div style="display: flex; align-items: center;">
+    <div style="text-align: center; margin-right: 40px;">
+    <br>
+        <p>five</p>
+        <img src="./img/five.png" alt="five gesture output" width="100px" height="134px">
+    </div>
+        <div style="text-align: center; margin-right: 40px;">
+        <br>
+        <p>thumbs_up</p>
+        <img src="./img/thumbs_up.png" alt="thumbs_up gesture output" width="100px" height="134px">
+    </div>
+    <div style="text-align: center; margin-right: 40px;">
+    <br>
+        <p>thumbs_down</p>
+        <img src="./img/thumbs_down.png" alt="thumbs_down gesture output" width="100px" height="134px">
+    </div>
+        <div style="text-align: center;">
+        <br>
+        <p>rock</p>
+        <img src="./img/rock.png" alt="rock gesture output" width="100px" height="134px">
+    </div>
+</div>
 
 ### Targeted product
 
@@ -156,12 +152,12 @@ For the ease of deployment all the deployables file and folders are provided on 
 |hand_gesture_recognition_v2_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `12_Hand_gesture_recognition_v2_deploy_tvm-v210.so` from [Release beta1.0](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/edit/beta1.0)
+    1. Run the commands below to download the `12_Hand_gesture_recognition_v2_deploy_tvm-v210.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
     ```
     cd {PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx 
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/beta1.0/12_Hand_gesture_recognition_v2_deploy_tvm-v210.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v1.00/12_Hand_gesture_recognition_v2_deploy_tvm-v210.so
     ```
-    2. Rename the `12_Hand_gesture_recognition_v2_tvm-v210.so` to `deploy.so`.
+    2. Rename the `12_Hand_gesture_recognition_v2_deploy_tvm-v210.so` to `deploy.so`.
     ```
     mv 12_Hand_gesture_recognition_v2_deploy_tvm-v210.so deploy.so
     ```
