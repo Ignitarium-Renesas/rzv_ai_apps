@@ -151,7 +151,7 @@ const static double anchors[] =
 #define HAND_STR_X                  (20)
 #define HAND_STR_Y                  (30)
 #define GESTURE_CHAR_THICKNESS      (1.9)
-#define GESTURE_SCALE_SMALL         (0.8)
+#define GESTURE_SCALE_SMALL         (0.6)
 
 
 
