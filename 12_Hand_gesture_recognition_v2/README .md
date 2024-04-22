@@ -14,55 +14,51 @@ ShareAlike — If you remix, transform, or build upon the material, you must dis
 No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
 
 ## Application: Overview
-This application showcases the capability of deep neural networks to predict different hand gestures. It detect total of 8 Gestures that includes one, two, three, four, five, thumbs up, thumbs down and rock.
+This application showcases the capability of deep neural networks to predict different hand gestures. It detect total of 8 Gestures that includes one, two, three, four, five, thumbs up, thumbs down and rock in the hand with the highest precision.
 
 The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1804.02767.pdf).
 
 ## Features
 This application 12_Hand_gesture_recognition_v2 detects the following
 
-<div style="display: flex; align-items: center;">
-    <div style="text-align: center; margin-right: 40px;">
-        <p>one</p>
-        <img src="./img/one.png" alt="one gesture output" width="100px" height="134px">
-    </div>
-        <div style="text-align: center; margin-right: 40px;">
-        <p>two</p>
-        <img src="./img/two.png" alt="two gesture output" width="100px" height="134px">
-    </div>
-    <div style="text-align: center; margin-right: 40px;">
-        <p>three</p>
-        <img src="./img/three.png" alt="three gesture output" width="100px" height="134px">
-    </div>
-        <div style="text-align: center;">
-        <p>four</p>
-        <img src="./img/three.png" alt="four gesture output" width="100px" height="134px">
-    </div>
-</div>
-
-
-<div style="display: flex; align-items: center;">
-    <div style="text-align: center; margin-right: 40px;">
-    <br>
-        <p>five</p>
-        <img src="./img/five.png" alt="five gesture output" width="100px" height="134px">
-    </div>
-        <div style="text-align: center; margin-right: 40px;">
-        <br>
-        <p>thumbs_up</p>
-        <img src="./img/thumbs_up.png" alt="thumbs_up gesture output" width="100px" height="134px">
-    </div>
-    <div style="text-align: center; margin-right: 40px;">
-    <br>
-        <p>thumbs_down</p>
-        <img src="./img/thumbs_down.png" alt="thumbs_down gesture output" width="100px" height="134px">
-    </div>
-        <div style="text-align: center;">
-        <br>
-        <p>rock</p>
-        <img src="./img/rock.png" alt="rock gesture output" width="100px" height="134px">
-    </div>
-</div>
+<table style="width:100%; border-collapse: collapse;">
+    <tr>
+        <td style="text-align: center; padding: 10px;">
+            <p>one</p>
+            <img src="./img/one.png" alt="one gesture output" width="100px" height="134px">
+        </td>
+        <td style="text-align: center; padding: 10px;">
+            <p>two</p>
+            <img src="./img/two.png" alt="two gesture output" width="100px" height="134px">
+        </td>
+        <td style="text-align: center; padding: 10px;">
+            <p>three</p>
+            <img src="./img/three.png" alt="three gesture output" width="100px" height="134px">
+        </td>
+        <td style="text-align: center; padding: 10px;">
+            <p>four</p>
+            <img src="./img/four.png" alt="four gesture output" width="100px" height="134px">
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center; padding: 10px;">
+            <p>five</p>
+            <img src="./img/five.png" alt="five gesture output" width="100px" height="134px">
+        </td>
+        <td style="text-align: center; padding: 10px;">
+            <p>thumbs_up</p>
+            <img src="./img/thumbs_up.png" alt="thumbs_up gesture output" width="100px" height="134px">
+        </td>
+        <td style="text-align: center; padding: 10px;">
+            <p>thumbs_down</p>
+            <img src="./img/thumbs_down.png" alt="thumbs_down gesture output" width="100px" height="134px">
+        </td>
+        <td style="text-align: center; padding: 10px;">
+            <p>rock</p>
+            <img src="./img/rock.png" alt="rock gesture output" width="100px" height="134px">
+        </td>
+    </tr>
+</table>
 
 ### Targeted product
 
