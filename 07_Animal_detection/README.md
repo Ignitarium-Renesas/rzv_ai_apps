@@ -106,14 +106,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 |animal_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `07_Animal_detection_deploy_tvm-v210.so` from [Release v3.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v3.00)
+    1. Run the commands below to download the `07_Animal_detection_deploy_tvm-v221.so` from [Release beta2.0](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/beta2.0)
     ```
     cd ${PROJECT_PATH}/07_Animal_detection/exe_v2h/animal_yolov3_onnx
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v3.00/07_Animal_detection_deploy_tvm-v210.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/beta2.0/07_Animal_detection_deploy_tvm-v221.so
     ```
-    2. Rename the `07_Animal_detection_deploy_tvm-v210.so` to `deploy.so`.
+    2. Rename the `07_Animal_detection_deploy_tvm-v221.so` to `deploy.so`.
     ```
-    mv 07_Animal_detection_deploy_tvm-v210.so deploy.so
+    mv 07_Animal_detection_deploy_tvm-v221.so deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
@@ -175,7 +175,7 @@ Output3 size: 1x52x52x48
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately 35ms  |
+|RZ/V2H EVK | Approximately 26ms  |
  
 ### Processing
  
