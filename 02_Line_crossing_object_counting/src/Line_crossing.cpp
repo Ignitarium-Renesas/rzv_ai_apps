@@ -22,7 +22,6 @@
  * under the License.
  *
  */
-
 /***********************************************************************************************************************
 * File Name    : Line_crossing.cpp
 * Version      : 1.1.0
@@ -64,12 +63,11 @@ static Wayland wayland;
 static pthread_t ai_inf_thread;
 static pthread_t kbhit_thread;
 static sem_t terminate_req_sem;
-static int32_t drp_max_freq;
-static int32_t drp_freq;
 
 static atomic<uint8_t> hdmi_obj_ready   (0);
 
 static uint32_t disp_time = 0;
+static int32_t drpai_freq;
 
 std::string media_port;
 std::string gstreamer_pipeline;
@@ -548,7 +546,7 @@ int Line_Crossing()
 
     /* Inference time start */
     auto t2 = std::chrono::high_resolution_clock::now();
-    runtime.Run();
+    runtime.Run(drpai_freq);
     /* Inference time end */
     auto t3 = std::chrono::high_resolution_clock::now();
     auto inf_duration = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count();
@@ -841,66 +839,24 @@ uint64_t get_drpai_start_addr(int drpai_fd)
 }
 
 /*****************************************
-* Function Name : set_drpai_freq
-* Description   : Function to set the DRP and DRP-AI frequency.
-* Arguments     : drpai_fd: DRP-AI file descriptor
-* Return value  : 0 if succeeded
-*                 not 0 otherwise
-******************************************/
-int set_drpai_freq(int drpai_fd)
-{
-    int ret = 0;
-    uint32_t data;
-
-    errno = 0;
-    data = drp_max_freq;
-    ret = ioctl(drpai_fd , DRPAI_SET_DRP_MAX_FREQ, &data);
-    if (-1 == ret)
-    {
-        std::cerr << "[ERROR] Failed to set DRP Max Frequency : errno=" << errno << std::endl;
-        return -1;
-    }
-
-    errno = 0;
-    data = drp_freq;
-    ret = ioctl(drpai_fd , DRPAI_SET_DRPAI_FREQ, &data);
-    if (-1 == ret)
-    {
-        std::cerr << "[ERROR] Failed to set DRP-AI Frequency : errno=" << errno << std::endl;
-        return -1;
-    }
-
-    return 0;
-}
-
-
-/*****************************************
 * Function Name : init_drpai
 * Description   : Function to initialize DRP-AI.
 * Arguments     : drpai_fd: DRP-AI file descriptor
 * Return value  : If non-zero, DRP-AI memory start address.
 *                 0 is failure.
-******************************************/
+*****************************************/
 uint64_t init_drpai(int drpai_fd)
-
 {
     int ret = 0;
     uint64_t drpai_addr = 0;
 
     /*Get DRP-AI memory start address*/
     drpai_addr = get_drpai_start_addr(drpai_fd);
+    
     if (drpai_addr == 0)
     {
         return 0;
     }
-
-    /*Set DRP-AI frequency*/
-    ret = set_drpai_freq(drpai_fd);
-    if (ret != 0)
-    {
-        return 0;
-    }
-
 
     return drpai_addr;
 }
@@ -1121,18 +1077,21 @@ int main(int argc, char *argv[])
         }
         if(argc>8)
         {
-            drp_max_freq = std::atoi(argv[8]);
+            drpai_freq = atoi(argv[8]);
+            if ((1 <= drpai_freq) && (127 >= drpai_freq))
+            {
+                printf("Argument : <AI-MAC_freq_factor> = %d\n", drpai_freq);
+            }
+            else
+            {
+                fprintf(stderr,"[ERROR] Invalid Command Line Argument : <AI-MAC_freq_factor>=%d\n", drpai_freq);
+                return -1;
+            }
         }
         else{
-            drp_max_freq = DRP_MAX_FREQ;
+            drpai_freq = DRPAI_FREQ;
         }
-        if(argc>9)
-        {
-            drp_freq = std::atoi(argv[9]);
-        }
-        else{
-            drp_freq = DRPAI_FREQ;
-        }
+
     }
     else
     {
