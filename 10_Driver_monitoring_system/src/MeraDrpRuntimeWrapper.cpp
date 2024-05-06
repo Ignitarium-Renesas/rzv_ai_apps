@@ -109,7 +109,7 @@ bool MeraDrpRuntimeWrapper::LoadModel(const std::string& model_dir, uint64_t sta
 
 template <typename T>
 void MeraDrpRuntimeWrapper::SetInput(int input_index, const T* data_ptr) {
-     LOG(INFO) << "Loading input...";
+    LOG(INFO) << "Loading input...";
 
     tvm::runtime::PackedFunc get_input = mod.GetFunction("get_input");
     tvm::runtime::NDArray xx = get_input(input_index);
@@ -136,10 +136,30 @@ void MeraDrpRuntimeWrapper::Run() {
     mod.GetFunction("run")();
 }
 
+void MeraDrpRuntimeWrapper::Run(int freq_index) {
+    mod.GetFunction("run")(freq_index);
+}
+
 void MeraDrpRuntimeWrapper::ProfileRun(const std::string& profile_table, const std::string& profile_csv) {
     tvm::runtime::PackedFunc profile = mod.GetFunction("profile");
     tvm::runtime::Array<tvm::runtime::profiling::MetricCollector> collectors;
     tvm::runtime::profiling::Report report = profile(collectors);
+
+    std::string rep_table = report->AsTable();
+    std::ofstream ofs_table (profile_table, std::ofstream::out);
+    ofs_table << rep_table << std::endl;
+    ofs_table.close();
+
+    std::string rep_csv = report->AsCSV();
+    std::ofstream ofs_csv (profile_csv, std::ofstream::out);
+    ofs_csv << rep_csv << std::endl;
+    ofs_csv.close();
+}
+
+void MeraDrpRuntimeWrapper::ProfileRun(const std::string& profile_table, const std::string& profile_csv, int freq_index) {
+    tvm::runtime::PackedFunc profile = mod.GetFunction("profile");
+    tvm::runtime::Array<tvm::runtime::profiling::MetricCollector> collectors;
+    tvm::runtime::profiling::Report report = profile(collectors, freq_index);
 
     std::string rep_table = report->AsTable();
     std::ofstream ofs_table (profile_table, std::ofstream::out);
