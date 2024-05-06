@@ -94,13 +94,13 @@ For the ease of deployment all the deployables file and folders are provided on 
 |human_gaze_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `human_gaze_tinyyolov2_deploy_tvm-v221.so` and `human_gaze_resnet18_deploy_tvm-v221.so` from [Release beta2.0](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/beta2.0)
+    1. Run the commands below to download the `human_gaze_tinyyolov2_deploy_tvm-v221.so` and `human_gaze_resnet18_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/Release v4.00)
     ```
     cd ${PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_tinyyolov2
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/beta2.0/human_gaze_tinyyolov2_deploy_tvm-v221.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/Release v4.00/human_gaze_tinyyolov2_deploy_tvm-v221.so
 
     cd ${PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_resnet18
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/beta2.0/human_gaze_resnet18_deploy_tvm-v221.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/Release v4.00/human_gaze_resnet18_deploy_tvm-v221.so
     ```
     2. Rename the `human_gaze_tinyyolov2_deploy_tvm-v221.so` and `human_gaze_resnet18_deploy_tvm-v221.so`  to `deploy.so`.
     ```
