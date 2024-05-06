@@ -89,7 +89,7 @@ Connect the hardware as shown below.
      height=334px />
 
 
-When using the keyboard connected to RZ/V2H Evaluation Board, the keyboard layout and language are fixed to English.
+When using the keyboard connected to RZ/V2H EVK Evaluation Board, the keyboard layout and language are fixed to English.
 
 ## Application: Build Stage
 
@@ -148,14 +148,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 |hand_gesture_recognition_v2_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `12_Hand_gesture_recognition_v2_deploy_tvm-v210.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
+    1. Run the commands below to download the `12_Hand_gesture_recognition_v2_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
     ```
-    cd {PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx 
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v1.00/12_Hand_gesture_recognition_v2_deploy_tvm-v210.so
+    cd ${PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/12_Hand_gesture_recognition_v2_deploy_tvm-v221.so
     ```
-    2. Rename the `12_Hand_gesture_recognition_v2_deploy_tvm-v210.so` to `deploy.so`.
+    2. Rename the `12_Hand_gesture_recognition_v2_deploy_tvm-v221.so` to `deploy.so`.
     ```
-    mv 12_Hand_gesture_recognition_v2_deploy_tvm-v210.so deploy.so
+    mv 12_Hand_gesture_recognition_v2_deploy_tvm-v221.so deploy.so
     ```
 
     3. Verify the presence of `deploy.so` file in {PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx 
@@ -211,14 +211,14 @@ cd /home/root/tvm
 - Dataset: [HaGRID (HAnd Gesture Recognition Image Dataset)](https://n-ws-620xz-pd11.s3pd11.sbercloud.ru/b-ws-620xz-pd11-jux/hagrid/hagrid_dataset_new_554800/hagrid_dataset_512.zip)
   
 Input size: 1x3x416x416  
-Output1 size: 1x13x13x39
-Output2 size: 1x26x26x39
+Output1 size: 1x13x13x39 <br>
+Output2 size: 1x26x26x39 <br>
 Output3 size: 1x52x52x39
 
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately <br> Yolov3: 53ms|
+|RZ/V2H EVK | Approximately <br> Yolov3: 46ms|
  
 ### Processing
  

@@ -153,9 +153,6 @@ const static double anchors[] =
 #define GESTURE_CHAR_THICKNESS      (1.9)
 #define GESTURE_SCALE_SMALL         (0.6)
 
-
-
-
 #define LINE_HEIGHT                 (30) 
 #define LINE_HEIGHT_OFFSET          (20) 
 
@@ -167,20 +164,12 @@ const static double anchors[] =
 #define DISPLAY_THREAD_TIMEOUT      (20)  /* seconds */
 #define TIME_COEF  
 
-/* DRP_MAX_FREQ and DRPAI_FREQ are the   */
+/* DRPAI_FREQ are the   */
 /* frequency settings for DRP-AI.        */
 /* Basically use the default values      */
 
-#define DRP_MAX_FREQ                (2)
-/* DRP_MAX_FREQ can be set from 2 to 127 */
-/* 2: 420MHz                             */
-/* 3: 315MHz                             */
-/* ...                                   */
-/* 127: 9.84MHz                          */
-/* Calculation Formula:                  */
-/*     1260MHz /(DRP_MAX_FREQ + 1)       */
 
-#define DRPAI_FREQ                  (5)
+#define DRPAI_FREQ                  (2)
 /* DRPAI_FREQ can be set from 1 to 127   */
 /* 1,2: 1GHz                             */
 /* 3: 630MHz                             */
