@@ -106,10 +106,10 @@ For the ease of deployment all the deployables file and folders are provided on 
 |animal_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `07_Animal_detection_deploy_tvm-v221.so` from [Release beta2.0](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/beta2.0)
+    1. Run the commands below to download the `07_Animal_detection_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
     ```
     cd ${PROJECT_PATH}/07_Animal_detection/exe_v2h/animal_yolov3_onnx
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/beta2.0/07_Animal_detection_deploy_tvm-v221.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/07_Animal_detection_deploy_tvm-v221.so
     ```
     2. Rename the `07_Animal_detection_deploy_tvm-v221.so` to `deploy.so`.
     ```
