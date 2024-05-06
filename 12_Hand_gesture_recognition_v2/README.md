@@ -211,10 +211,8 @@ cd /home/root/tvm
 - Dataset: [HaGRID (HAnd Gesture Recognition Image Dataset)](https://n-ws-620xz-pd11.s3pd11.sbercloud.ru/b-ws-620xz-pd11-jux/hagrid/hagrid_dataset_new_554800/hagrid_dataset_512.zip)
   
 Input size: 1x3x416x416  
-Output1 size: 1x13x13x39
-
-Output2 size: 1x26x26x39
-
+Output1 size: 1x13x13x39 <br>
+Output2 size: 1x26x26x39 <br>
 Output3 size: 1x52x52x39
 
 ### AI inference time
