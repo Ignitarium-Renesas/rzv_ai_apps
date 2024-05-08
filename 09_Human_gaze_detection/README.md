@@ -161,7 +161,7 @@ Output size: 1x2
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately <br> Tinyyolov2: 9ms <br> Resnet-18: 3ms|
+|RZ/V2H EVK | Approximately <br> Tinyyolov2: 5.5ms <br> Resnet-18: 2.3ms|
  
 ### Processing
  
