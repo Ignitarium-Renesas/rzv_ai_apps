@@ -103,13 +103,13 @@ For the ease of deployment all the deployables file and folders are provided on 
 |File | Details |
 |:---|:---|
 |DMS_yolov3| Model object files for deployment.|
-|DMS_Deeppose| Model object files for deployment.|
+|DMS_deeppose| Model object files for deployment.|
 |driver_monitoring_system_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
     1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
     ```
-    cd {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_Deeppose
+    cd {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_deeppose
     wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/10_Driver_monitoring_system_deploy_tvm-v221.so
     ```
     2. Rename the `10_Driver_monitoring_system_deploy_tvm-v221.so` to `deploy.so`.
@@ -117,7 +117,7 @@ For the ease of deployment all the deployables file and folders are provided on 
     mv 10_Driver_monitoring_system_deploy_tvm-v221.so deploy.so
     ```
 
-    3. Verify the presence of `deploy.so` file in {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_Deeppose
+    3. Verify the presence of `deploy.so` file in {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 &{PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_deeppose
     4. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
         -  `10_Driver_monitoring_system` application file if you generated the file according to [Application File Generation](#application-file-generation)
@@ -135,7 +135,7 @@ For the ease of deployment all the deployables file and folders are provided on 
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
-            ├── DMS_Deeppose/
+            ├── DMS_deeppose/
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
