@@ -94,20 +94,8 @@ For the ease of deployment all the deployables file and folders are provided on 
 |human_gaze_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `human_gaze_tinyyolov2_deploy_tvm-v221.so` and `human_gaze_resnet18_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/Release v4.00)
-    ```
-    cd ${PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_tinyyolov2
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/Release v4.00/human_gaze_tinyyolov2_deploy_tvm-v221.so
-
-    cd ${PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_resnet18
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/Release v4.00/human_gaze_resnet18_deploy_tvm-v221.so
-    ```
-    2. Rename the `human_gaze_tinyyolov2_deploy_tvm-v221.so` and `human_gaze_resnet18_deploy_tvm-v221.so`  to `deploy.so`.
-    ```
-    mv `human_gaze_tinyyolov2_deploy_tvm-v221.so` deploy.so
-    mv `human_gaze_resnet18_deploy_tvm-v221.so` deploy.so
-    ```
-    3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
+    1. Verify the presence of `deploy.so` file in \{PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_resnet18 &\{PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_tinyyolov2
+    2. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
         -  `09_Human_gaze_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
     3. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.

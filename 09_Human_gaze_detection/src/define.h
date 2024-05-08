@@ -188,7 +188,7 @@ const static std::string pre_dir1 = model_dir1 + "/preprocess";
 #define TIME_COEF  
 
 
-/* DRPAI_FREQ are the   */
+/* DRPAI_FREQ is the   */
 /* frequency settings for DRP-AI.        */
 /* Basically use the default values      */
 
