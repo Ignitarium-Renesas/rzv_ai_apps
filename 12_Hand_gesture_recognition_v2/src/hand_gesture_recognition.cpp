@@ -983,7 +983,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    if (argc>5)
+    if (argc>3)
     {
         std::cerr << "[ERROR] Wrong number Arguments are passed " << std::endl;
         return 1;
