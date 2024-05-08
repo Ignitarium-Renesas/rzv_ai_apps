@@ -169,7 +169,7 @@ cd /home/root/tvm/
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately  5ms |
+|RZ/V2H EVK | Approximately  25ms |
  
 ### Processing
  
