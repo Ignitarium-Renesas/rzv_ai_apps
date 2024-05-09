@@ -618,7 +618,7 @@ int Gaze_Detection()
 
             /* Check the bounding box is in the image range */
             cropx1[i] = cropx1[i] < 1 ? 1 : cropx1[i];
-            cropx2[i] = ((DRPAI_IN_WIDTH - 2) < cropx2[i]) ? (cropx2[i] - 2) : cropx2[i];
+            cropx2[i] = ((DRPAI_IN_WIDTH - 2) < cropx2[i]) ? (DRPAI_IN_WIDTH - 2) : cropx2[i];
             cropy1[i] = cropy1[i] < 1 ? 1 : cropy1[i];
             cropy2[i] = ((DRPAI_IN_HEIGHT - 2) < cropy2[i]) ? (DRPAI_IN_HEIGHT - 2) : cropy2[i];
 
