@@ -29,5 +29,19 @@ This [Animal_detection](./07_Animal_detection) is used to detect specific set of
 
 ### 11. Head_count_topview 
 The [Head_count_topvew](./11_Head_count_topview) application will count the human heads present in a video from camera input.
-
-
+<br>
+<br>
+### 09. Human_gaze_detection 
+The [Human_gaze_detection](./09_Human_gaze_detection) application finds out the direction in which a person is looking at.
+<br>
+<br>
+### 10. Driver_monitoring_system
+The [Driver_monitoring_system](./10_Driver_monitoring_system) application demonstrates a very basic driver monitoring system. The features are head pose 
+detection (Left, right or center), eye blink detection and yawn detection.
+<br>
+<br>
+### 12. Hand_gesture_recognition_v2 
+The [Hand_gesture_recognition_v2](./12_Hand_gesture_recognition_v2) application recognizes hand gestures like one, two, three, four five, thumbs up, thumbs down, 
+and rock.
+<br>
+<br>
