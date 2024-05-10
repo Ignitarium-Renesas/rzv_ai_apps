@@ -1098,6 +1098,13 @@ int main(int argc, char *argv[])
         std::cout<<"Support for USB mode only"<<std::endl;
         return -1;
     }
+
+    if (argc>9)
+    {
+        std::cerr << "[ERROR] Wrong number Arguments are passed " << std::endl;
+        return 1;
+    }
+
     errno = 0;
     int drpai_fd = open("/dev/drpai0", O_RDWR);
     if (0 > drpai_fd)

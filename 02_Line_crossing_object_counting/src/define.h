@@ -161,7 +161,7 @@ const static double anchors[] =
 #define CAPTURE_TIMEOUT             (20)  /* seconds */
 #define DISPLAY_THREAD_TIMEOUT      (20)  /* seconds */
 
-/* DRPAI_FREQ are the   */
+/* DRPAI_FREQ is the   */
 /* frequency settings for DRP-AI.        */
 /* Basically use the default values      */
 #define DRPAI_FREQ                  (2)
