@@ -160,7 +160,7 @@ const static double anchors[] =
 #define DISPLAY_THREAD_TIMEOUT      (20)  /* seconds */
 #define TIME_COEF  
 
-/* DRPAI_FREQ are the   */
+/* DRPAI_FREQ is the   */
 /* frequency settings for DRP-AI.        */
 /* Basically use the default values      */
 
