@@ -94,7 +94,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 |human_gaze_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Verify the presence of `deploy.so` file in \{PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_resnet18 &\{PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_tinyyolov2
+    1. Verify the presence of `deploy.so` file in $\{PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_resnet18 \${PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_tinyyolov2
     2. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
         -  `09_Human_gaze_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
