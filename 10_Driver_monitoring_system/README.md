@@ -117,7 +117,7 @@ For the ease of deployment all the deployables file and folders are provided on 
     mv 10_Driver_monitoring_system_deploy_tvm-v221.so deploy.so
     ```
 
-    3. Verify the presence of `deploy.so` file in ${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 & ${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_deeppose
+    3. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3` &` ${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_deeppose`
     4. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
         -  `10_Driver_monitoring_system` application file if you generated the file according to [Application File Generation](#application-file-generation)
