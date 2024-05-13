@@ -109,7 +109,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 1. Follow the steps below to deploy the project on the board. 
     1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
     ```
-    cd {PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 
+    cd ${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3 
     wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/10_Driver_monitoring_system_deploy_tvm-v221.so
     ```
     2. Rename the `10_Driver_monitoring_system_deploy_tvm-v221.so` to `deploy.so`.
