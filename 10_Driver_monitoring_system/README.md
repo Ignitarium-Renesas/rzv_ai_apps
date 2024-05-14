@@ -9,7 +9,7 @@ This application 10_Driver_monitoring_system detects the following
 - Blink
 - Yawn 
 
-The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1910.01271.pdf) ,[DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014).
+The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1804.02767) ,[DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014).
 
 It is recommended to setup the camera as shown in the image below. This application needs user at a particular distance from a camera. 
 
@@ -172,7 +172,8 @@ cd /home/root/tvm
 
 ## AI Model
 - YOLOV3: [Darknet](https://pjreddie.com/darknet/yolo/)  
-- Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/)
+- Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/) *[Head_data](https://www.kaggle.com/datasets/houssad/head-data) *[RGBD_Indoor_Dataset](https://drive.google.com/file/d/1fOub9LcNqfDlr-mEcdnenAJWw-rqWGmG/view)
+
   
 Input size: 1x3x416x416  <br>
 Output1 size: 1x13x13x18  <br>
