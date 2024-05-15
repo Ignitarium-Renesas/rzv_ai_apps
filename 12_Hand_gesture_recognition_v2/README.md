@@ -1,7 +1,7 @@
 # 12_Hand_gesture_recognition_v2
 
 This application is not covered with MIT license. This application is licensed with Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license.
-Please have a look at dos and dont's here : [Cretive commons website link](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
+Please have a look at dos and dont's here : [Cretaive commons website link](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
 Hand gesture model's reference : [Dataset link](https://github.com/hukenovs/hagrid)
 
 User can :
