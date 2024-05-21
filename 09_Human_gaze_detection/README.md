@@ -147,7 +147,7 @@ cd /home/root/tvm
 
 ## AI Model
 - TinyYOLOV2: [Darknet](https://pjreddie.com/darknet/yolo/)  
-- Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/)
+- Dataset: *[WIDERFACE](http://shuoyang1213.me/WIDERFACE/)
   
 Input size: 1x3x416x416  
 Output size: 1x13x13x30  
