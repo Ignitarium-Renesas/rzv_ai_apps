@@ -11,6 +11,9 @@ This application 10_Driver_monitoring_system detects the following
 
 The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1804.02767) ,[DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014).
 
+## sample video on YouTube -[Driver Monitoring System demo](https://youtu.be/Vrcq8KhxTzs)
+
+
 It is recommended to setup the camera as shown in the image below. This application needs user at a particular distance from a camera. 
 
 <img src="./img/DMS_sample_setup.jpeg" alt="DMS setup"
