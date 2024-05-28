@@ -8,6 +8,8 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 ### Targeted product
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
+### Sample video 
+- [Head counting from topview demo](https://youtu.be/EtX_aJfxSRE)  on YouTube
 
 ## Application: Requirements
 

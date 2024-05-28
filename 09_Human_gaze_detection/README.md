@@ -9,6 +9,9 @@ The AI model used for the sample application is [TINYYOLOV2](https://arxiv.org/p
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
+### Sample video 
+- [Gaze detection demo](https://youtu.be/JYbgbfT2N3Q)  on YouTube
+
 ## Application: Requirements
 
 #### Hardware Requirements

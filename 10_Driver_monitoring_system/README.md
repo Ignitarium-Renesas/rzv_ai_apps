@@ -11,6 +11,7 @@ This application 10_Driver_monitoring_system detects the following
 
 The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1804.02767) ,[DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014).
 
+
 It is recommended to setup the camera as shown in the image below. This application needs user at a particular distance from a camera. 
 
 <img src="./img/DMS_sample_setup.jpeg" alt="DMS setup"
@@ -21,6 +22,10 @@ It is recommended to setup the camera as shown in the image below. This applicat
 ### Targeted product
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
+
+ ### Sample video 
+- [Driver Monitoring System demo](https://youtu.be/Vrcq8KhxTzs) on YouTube
+
 
 ## Application: Requirements
 
