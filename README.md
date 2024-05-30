@@ -26,8 +26,22 @@ The [Line_crossing_object_counting](./02_Line_crossing_object_counting) is a sam
 This [Animal_detection](./07_Animal_detection) is used to detect specific set of animals in camera inputs.
 <br>
 <br>
+### 09. Human_gaze_detection 
+The [Human_gaze_detection](./09_Human_gaze_detection) application has important information for applications such as Driver Monitor Systems to monitor driver's attentiveness. It can also help to analyse viewer's attention data in case of digital signage and retail industry.
+<br>
+<br>
+### 10. Driver_monitoring_system
+The [Driver_monitoring_system](./10_Driver_monitoring_system) application is basic variant of the DMS system. This has features like driver's head pose detection(left, right and center head pose), eye blink detection and yawn detection.
+<br>
+<br>
 
 ### 11. Head_count_topview 
 The [Head_count_topvew](./11_Head_count_topview) application will count the human heads present in a video from camera input.
+<br>
+<br>
 
-
+### 12. Hand_gesture_recognition_v2 
+The [Hand_gesture_recognition_v2](./12_Hand_gesture_recognition_v2) application recognizes hand gestures like one, two, three, four five, thumbs up, thumbs down, 
+and rock.
+<br>
+<br>
