@@ -748,7 +748,7 @@ void capture_frame(std::string gstreamer_pipeline )
             }            
 
             stream.str("");
-            stream << "Camera Frame Rate : "<<fps <<" fps ";
+            stream << "Camera Frame Rate : "<< fixed << setprecision(1) << fps <<" fps ";
             str = stream.str();
             Size camera_rate_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - camera_rate_size.width - RIGHT_ALIGN_OFFSET), (FPS_STR_Y + camera_rate_size.height)), FONT_HERSHEY_SIMPLEX, 

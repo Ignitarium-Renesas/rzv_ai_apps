@@ -147,30 +147,30 @@ const static std::string pre_dir1 = model_dir1 + "/preprocess";
 #define AGE_STR_Y                   (40)
 
 #define T_TIME_STR_X                (645)
-#define T_TIME_STR_Y                (220)
+#define T_TIME_STR_Y                (120)
 
 #define MODEL_NAME_1_X              (645)
-#define MODEL_NAME_1_Y              (290)
+#define MODEL_NAME_1_Y              (190)
 
 #define PRE_TIME_STR_X              (645)
-#define PRE_TIME_STR_Y              (340)
+#define PRE_TIME_STR_Y              (240)
 #define I_TIME_STR_X                (645)
-#define I_TIME_STR_Y                (390)
+#define I_TIME_STR_Y                (290)
 #define P_TIME_STR_X                (645)
-#define P_TIME_STR_Y                (440)
+#define P_TIME_STR_Y                (340)
 
 #define MODEL_NAME_2_X              (645)
-#define MODEL_NAME_2_Y              (510)
+#define MODEL_NAME_2_Y              (410)
 
 #define PRE_TIME_STR_X_FACE         (645)
-#define PRE_TIME_STR_Y_FACE         (560)
+#define PRE_TIME_STR_Y_FACE         (460)
 #define I_TIME_STR_X_FACE           (645)
-#define I_TIME_STR_Y_FACE           (610)
+#define I_TIME_STR_Y_FACE           (510)
 #define P_TIME_STR_X_FACE           (645)
-#define P_TIME_STR_Y_FACE           (660)
+#define P_TIME_STR_Y_FACE           (560)
 
 #define FPS_STR_X                   (645)
-#define FPS_STR_Y                   (730)
+#define FPS_STR_Y                   (630)
 
 #define AGE_CHAR_THICKNESS          (1.9)
 #define CHAR_SCALE_LARGE            (1.6)
