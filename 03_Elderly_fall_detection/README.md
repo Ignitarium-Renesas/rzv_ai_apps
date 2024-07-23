@@ -71,17 +71,17 @@ Here, we use the `rzv2h_ai_sdk_container` as the name of container, created from
     ```sh
     export PROJECT_PATH=/drp-ai_tvm/data/rzv_ai_apps
     ```
-3. Go to the application source code directory.  
+4. Go to the application source code directory.  
     ```sh
     cd ${PROJECT_PATH}/03_Elderly_fall_detection/src
     ```
-4. Build the application by following the commands below.  
+5. Build the application by following the commands below.  
     ```sh
     mkdir -p build && cd build
     cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake -DV2H=ON ..
     make -j$(nproc)
     ```
-5. The following application file would be genarated in the `${PROJECT_PATH}/03_Elderly_fall_detection/src/build` directory
+6. The following application file would be genarated in the `${PROJECT_PATH}/03_Elderly_fall_detection/src/build` directory
 - elderly_fall_detection_app
 
 
@@ -162,7 +162,7 @@ Output size: 1x16x16x64
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately <br> Tinyyolov2: 5.57ms <br> HRNet: 17.29ms|
+|RZ/V2H EVK | Approximately <br> Tinyyolov2: 5.7ms <br> HRNet: 17.4ms|
  
 ### Processing
  
