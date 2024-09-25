@@ -86,6 +86,8 @@ static std::map<int,float> Avg_Area_MAP;
 static std::set<int>DONE_IDS;   /*ids that have moved */
 static std::set<int>MOVE_IDS; 
 
+int32_t x__min;
+int32_t y__min;
 
 static float ai_time = 0;
 /*Audio selection*/
@@ -344,6 +346,7 @@ void R_Post_Proc(float *floatarr)
  ******************************************/
 void draw_bounding_box(void)
 {
+    
     std::stringstream stream;
     string str = "";
     std::string result_str;
@@ -436,7 +439,8 @@ void draw_bounding_box(void)
             x_max = ((DRPAI_IN_WIDTH - 2) < x_max) ? (DRPAI_IN_WIDTH - 2) : x_max;
             y_min = y_min < 1 ? 1 : y_min;
             y_max = ((DRPAI_IN_HEIGHT - 2) < y_max) ? (DRPAI_IN_HEIGHT - 2) : y_max;
-
+            x__min=x_min;
+            y__min=y_min;
             Point topLeft(x_min, y_min);
             Point bottomRight(x_max, y_max);
 
@@ -645,8 +649,7 @@ void capture_frame(std::string gstreamer_pipeline )
                     stream.str("");
                     stream << "The " << label_file_map[det[i].c].c_str() << " in front moved ";
                     str = stream.str();
-                    putText(g_frame, str,Point(CAR_STR_X, CAR_STR_Y), FONT_HERSHEY_SIMPLEX, CAR_CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*CAR_CHAR_THICKNESS);
-                    putText(g_frame, str,Point(CAR_STR_X, CAR_STR_Y), FONT_HERSHEY_SIMPLEX, CAR_CHAR_SCALE_SMALL, Scalar(0, 255, 255), CAR_CHAR_THICKNESS);
+                    putText(g_frame, str,Point(x__min,y__min-10), FONT_HERSHEY_SIMPLEX, CAR_CHAR_SCALE_SMALL, Scalar(0, 255, 255), CAR_CHAR_THICKNESS);
                     count++;
                 }
                 count = 0;
