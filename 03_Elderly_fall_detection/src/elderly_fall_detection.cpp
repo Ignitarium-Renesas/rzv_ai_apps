@@ -1109,18 +1109,9 @@ void capture_frame(std::string gstreamer_pipeline )
             if((fall_frame_count[i] >= 5 )&&(flag[i] == 1))
             {
                 stream.str("");
-                stream << "The person has fallen !!";
+                stream << "The person had fallen !!";
                 str = stream.str();
-                Point textPosition(PERSON_STR_X, PERSON_STR_Y);
-                Size textSize = getTextSize(str, FONT_HERSHEY_SIMPLEX, PERSON_SCALE_SMALL, PERSON_CHAR_THICKNESS , &baseline);
-                int rectMarginX = 10; 
-                int rectMarginY = 5; 
-                int rectTopLeftX = textPosition.x - rectMarginX;
-                int rectTopLeftY = textPosition.y - textSize.height - rectMarginY;
-                int rectBottomRightX = textPosition.x + textSize.width + rectMarginX;
-                int rectBottomRightY = textPosition.y + rectMarginY;
-                rectangle(g_frame, Point(rectTopLeftX, rectTopLeftY), Point(rectBottomRightX, rectBottomRightY), Scalar(0, 255, 255), -1);
-                putText(g_frame, str, textPosition, FONT_HERSHEY_SIMPLEX, PERSON_SCALE_SMALL, Scalar(0, 0, 0), PERSON_CHAR_THICKNESS );
+                putText(g_frame, str, Point(PERSON_STR_X, PERSON_STR_Y), FONT_HERSHEY_SIMPLEX, PERSON_SCALE_SMALL, Scalar(0, 255, 255), PERSON_CHAR_THICKNESS );
             }
             }
             }

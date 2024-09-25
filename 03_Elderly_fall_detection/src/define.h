@@ -158,10 +158,10 @@ const static std::string pre_dir1 = model_dir1 + "/preprocess";
 #define CHAR_SCALE_SMALL            (1.2)
 #define HC_CHAR_THICKNESS           (4)
 #define RIGHT_ALIGN_OFFSET          (20)
-#define PERSON_STR_X                (20)
-#define PERSON_STR_Y                (30)
-#define PERSON_CHAR_THICKNESS       (1.9)
-#define PERSON_SCALE_SMALL          (0.4) 
+#define PERSON_STR_X                (130)
+#define PERSON_STR_Y                (240)
+#define PERSON_CHAR_THICKNESS       (2.5)
+#define PERSON_SCALE_SMALL          (1) 
 
 /*Waiting Time*/
 #define WAIT_TIME                   (1000) /* microseconds */
