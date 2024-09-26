@@ -146,7 +146,7 @@ const static double anchors[] =
 #define BOX_THICKNESS               (2)
 #define BOX_CHAR_THICKNESS          (0.5)
 #define HC_CHAR_THICKNESS           (4)
-#define CAR_CHAR_THICKNESS          (1.9)
+#define CAR_CHAR_THICKNESS          (2.0)
 #define FPS_CHAR_THICKNESS          (4)
 #define RIGHT_ALIGN_OFFSET          (20)
 
