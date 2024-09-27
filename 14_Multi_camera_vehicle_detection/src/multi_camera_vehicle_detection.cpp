@@ -26,7 +26,7 @@
 /***********************************************************************************************************************
 * File Name    : multi_camera_vehicle_detection.cpp
 * Version      : 1.0.0
-* Description  : DRP-AI Multi Camera Vehicle Detection Application
+* Description  : DRP-AI Multi camera vehicle detection application
 ***********************************************************************************************************************/
 
 /*****************************************
@@ -1344,7 +1344,7 @@ int8_t R_Main_Process()
             }
         }
         stream.str("");
-        stream << "14_Multi_Camera_Vehicle_Detection";
+        stream << "14_Multi_camera_vehicle_detection";
         str = stream.str();
         Size app_name_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_APP_NAME, HC_CHAR_THICKNESS, &baseline);
         putText(output_image, str,Point((APP_NAME_X), (T_TIME_STR_Y + app_name_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -1434,7 +1434,7 @@ int main(int argc, char *argv[])
     int x=6;
     int y=7;
     std::string input_source = argv[1];
-    std::cout << "Starting Multi Camera Vehicle Detection Application" << std::endl;
+    std::cout << "Starting Multi camera vehicle detection application" << std::endl;
 
     InOutDataType input_data_type;
     bool runtime_status = false;

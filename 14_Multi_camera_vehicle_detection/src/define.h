@@ -26,7 +26,7 @@
 /***********************************************************************************************************************
 * File Name    : define.h
 * Version      : 1.0.0
-* Description  : DRP-AI Multi Camera Vehicle Detection Application
+* Description  : DRP-AI Multi camera vehicle detection application
 ***********************************************************************************************************************/
 #ifndef DEFINE_MACRO_H
 #define DEFINE_MACRO_H
@@ -61,7 +61,7 @@
 * Tinyyolov3
 ******************************************/
 /* Model Binary */
-const static std::string model_dir = "Multi_Camera_Vehicle_Detection_tinyyolov3";
+const static std::string model_dir = "Multi_camera_vehicle_detection_tinyyolov3";
 /* Pre-processing Runtime Object */
 const static std::string pre_dir = model_dir + "/preprocess";
 
