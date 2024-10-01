@@ -134,7 +134,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 ```sh
 cd /home/root/tvm
 ```
-2. Run the application. The 2nd argument (4) means the number of cameras.
+2. Run the application. The 2nd argument (2) means the number of cameras.
 
    - Application with USB camera input
     ```sh
@@ -146,18 +146,23 @@ cd /home/root/tvm
     ```
     - Application with MIPI camera input 
     ```sh
-    ./multi_camera_vehicle_detection_app MIPI 4 
+    ./multi_camera_vehicle_detection_app MIPI 2 
     ```
     - Application with MIPI camera input with flip mode
     ```sh
-    ./multi_camera_vehicle_detection_app MIPI 4 FLIP
+    ./multi_camera_vehicle_detection_app MIPI 2 FLIP
     ```
    
 3. Following window shows up on HDMI screen.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
-     height=334px />
+     height=334px />  
+- In the case of using 4 MIPI cameras  
+<img src="./img/app1_run.png" alt="Sample application output"
+margin-right=10px; 
+width=600px;
+height=334px /> 
         
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
