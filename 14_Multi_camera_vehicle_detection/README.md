@@ -158,11 +158,11 @@ cd /home/root/tvm
      margin-right=10px; 
      width=600px;
      height=334px />  
-- In the case of using 4 MIPI cameras  
+    - In the case of using 4 MIPI cameras  
 <img src="./img/app1_run.png" alt="Sample application output"
-margin-right=10px; 
-width=600px;
-height=334px /> 
+     margin-right=10px; 
+     width=600px;
+    height=334px /> 
         
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
