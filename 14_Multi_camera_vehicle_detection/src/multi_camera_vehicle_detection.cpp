@@ -270,7 +270,7 @@ void R_Post_Proc(float* floatarr, int camera_num)
                     center_x = ((float) x + sigmoid(tx)) / (float) num_grid;
                     center_y = ((float) y + sigmoid(ty)) / (float) num_grid;
                     box_w = (float) exp(tw) * anchors[anchor_offset+2*b+0] / (float) MODEL_IN_W;
-                    box_h = (float) exp(th) * anchors[anchor_offset+2*b+1] / (float) MODEL_IN_W;
+                    box_h = (float) exp(th) * anchors[anchor_offset+2*b+1] / (float) MODEL_IN_H;
 
                     /* Adjustment for VGA size */
                     /* correct_yolo/region_boxes */
@@ -431,7 +431,7 @@ void draw_bounding_box(void)
  ******************************************/
 int Object_Detection()
 { 
-    mtx1.lock();
+    
     /*Variable for getting Inference output data*/
     void* output_ptr;
     void* output_ptr1;
@@ -452,6 +452,8 @@ int Object_Detection()
     /*load inference out on drpai_out_buffer*/
     int32_t i = 0;
 
+    int32_t inf_num;
+
     int32_t output_num = 0;
     int32_t output_num1 = 0;
     int32_t output_num2 = 0;
@@ -471,13 +473,12 @@ int Object_Detection()
     uint32_t size_count1 = 0;
     uint32_t size_count2 = 0;
     uint32_t size_count3 = 0;
-
+    
+    mtx1.lock();
     sum_inf_time=0;
     sum_pre_poc_time=0;
     sum_post_proc_time=0;
     sum_total_time=0;
-
-    int32_t inf_num;
 
     for(inf_num=0; inf_num<number_of_cameras; inf_num++)
     {
@@ -872,7 +873,7 @@ uint64_t init_drpai(int drpai_fd)
  * Arguments     : device_type: for USB,  specify "usb".
  *                              for MIPI, specify "CRU".
  * Return value  : 1 if succeeded
- *                -1 otherwise 
+ *                -1 otherwise
  ******************************************/
 int query_device_status(std::string device_type)
 {
@@ -1216,6 +1217,7 @@ void *R_Inf_Thread(void *threadid)
         if (ret != 0)
         {
             std::cerr << "[ERROR] Inference Not working !!! " << std::endl;
+            goto err;
         }
         inference_start.store(0);
     }/*End of Inference Loop*/
@@ -1404,7 +1406,7 @@ int8_t R_Main_Process()
 
         img_processing_start.store(0);
     }/*End of Loop*/
-    free(img_buffer0);
+    goto main_proc_end;
 /*Error Processing*/
 err:
     free(img_buffer0);
@@ -1429,7 +1431,7 @@ int main(int argc, char *argv[])
     int32_t ret = 0;
     int8_t main_proc = 0;
     int32_t sem_create = -1;
-    std::string command;
+    std::string command,white_space;
     int32_t i,status = 0;
     int x=6;
     int y=7;
@@ -1453,7 +1455,7 @@ int main(int argc, char *argv[])
         if(argc ==2)
         {
             cout<<"enter number of cameras as third argument";
-            return -1;
+            goto end_close_drpai;
         }
         else if(argc == 3)
         {                      
@@ -1468,7 +1470,7 @@ int main(int argc, char *argv[])
                 else
                 {
                     cout<<"enter number of cameras as third argument maximum number to enter is 3 and minimum is 1"<<endl;
-                    return -1;
+                    goto end_close_drpai;
                 }
             }
             else
@@ -1482,7 +1484,7 @@ int main(int argc, char *argv[])
                 else
                 {
                     cout<<"enter number of cameras as third argument maximum number to enter is 4 and minimum is 1"<<endl;
-                    return -1;
+                    goto end_close_drpai;
                 }
             }
         }
@@ -1501,7 +1503,7 @@ int main(int argc, char *argv[])
                     else
                     {
                     cout<<"enter number of cameras as third argument and maximum number to enter is 3 and minimum is 1"<<endl;
-                    return -1;
+                    goto end_close_drpai;
                     }
                 }   
                 else
@@ -1514,7 +1516,7 @@ int main(int argc, char *argv[])
                     else
                     {
                     cout<<"enter number of cameras as third argument and maximum number to enter is 4 and minimum is 1"<<endl;
-                    return -1;
+                    goto end_close_drpai;
                     }
                 }         
             }
@@ -1535,7 +1537,7 @@ int main(int argc, char *argv[])
                             else
                             {
                             cout<<"enter number of cameras as third argument and maximum number to enter is 3 and minimum is 1"<<endl;
-                            return -1;
+                            goto end_close_drpai;
                             }
                         }
                         else
@@ -1547,21 +1549,21 @@ int main(int argc, char *argv[])
                             else
                             {
                             cout<<"enter number of cameras as third argument and maximum number to enter is 4 and minimum is 1"<<endl;
-                            return -1;
+                            goto end_close_drpai;
                             }
                         }
                     }
                     else
                     {
                         cout<<"enter fourth argument as FLIP if you want or enter frequency [1,127]"<<endl; 
-                        return -1;
+                        goto end_close_drpai;
                     }
 
                 }
                 else
                 {
                     cout<<"enter integer in range"<<endl;
-                    return -1;
+                    goto end_close_drpai;
                 }
             }
         }
@@ -1576,7 +1578,7 @@ int main(int argc, char *argv[])
                 else
                 {
                     cout<<"enter number of cameras as third argument and maximum number to enter is 3 and minimum is 1"<<endl;
-                    return -1;
+                    goto end_close_drpai;
                 }
             }
             else
@@ -1588,7 +1590,7 @@ int main(int argc, char *argv[])
                 else
                 {
                     cout<<"enter number of cameras as third argument and maximum number to enter is 4 and minimum is 1"<<endl;
-                    return -1;
+                    goto end_close_drpai;
                 }
             }
             if(strcmp(argv[3],"FLIP")==0)
@@ -1598,7 +1600,7 @@ int main(int argc, char *argv[])
             else
             {
                 cout<<"support for FLIP"<<endl;
-                return -1;
+                goto end_close_drpai;
             }
 
             if((atoi(argv[4])<= (pow(2,sizeof(long long int) * 8 -1) -1) ) && ( atoi(argv[4]) >= -(pow(2,sizeof(long long int) * 8 -1))))
@@ -1610,27 +1612,27 @@ int main(int argc, char *argv[])
                 else
                 {
                     cout<<"enter fifth argument to be drp-ai frequency between [1,127] "<<endl;
-                    return -1;
+                    goto end_close_drpai;
                 }
 
             }
             else 
             {
                 cout<<"enter integer in range"<<endl;
-                return -1;
+                goto end_close_drpai;
             } 
         }
         else
         {
             cout<<"wrong number of parameters passed"<<endl;
-            return -1;
+            goto end_close_drpai;
         }
 
     }
     else
     {
         std::cout<<"Support for USB mode or MIPI mode only."<<std::endl;
-        return -1;
+        goto end_close_drpai;
     }
 
     errno = 0;
@@ -1638,7 +1640,7 @@ int main(int argc, char *argv[])
     if (0 > drpai_fd)
     {
         std::cerr << "[ERROR] Failed to open DRP-AI Driver : errno=" << errno << std::endl;
-        return -1;
+        goto end_close_drpai;
     }
 
     /*Initialzie DRP-AI (Get DRP-AI memory address and set DRP-AI frequency)*/
@@ -1646,7 +1648,7 @@ int main(int argc, char *argv[])
     if (drpaimem_addr_start == 0)
     {
         close(drpai_fd);
-        return -1;
+        goto end_close_drpai;
     }
     /*Load pre_dir object to DRP-AI */
     ret = preruntime.Load(pre_dir);
@@ -1663,7 +1665,7 @@ int main(int argc, char *argv[])
     {
         std::cerr << "[ERROR] Failed to load model. " << std::endl;
         close(drpai_fd);
-        return -1;
+        goto end_close_drpai;
     }
 
     /*Get input data */
@@ -1727,7 +1729,7 @@ int main(int argc, char *argv[])
             if(number_of_cameras>device_paths.size())  
             {
             cout<<"check no.of cameras connected and entered no.of cameras"<<endl;
-            return -1;
+            goto end_close_drpai;
             }  
 
             if(status ==1)
@@ -1792,8 +1794,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                cout<<"unable lo device paths"<<endl;
-                return -1;
+                cout<<"unable to get device paths"<<endl;
+                goto end_close_drpai;
             }
         }
         break;
@@ -1804,7 +1806,7 @@ int main(int argc, char *argv[])
             if(number_of_cameras>device_paths.size())  
             {
             cout<<"check no.of cameras connected and entered no.of cameras"<<endl;
-            return -1;
+            goto end_close_drpai;
             }  
         
             if(status ==1)
@@ -1816,10 +1818,20 @@ int main(int argc, char *argv[])
                 
                 for(i=0;i<number_of_cameras;i++)
                 {
-                    command = "v4l2-ctl -d " + std::to_string(i) + " -c framerate=30";
+                    white_space="";
+                    //removal of white space from string 
+                    for (char ch : device_paths[i]) 
+                    {
+                        if (!isspace(ch)) 
+                        {
+                            white_space += ch;
+                        }
+                    }
+
+                    command = "v4l2-ctl -d " + white_space + " -c framerate=30";
                     std::system(command.c_str());
 
-                    command = "v4l2-ctl -d " + std::to_string(i) + " -c white_balance_auto_preset=0";
+                    command = "v4l2-ctl -d " + white_space + " -c white_balance_auto_preset=0";
                     std::system(command.c_str());
 
                     command = "media-ctl -d /dev/media" + std::to_string(i) + " -r";
@@ -1904,7 +1916,7 @@ int main(int argc, char *argv[])
             else
             {
                 cout<<"unable to get device paths"<<endl;
-                return -1;
+                goto end_close_drpai;
             }
             break;
         }
