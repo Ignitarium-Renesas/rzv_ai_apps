@@ -1409,7 +1409,6 @@ int8_t R_Main_Process()
     goto main_proc_end;
 /*Error Processing*/
 err:
-    free(img_buffer0);
     sem_trywait(&terminate_req_sem);
     main_ret = 1;
     goto main_proc_end;
