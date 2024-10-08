@@ -423,13 +423,13 @@ void draw_bounding_box(void)
 }
 
 /*****************************************
- * Function Name : Object Detection
+ * Function Name : Vehicle Detection
  * Description   : Function to perform over all detection
  * Arguments     : -
  * Return value  : 0 if succeeded
  *                 not 0 otherwise
  ******************************************/
-int Object_Detection()
+int Vehicle_Detection()
 { 
     
     /*Variable for getting Inference output data*/
@@ -1213,7 +1213,7 @@ void *R_Inf_Thread(void *threadid)
             usleep(WAIT_TIME);
         }
 
-        int ret = Object_Detection();
+        int ret = Vehicle_Detection();
         if (ret != 0)
         {
             std::cerr << "[ERROR] Inference Not working !!! " << std::endl;
@@ -1441,6 +1441,14 @@ int main(int argc, char *argv[])
     bool runtime_status = false;
     int drpai_fd;
 
+    errno = 0;
+    drpai_fd = open("/dev/drpai0", O_RDWR);
+    if (0 > drpai_fd)
+    {
+        std::cerr << "[ERROR] Failed to open DRP-AI Driver : errno=" << errno << std::endl;
+        goto end_close_drpai;
+    }
+
     unsigned long OCA_list[16];
     /*Disable OpenCV Accelerator due to the use of multithreading */
     for (int i=0; i<16; i++)
@@ -1631,14 +1639,6 @@ int main(int argc, char *argv[])
     else
     {
         std::cout<<"Support for USB mode or MIPI mode only."<<std::endl;
-        goto end_close_drpai;
-    }
-
-    errno = 0;
-    drpai_fd = open("/dev/drpai0", O_RDWR);
-    if (0 > drpai_fd)
-    {
-        std::cerr << "[ERROR] Failed to open DRP-AI Driver : errno=" << errno << std::endl;
         goto end_close_drpai;
     }
 
