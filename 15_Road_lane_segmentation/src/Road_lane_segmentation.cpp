@@ -197,13 +197,7 @@ cv::Mat lane_segmentation(cv::Mat frame)
 
     /* Postprocess time start */
     auto t4 = std::chrono::high_resolution_clock::now();
-    /* Get the number of output.  */
-    auto output_num = runtime.GetNumOutput();
-    if (output_num != 1)
-    {
-        std::cout << "[ERROR] Output size : not 1." << std::endl;
-        abort();
-    }
+   
     /* get output buffer */
     auto output_buffer = runtime.GetOutput(0);
     output_size_unet = std::get<2>(output_buffer);
@@ -219,8 +213,7 @@ cv::Mat lane_segmentation(cv::Mat frame)
             floatarr[n] = float16_to_float32(data_ptr[n]);
         }
     }
-
-
+    
     /* convert float32 format to opencv mat image format */ 
     cv::Mat img_mask(MODEL_IN_H,MODEL_IN_W,CV_32F,floatarr.data());
     /* setting minimum threshold to heatmap */ 

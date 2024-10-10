@@ -61,14 +61,12 @@
 ******************************************/
 /* Model Binary */
 const static std::string model_dir = "unet_onnx";
-/* Pre-processing Runtime Object */
-const static std::string pre_dir = model_dir + "/preprocess";
 
 /* DRP-AI memory offset for model object file*/
 #define DRPAI_MEM_OFFSET            (0)
 
 /* Thresholds */
-#define TH_PROB                     (0.38f)
+#define TH_PROB                     (0.01f)
 
 /*Model input info*/
 #define MODEL_IN_H                  (224)
