@@ -112,14 +112,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 |driver_monitoring_system_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
+    1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v230.so` from [Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)
     ```
     cd ${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/10_Driver_monitoring_system_deploy_tvm-v221.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00/10_Driver_monitoring_system_deploy_tvm-v230.so
     ```
-    2. Rename the `10_Driver_monitoring_system_deploy_tvm-v221.so` to `deploy.so`.
+    2. Rename the `10_Driver_monitoring_system_deploy_tvm-v230.so` to `deploy.so`.
     ```
-    mv 10_Driver_monitoring_system_deploy_tvm-v221.so deploy.so
+    mv 10_Driver_monitoring_system_deploy_tvm-v230.so deploy.so
     ```
 
     3. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3` & `${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_deeppose`
