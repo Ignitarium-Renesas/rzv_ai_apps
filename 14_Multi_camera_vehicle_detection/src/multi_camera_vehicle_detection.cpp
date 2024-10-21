@@ -57,9 +57,9 @@ PreRuntime preruntime;
 
 /*MMNGR buffer for DRP-AI Pre-processing*/
 static dma_buffer *drpai_buf;
-static dma_buffer1 *drpai_buf1;
-static dma_buffer2 *drpai_buf2;
-static dma_buffer3 *drpai_buf3;
+static dma_buffer *drpai_buf1;
+static dma_buffer *drpai_buf2;
+static dma_buffer *drpai_buf3;
 
 /*Global Variables*/
 static float drpai_output_buf[INF_OUT_SIZE];
@@ -100,7 +100,7 @@ static vector<detection> det3;
 
 /*Global frame */
 std::vector<Mat> g_frame;
-
+std::vector<Mat> cap_frame;
 std::vector<Mat> inf_frames=
 {
    cv::Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC3, cv::Scalar(0, 0, 0)),
@@ -993,6 +993,7 @@ void *R_Capture_Thread(void *threadid)
     printf("Capture Thread Starting\n");
 
     cap.resize(number_of_cameras);
+    cap_frame.resize(number_of_cameras);
     g_frame.resize(number_of_cameras);
 
     for(i=0;i<number_of_cameras;i++)
@@ -1023,22 +1024,22 @@ void *R_Capture_Thread(void *threadid)
             {
                 goto capture_end;
             }
+            for(i=0;i<number_of_cameras;i++)
+            {
+            cap[i].read(cap_frame[i]); 
+            if (cap_frame[i].empty())
+            {
+                std::cout << "[INFO] Video ended or corrupted frame from "<< device_paths[i] <<endl;
+                return 0;
+            }
+            g_frame[i]=cap_frame[i].clone();
+            }
             /*Checks if image frame from Capture Thread is ready.*/
             if (capture_start.load())
             {
                 break;
             }
             usleep(WAIT_TIME);
-        }
-
-        for(i=0;i<number_of_cameras;i++)
-        {
-           cap[i].read(g_frame[i]); 
-           if (g_frame[i].empty())
-           {
-            std::cout << "[INFO] Video ended or corrupted frame from "<< device_paths[i] <<endl;
-            return 0;
-           }
         }
         if(flip_mode == 1)
         {
@@ -1693,24 +1694,24 @@ int main(int argc, char *argv[])
         goto end_free_malloc;
     }
 
-    drpai_buf1 = (dma_buffer1*)malloc(sizeof(dma_buffer1));
-    ret = buffer_alloc_dmabuf1(drpai_buf1, IMAGE_WIDTH  * IMAGE_HEIGHT * BGR_CHANNEL);
+    drpai_buf1 = (dma_buffer*)malloc(sizeof(dma_buffer));
+    ret = buffer_alloc_dmabuf(drpai_buf1, IMAGE_WIDTH  * IMAGE_HEIGHT * BGR_CHANNEL);
     if (-1 == ret)
     {
         fprintf(stderr, "[ERROR] Failed to Allocate DMA buffer for the drpai_buf\n");
         goto end_free_malloc;
     }
 
-    drpai_buf2 = (dma_buffer2*)malloc(sizeof(dma_buffer2));
-    ret = buffer_alloc_dmabuf2(drpai_buf2, IMAGE_WIDTH  * IMAGE_HEIGHT * BGR_CHANNEL);
+    drpai_buf2 = (dma_buffer*)malloc(sizeof(dma_buffer));
+    ret = buffer_alloc_dmabuf(drpai_buf2, IMAGE_WIDTH  * IMAGE_HEIGHT * BGR_CHANNEL);
     if (-1 == ret)
     {
         fprintf(stderr, "[ERROR] Failed to Allocate DMA buffer for the drpai_buf\n");
         goto end_free_malloc;
     }
 
-    drpai_buf3 = (dma_buffer3*)malloc(sizeof(dma_buffer3));
-    ret = buffer_alloc_dmabuf3(drpai_buf3, IMAGE_WIDTH  * IMAGE_HEIGHT * BGR_CHANNEL);
+    drpai_buf3 = (dma_buffer*)malloc(sizeof(dma_buffer));
+    ret = buffer_alloc_dmabuf(drpai_buf3, IMAGE_WIDTH  * IMAGE_HEIGHT * BGR_CHANNEL);
     if (-1 == ret)
     {
         fprintf(stderr, "[ERROR] Failed to Allocate DMA buffer for the drpai_buf\n");

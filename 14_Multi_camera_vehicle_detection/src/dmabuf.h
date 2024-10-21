@@ -54,55 +54,10 @@ typedef struct
         void *mem;           
 }dma_buffer;
 
-typedef struct
-{
-        /* The index of the buffer. */
-        uint32_t idx;
-        /* The file descriptor for the DMA buffer. */
-        uint32_t dbuf_fd;
-        /* The size of the buffer in bytes. */
-        uint32_t size;
-        /* The physical address of DMA buffer. */
-        uint32_t phy_addr;
-        /* The pointer to the memory for the buffer. */
-        void *mem;
-}dma_buffer1;
-
-typedef struct
-{
-        /* The index of the buffer. */
-        uint32_t idx;
-        /* The file descriptor for the DMA buffer. */
-        uint32_t dbuf_fd;
-        /* The size of the buffer in bytes. */
-        uint32_t size;
-        /* The physical address of DMA buffer. */
-        uint32_t phy_addr;
-        /* The pointer to the memory for the buffer. */
-        void *mem;
-}dma_buffer2;
-
-typedef struct
-{
-        /* The index of the buffer. */
-        uint32_t idx;
-        /* The file descriptor for the DMA buffer. */
-        uint32_t dbuf_fd;
-        /* The size of the buffer in bytes. */
-        uint32_t size;
-        /* The physical address of DMA buffer. */
-        uint32_t phy_addr;
-        /* The pointer to the memory for the buffer. */
-        void *mem;
-}dma_buffer3;
-
 /*****************************************
 * Functions
 ******************************************/
 int8_t buffer_alloc_dmabuf(dma_buffer *buffer,int buf_size);
-int8_t buffer_alloc_dmabuf1(dma_buffer1 *buffer1,int buf_size);
-int8_t buffer_alloc_dmabuf2(dma_buffer2 *buffer2,int buf_size);
-int8_t buffer_alloc_dmabuf3(dma_buffer3 *buffer3,int buf_size);
 int buffer_flush_dmabuf(uint32_t idx, uint32_t size);
 void buffer_free_dmabuf(dma_buffer *buffer);
 
