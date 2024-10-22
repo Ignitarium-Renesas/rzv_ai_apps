@@ -1032,7 +1032,6 @@ void *R_Capture_Thread(void *threadid)
                 std::cout << "[INFO] Video ended or corrupted frame from "<< device_paths[i] <<endl;
                 return 0;
             }
-            g_frame[i]=cap_frame[i].clone();
             }
             /*Checks if image frame from Capture Thread is ready.*/
             if (capture_start.load())
@@ -1040,6 +1039,10 @@ void *R_Capture_Thread(void *threadid)
                 break;
             }
             usleep(WAIT_TIME);
+        }
+        for(i=0;i<number_of_cameras;i++)
+        {
+            g_frame[i]=cap_frame[i].clone();
         }
         if(flip_mode == 1)
         {
