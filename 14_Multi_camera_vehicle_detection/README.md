@@ -11,6 +11,11 @@ The AI model used for the sample application is [TINYYOLOV3](https://pjreddie.co
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
+ ### Sample Video
+ <a href="https://youtu.be/Ft-BGWEu5bY" target="_blank\">
+  <img src="./img/thumbnail.png" alt="Multi Camera vehicle demo" width="400" />
+</a>
+
 ## Application: Requirements
 
 #### Hardware Requirements
