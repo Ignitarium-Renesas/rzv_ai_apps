@@ -10,7 +10,9 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
 ### Sample video 
-- [Head counting demo](https://youtu.be/h0ddFFAJuQQ)  on YouTube
+-<a href="https://youtu.be/h0ddFFAJuQQ" target="_blank\">
+  <img src="./img/thumbnail.png" alt="Head counting demo" width="400" />
+</a>
 ## Application: Requirements
 
 #### Hardware Requirements

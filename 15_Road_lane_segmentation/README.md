@@ -9,6 +9,11 @@ The AI model used for the sample application is [Unet](https://github.com/qubvel
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
+### Sample Video
+<a href="https://youtu.be/5Vys9i1_nqM" target="_blank\">
+  <img src="./img/thumbnail.png" alt="Road Lane segmentation demo" width="400" />
+</a>
+
 ## Application: Requirements
 
 #### Hardware Requirements
