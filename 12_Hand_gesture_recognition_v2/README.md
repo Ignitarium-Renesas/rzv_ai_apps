@@ -64,7 +64,7 @@ This application 12_Hand_gesture_recognition_v2 detects the following
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 ### Sample video 
-<a href="ttps://youtu.be/bmhasiAWMbQ" target="_blank\">
+<a href="https://youtu.be/bmhasiAWMbQ" target="_blank\">
   <img src="./img/thumbnail.png" alt="Hand gesture recognition demo" width="400" />
 </a>
 
