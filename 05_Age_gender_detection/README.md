@@ -9,10 +9,10 @@ The AI model used for the sample application is [TINYYOLOV2](https://arxiv.org/p
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
  
- ## Sample Video
+ ### Sample Video
 
  <a href="https://youtu.be/ryyOjTx9ttw" target="_blank\">
-  <img src="./img/thumbnail.png" alt="Age Gender demo width="400" />
+  <img src="./img/thumbnail.png" alt="Age Gender demo" width="400" />
 </a>
 
 ## Application: Requirements

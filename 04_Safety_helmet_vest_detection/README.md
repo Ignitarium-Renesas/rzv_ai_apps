@@ -9,7 +9,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
-## Sample Video
+### Sample Video
 
  <a href="https://youtu.be/AoLrw2EwN1Y" target="_blank\">
   <img src="./img/thumbnail.png" alt="Safety helmet vest detection demo" width="400" />
