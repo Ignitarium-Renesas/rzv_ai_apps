@@ -10,7 +10,10 @@ Line crossing object counting is a sample application that demonstrates counting
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 ### Sample video 
-- [Line crossing object counting demo](https://youtu.be/Y_C829DTFE8)  on YouTube
+
+<a href="https://youtu.be/Y_C829DTFE8)" target="_blank\">
+<img src="./img/thumbnail.png" alt="Line crossing object counting demo" width="400" />
+</a>
 
 ## Application: Requirements
 
@@ -96,14 +99,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 |line_crossing_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `02_Line_crossing_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
+    1. Run the commands below to download the `02_Line_crossing_deploy_tvm-v230.so` from [Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)
     ```
     cd ${PROJECT_PATH}/02_Line_crossing_object_counting/exe_v2h/line_crossing_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/02_Line_crossing_deploy_tvm-v221.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00/02_Line_crossing_deploy_tvm-v230.so
     ```
-    2. Rename the `02_Line_crossing_deploy_tvm-v221.so` to `deploy.so`.
+    2. Rename the `02_Line_crossing_deploy_tvm-v230.so` to `deploy.so`.
     ```
-    mv 02_Line_crossing_deploy_tvm-v221.so deploy.so
+    mv 02_Line_crossing_deploy_tvm-v230.so deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)

@@ -64,7 +64,9 @@ This application 12_Hand_gesture_recognition_v2 detects the following
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 ### Sample video 
-- [Hand gesture recognition demo](https://youtu.be/bmhasiAWMbQ)  on YouTube
+<a href="https://youtu.be/bmhasiAWMbQ" target="_blank\">
+  <img src="./img/thumbnail.png" alt="Hand gesture recognition demo" width="400" />
+</a>
 
 ## Application: Requirements
 
@@ -150,14 +152,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 |hand_gesture_recognition_v2_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `12_Hand_gesture_recognition_v2_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
+    1. Run the commands below to download the `12_Hand_gesture_recognition_v2_deploy_tvm-v230.so` from [Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)
     ```
     cd ${PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/12_Hand_gesture_recognition_v2_deploy_tvm-v221.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00/12_Hand_gesture_recognition_v2_deploy_tvm-v230.so
     ```
-    2. Rename the `12_Hand_gesture_recognition_v2_deploy_tvm-v221.so` to `deploy.so`.
+    2. Rename the `12_Hand_gesture_recognition_v2_deploy_tvm-v230.so` to `deploy.so`.
     ```
-    mv 12_Hand_gesture_recognition_v2_deploy_tvm-v221.so deploy.so
+    mv 12_Hand_gesture_recognition_v2_deploy_tvm-v230.so deploy.so
     ```
 
     3. Verify the presence of `deploy.so` file in ${PROJECT_PATH}/12_Hand_gesture_recognition_v2/exe_v2h/hand_yolov3_onnx 

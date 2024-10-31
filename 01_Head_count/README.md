@@ -10,7 +10,9 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
 ### Sample video 
-- [Head counting demo](https://youtu.be/h0ddFFAJuQQ)  on YouTube
+-<a href="https://youtu.be/h0ddFFAJuQQ" target="_blank\">
+  <img src="./img/thumbnail.png" alt="Head counting demo" width="400" />
+</a>
 ## Application: Requirements
 
 #### Hardware Requirements
@@ -95,14 +97,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 |head_count_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `01_Head_count_deploy_tvm-v221.so` from [Release v4.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v4.00)
+    1. Run the commands below to download the `01_Head_count_deploy_tvm-v230.so` from [Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)
     ```
     cd ${PROJECT_PATH}/01_Head_count/exe_v2h/head_count_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v4.00/01_Head_count_deploy_tvm-v221.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00/01_Head_count_deploy_tvm-v230.so
     ```
-    2. Rename the `01_Head_count_deploy_tvm-v221.so` to `deploy.so`.
+    2. Rename the `01_Head_count_deploy_tvm-v230.so` to `deploy.so`.
     ```
-    mv 01_Head_count_deploy_tvm-v221.so deploy.so
+    mv 01_Head_count_deploy_tvm-v230.so deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
