@@ -148,9 +148,9 @@ double sigmoid(double x)
 
 /*****************************************
 * Function Name : yolo_index
-* Description   : Get the index of the bounding box attributes based on the input offset.
-* Arguments     : n = output layer number.
-*                 offs = offset to access the bounding box attributesd.
+* Description   : Get the index of the bounding box attributes based on the input offset
+* Arguments     : n = output layer number
+                  offs = offset to access the bounding box attributes
 *                 channel = channel to access each bounding box attribute.
 * Return value  : index to access the bounding box attribute.
 ******************************************/
@@ -162,10 +162,10 @@ int32_t yolo_index(uint8_t n, int32_t offs, int32_t channel)
 
 /*****************************************
 * Function Name : yolo_offset
-* Description   : Get the offset nuber to access the bounding box attributes
+* Description   : Get the offset number to access the bounding box attributes
 *                 To get the actual value of bounding box attributes, use yolo_index() after this function.
 * Arguments     : n = output layer number [0~2].
-*                 b = Number to indicate which bounding box in the region [0~2]
+                  b = Number to indicate which bounding box in the region [0~4]
 *                 y = Number to indicate which region [0~13]
 *                 x = Number to indicate which region [0~13]
 * Return value  : offset to access the bounding box attributes.
@@ -176,11 +176,11 @@ int32_t yolo_offset(uint8_t n, int32_t b, int32_t y, int32_t x)
     uint32_t prev_layer_num = 0;
     int32_t i = 0;
 
-    for (i = 0 ; i < n; i++)
+    for (i = 0; i < n; i++)
     {
-        prev_layer_num += NUM_BB *(NUM_CLASS + 5)* num_grids[i] * num_grids[i];
+        prev_layer_num += NUM_BB * (NUM_CLASS + 5) * num_grids[i] * num_grids[i];
     }
-    return prev_layer_num + b *(NUM_CLASS + 5)* num * num + y * num + x;
+    return prev_layer_num + b * (NUM_CLASS + 5) * num * num + y * num + x;
 }
 
 static int8_t wait_join(pthread_t *p_join_thread, uint32_t join_time)
@@ -245,71 +245,82 @@ void R_Post_Proc(float* floatarr, int camera_num)
     int32_t pred_class = -1;
     float probability = 0;
     detection d;
-    /* Clear the detected result list */
+    //YOLOX-L
+    int stride = 0;
+    vector<int> strides = {8, 16, 32};
 
-    for (n = 0; n<NUM_INF_OUT_LAYER; n++)
+    for (n = 0; n < NUM_INF_OUT_LAYER; n++)
     {
         num_grid = num_grids[n];
         anchor_offset = 2 * NUM_BB * (NUM_INF_OUT_LAYER - (n + 1));
 
-        for (b = 0;b<NUM_BB;b++)
+        for (b = 0; b < NUM_BB; b++)
         {
+           stride = strides[n];
             for (y = 0;y<num_grid;y++)
             {
                 for (x = 0;x<num_grid;x++)
                 {
                     offs = yolo_offset(n, b, y, x);
-                    tx = floatarr[offs];
-                    ty = floatarr[yolo_index(n, offs, 1)];
-                    tw = floatarr[yolo_index(n, offs, 2)];
-                    th = floatarr[yolo_index(n, offs, 3)];
                     tc = floatarr[yolo_index(n, offs, 4)];
 
-                    /* Compute the bounding box */
-                    /*get_yolo_box/get_region_box in paper implementation*/
-                    center_x = ((float) x + sigmoid(tx)) / (float) num_grid;
-                    center_y = ((float) y + sigmoid(ty)) / (float) num_grid;
-                    box_w = (float) exp(tw) * anchors[anchor_offset+2*b+0] / (float) MODEL_IN_W;
-                    box_h = (float) exp(th) * anchors[anchor_offset+2*b+1] / (float) MODEL_IN_H;
+                    objectness = tc;
 
-                    /* Adjustment for VGA size */
-                    /* correct_yolo/region_boxes */
-                    center_x = (center_x - (MODEL_IN_W - new_w) / 2. / MODEL_IN_W) / ((float) new_w / MODEL_IN_W);
-                    center_y = (center_y - (MODEL_IN_H - new_h) / 2. / MODEL_IN_H) / ((float) new_h / MODEL_IN_H);
-                    box_w *= (float) (MODEL_IN_W / new_w);
-                    box_h *= (float) (MODEL_IN_H / new_h);
-
-                    center_x = round(center_x * DRPAI_IN_WIDTH);
-                    center_y = round(center_y * DRPAI_IN_HEIGHT);
-                    box_w = round(box_w * DRPAI_IN_WIDTH);
-                    box_h = round(box_h * DRPAI_IN_HEIGHT);
-
-                    objectness = sigmoid(tc);
-
-                    Box bb = {center_x, center_y, box_w, box_h};
-                    /* Get the class prediction */
-                    for (i = 0;i < NUM_CLASS;i++)
+                    if (objectness > TH_PROB)
                     {
-                        classes[i] = sigmoid(floatarr[yolo_index(n, offs, 5+i)]);
-                    }
-
-                    max_pred = 0;
-                    pred_class = -1;
-                    for (i = 0; i < NUM_CLASS; i++)
-                    {
-                        if (classes[i] > max_pred)
+                        /* Get the class prediction */
+                        for (i = 0; i < NUM_CLASS; i++)
                         {
-                            pred_class = i;
-                            max_pred = classes[i];
+                            classes[i] = floatarr[yolo_index(n, offs, 5+i)];
                         }
-                    }
 
-                    /* Store the result into the list if the probability is more than the threshold */
-                    probability = max_pred * objectness;
-                    if (probability >= TH_PROB)
-                    {
-                        d = {bb, pred_class, probability};
-                        det_buff.push_back(d);
+                        max_pred = 0;
+                        pred_class = -1;
+                        for (i = 0; i < NUM_CLASS; i++)
+                        {
+                            if (classes[i] > max_pred)
+                            {
+                                pred_class = i;
+                                max_pred = classes[i];
+                            }
+                        }
+
+                        /* Store the result into the list if the probability is more than the threshold */
+                        probability = max_pred * objectness;
+                        if (probability > TH_PROB)
+                        {
+                            tx = floatarr[offs];
+                            ty = floatarr[yolo_index(n, offs, 1)];
+                            tw = floatarr[yolo_index(n, offs, 2)];
+                            th = floatarr[yolo_index(n, offs, 3)];
+
+                            /* Compute the bounding box */
+                            /*get_yolo_box/get_region_box in paper implementation*/
+                            center_x = (tx+ float(x))* stride;
+                            center_y = (ty+ float(y))* stride;
+                            center_x = center_x  / (float) MODEL_IN_W;
+                            center_y = center_y  / (float) MODEL_IN_H;
+                            box_w = exp(tw) * stride;
+                            box_h = exp(th) * stride;
+                            box_w = box_w / (float) MODEL_IN_W;
+                            box_h = box_h / (float) MODEL_IN_H;
+
+                            /* Adjustment for size */
+                            /* correct_yolo/region_boxes */
+                            center_x = (center_x - (MODEL_IN_W - new_w) / 2. / MODEL_IN_W) / ((float) new_w / MODEL_IN_W);
+                            center_y = (center_y - (MODEL_IN_H - new_h) / 2. / MODEL_IN_H) / ((float) new_h / MODEL_IN_H);
+                            box_w *= (float) (MODEL_IN_W / new_w);
+                            box_h *= (float) (MODEL_IN_H / new_h);
+
+                            center_x = round(center_x * DRPAI_IN_WIDTH);
+                            center_y = round(center_y * DRPAI_IN_HEIGHT);
+                            box_w = round(box_w * DRPAI_IN_WIDTH);
+                            box_h = round(box_h * DRPAI_IN_HEIGHT);
+
+                            Box bb = {center_x, center_y, box_w, box_h};
+                            d = {bb, pred_class, probability};
+                            det_buff.push_back(d);
+                        }
                     }
                 }
             }
@@ -366,7 +377,6 @@ void draw_bounding_box(void)
     int32_t cam_num;
     cv::Mat tmp_image;
 
-    uint8_t thickness = BOX_THICKNESS;
     int baseline = 0;
 
     for(cam_num = 0; cam_num < number_of_cameras; cam_num++)
@@ -411,12 +421,12 @@ void draw_bounding_box(void)
             uint8_t g = (color >>  8) & 0x0000FF;
             uint8_t b = color & 0x0000FF;
 
-            cv::rectangle(tmp_image, cv::Point(x_min,y_min), cv::Point(x_max,y_max), cv::Scalar(b, g, r, 0xFF), BOX_LINE_SIZE);
+            cv::rectangle(tmp_image, cv::Point(x_min,y_min), cv::Point(x_max,y_max), cv::Scalar(b, g, r, 0xFF), 2);
 
-            cv::Size size = cv::getTextSize(result_str.c_str(), cv::FONT_ITALIC, BOX_CHAR_THICKNESS, thickness + 2, &baseline);
-            cv::rectangle(tmp_image, cv::Point(x_min-BOX_LINE_SIZE+1, y_min), cv::Point(x_min+size.width,y_min+BOX_HEIGHT_OFFSET), cv::Scalar(b, g, r, 0xFF), cv::FILLED);
+            cv::Size size = cv::getTextSize(result_str.c_str(), cv::FONT_HERSHEY_TRIPLEX,CLASS_NAME_FONT ,CLASS_NAME_THICKNESS, &baseline);
+            cv::rectangle(tmp_image, cv::Point(x_min+2, y_min+2), cv::Point(x_min+2+size.width,y_min+2+size.height+2), cv::Scalar(0,0,0), cv::FILLED);
             /*Color must be in BGR order*/
-            cv::putText(tmp_image, result_str.c_str(), cv::Point(x_min, y_min+BOX_TEXT_HEIGHT_OFFSET), cv::FONT_ITALIC, BOX_CHAR_THICKNESS, cv::Scalar(0x00, 0x00, 0x00, 0xFF), thickness);
+            cv::putText(tmp_image, result_str.c_str(), cv::Point(x_min+2, y_min+2+size.height), cv::FONT_HERSHEY_TRIPLEX, CLASS_NAME_FONT, cv::Scalar(255, 255, 255),CLASS_NAME_THICKNESS);
         }
     }
     return;
@@ -1303,105 +1313,273 @@ int8_t R_Main_Process()
         {
             if(number_of_cameras == 4)
             {
-                img_frames[0].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[1].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[2].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[3].copyTo(output_image(Rect(IMAGE_WIDTH,IMAGE_HEIGHT+HEIGHT_OFFSET , IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[0].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[1].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[2].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[3].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                stream.str("");
+                stream << "Cam 1";
+                str = stream.str();
+                Size cam_name_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size.width -15 ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+cam_name_size.height +15), cv::Scalar(0, 0, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size.width -5), (FIRST_FRAME_Y_COORDINATE +cam_name_size.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 0, 255), 2);
+                stream.str("");
+                stream << "Cam 0";
+                str = stream.str();
+                Size cam_name_size1 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size1.width +15 ,FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +15), cv::Scalar(0, 255, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH +5), (FIRST_FRAME_Y_COORDINATE +cam_name_size1.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH, FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 255, 255), 2);
+                stream.str("");
+                stream << "Cam 3";
+                str = stream.str();
+                Size cam_name_size2 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size2.width -15 ,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+cam_name_size2.height +15), cv::Scalar(0, 128, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size2.width -5), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ 5 + cam_name_size2.height)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+1), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+IMAGE_HEIGHT+1), cv::Scalar(0, 128, 255), 2);
+                stream.str("");
+                stream << "Cam 2";
+                str = stream.str();
+                Size cam_name_size3 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size3.width +15 ,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+cam_name_size3.height +15), cv::Scalar(150, 0, 0), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+5), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ cam_name_size3.height+5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+IMAGE_HEIGHT), cv::Scalar(150, 0, 0), 2);
             } 
             else if(number_of_cameras == 3)
             {
-                img_frames[0].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[1].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[2].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[0].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[1].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[2].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                stream.str("");
+                stream << "Cam 1";
+                str = stream.str();
+                Size cam_name_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size.width -15 ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+cam_name_size.height +15), cv::Scalar(0, 0, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size.width -5), (FIRST_FRAME_Y_COORDINATE +cam_name_size.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 0, 255), 2);
+                stream.str("");
+                stream << "Cam 0";
+                str = stream.str();
+                Size cam_name_size1 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size1.width +15 ,FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +15), cv::Scalar(0, 255, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH +5), (FIRST_FRAME_Y_COORDINATE +cam_name_size1.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH, FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 255, 255), 2);
+                stream.str("");
+                stream << "Cam 2";
+                str = stream.str();
+                Size cam_name_size3 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size3.width +15 ,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+cam_name_size3.height +15), cv::Scalar(150, 0, 0), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+5), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ cam_name_size3.height+5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+IMAGE_HEIGHT), cv::Scalar(150, 0, 0), 2);                                               
             }
             else if(number_of_cameras == 2)
             {
-                img_frames[0].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[1].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[0].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[1].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                stream.str("");
+                stream << "Cam 1";
+                str = stream.str();
+                Size cam_name_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size.width -15 ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+cam_name_size.height +15), cv::Scalar(0, 0, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size.width -5), (FIRST_FRAME_Y_COORDINATE +cam_name_size.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 0, 255), 2);
+                stream.str("");
+                stream << "Cam 0";
+                str = stream.str();
+                Size cam_name_size1 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size1.width +15 ,FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +15), cv::Scalar(0, 255, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH +5), (FIRST_FRAME_Y_COORDINATE +cam_name_size1.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH, FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 255, 255), 2);
             }
             else
             {
-                img_frames[0].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[0].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                stream.str("");
+                stream << "Cam 0";
+                str = stream.str();
+                Size cam_name_size1 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size1.width +15 ,FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +15), cv::Scalar(0, 255, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH +5), (FIRST_FRAME_Y_COORDINATE +cam_name_size1.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH, FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 255, 255), 2);
             }
         }
         else
         {
             if(number_of_cameras == 4)
             {
-                img_frames[0].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[1].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[2].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH,0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[3].copyTo(output_image(Rect(IMAGE_WIDTH,IMAGE_HEIGHT+HEIGHT_OFFSET, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[0].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 255, 255), FRAME_THICKNESS);
+
+                img_frames[1].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE , IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 0, 255), FRAME_THICKNESS);
+
+                img_frames[2].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+1), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+IMAGE_HEIGHT+1), cv::Scalar(150, 0, 0), FRAME_THICKNESS);
+
+                img_frames[3].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT ,IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+IMAGE_HEIGHT), cv::Scalar(0, 128, 255), FRAME_THICKNESS);
+
+                stream.str("");
+                stream << "Cam 0";
+                str = stream.str();
+                Size cam_name_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size.width -15 ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+cam_name_size.height +15), cv::Scalar(0, 255, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size.width -5), (FIRST_FRAME_Y_COORDINATE +cam_name_size.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                
+                stream.str("");
+                stream << "Cam 1";
+                str = stream.str();
+                Size cam_name_size1 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size1.width +15 ,FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +15), cv::Scalar(0, 0, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH +5), (FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255),CAM_NAME_THICKNESS);
+                
+                stream.str("");
+                stream << "Cam 2";
+                str = stream.str();
+                Size cam_name_size2 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size2.width -15 ,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+cam_name_size2.height +15), cv::Scalar(150, 0, 0), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size2.width -5), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+cam_name_size2.height+5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), CAM_NAME_THICKNESS);
+                
+                stream.str("");
+                stream << "Cam 3";
+                str = stream.str();
+                Size cam_name_size3 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size3.width +15 ,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+cam_name_size3.height +15), cv::Scalar(0, 128, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+5), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ cam_name_size3.height+5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                
             } 
             else if(number_of_cameras == 3)
             {
-                img_frames[0].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[1].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[2].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH,0, IMAGE_WIDTH, IMAGE_HEIGHT)));
+               img_frames[0].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 255, 255), FRAME_THICKNESS);
+
+                img_frames[1].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE , IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 0, 255), FRAME_THICKNESS);
+
+                img_frames[2].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+1), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+IMAGE_HEIGHT+1), cv::Scalar(150, 0, 0), FRAME_THICKNESS);
+
+                stream.str("");
+                stream << "Cam 0";
+                str = stream.str();
+                Size cam_name_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size.width -15 ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+cam_name_size.height +15), cv::Scalar(0, 255, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size.width -5), (FIRST_FRAME_Y_COORDINATE +cam_name_size.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                
+                stream.str("");
+                stream << "Cam 1";
+                str = stream.str();
+                Size cam_name_size1 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size1.width +15 ,FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +15), cv::Scalar(0, 0, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH +5), (FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255),CAM_NAME_THICKNESS);
+                
+                stream.str("");
+                stream << "Cam 2";
+                str = stream.str();
+                Size cam_name_size2 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size2.width -15 ,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+cam_name_size2.height +15), cv::Scalar(150, 0, 0), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size2.width -5), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+cam_name_size2.height+5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), CAM_NAME_THICKNESS);
+                                                      
             }
             else if(number_of_cameras == 2)
             {
-                img_frames[0].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
-                img_frames[1].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));              
+                img_frames[0].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 255, 255), FRAME_THICKNESS);
+
+                img_frames[1].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE , IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 0, 255), FRAME_THICKNESS);
+
+                stream.str("");
+                stream << "Cam 0";
+                str = stream.str();
+                Size cam_name_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size.width -15 ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+cam_name_size.height +15), cv::Scalar(0, 255, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size.width -5), (FIRST_FRAME_Y_COORDINATE +cam_name_size.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                
+                stream.str("");
+                stream << "Cam 1";
+                str = stream.str();
+                Size cam_name_size1 = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH+ cam_name_size1.width +15 ,FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +15), cv::Scalar(0, 0, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH+IMAGE_WIDTH +5), (FIRST_FRAME_Y_COORDINATE+cam_name_size1.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(255, 255, 255),CAM_NAME_THICKNESS);
+                                                                  
             }
             else
             {
-                img_frames[0].copyTo(output_image(Rect(DISP_INF_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH-IMAGE_WIDTH, 0, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                img_frames[0].copyTo(output_image(Rect(FIRST_FRAME_X_COORDINATE, FIRST_FRAME_Y_COORDINATE, IMAGE_WIDTH, IMAGE_HEIGHT)));
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE+IMAGE_WIDTH-3,FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT-3), cv::Scalar(0, 255, 255), FRAME_THICKNESS);
+
+                stream.str("");
+                stream << "Cam 0";
+                str = stream.str();
+                Size cam_name_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, CAM_NAME_THICKNESS, &baseline);
+                cv::rectangle(output_image, cv::Point(FIRST_FRAME_X_COORDINATE - cam_name_size.width -15 ,FIRST_FRAME_Y_COORDINATE), cv::Point(FIRST_FRAME_X_COORDINATE,FIRST_FRAME_Y_COORDINATE+cam_name_size.height +15), cv::Scalar(0, 255, 255), cv::FILLED);
+                putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - cam_name_size.width -5), (FIRST_FRAME_Y_COORDINATE +cam_name_size.height +5)), FONT_HERSHEY_TRIPLEX, 
+                                CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), CAM_NAME_THICKNESS);
+                                        
             }
         }
         stream.str("");
-        stream << "14_Multi_camera_vehicle_detection";
+        stream << "Multi camera vehicle detection";
         str = stream.str();
-        Size app_name_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_APP_NAME, HC_CHAR_THICKNESS, &baseline);
-        putText(output_image, str,Point((APP_NAME_X), (T_TIME_STR_Y + app_name_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_APP_NAME, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-        putText(output_image, str,Point((APP_NAME_X), (T_TIME_STR_Y + app_name_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+        Size app_name_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_APP_NAME, APP_NAME_THICKNESS, &baseline);
+        putText(output_image, str,Point((APP_NAME_X), (APP_NAME_Y+ app_name_size.height)), FONT_HERSHEY_TRIPLEX, 
+                        CHAR_SCALE_APP_NAME, Scalar(255, 255, 255), APP_NAME_THICKNESS);
         mtx1.lock();
         stream.str("");
-        stream << "Total Time: " << fixed << setprecision(1) << sum_total_time <<" ms";
+        stream << "Total time: " << fixed << setprecision(1) << sum_total_time <<" ms";
         str = stream.str();
-        Size tot_time_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_LARGE, HC_CHAR_THICKNESS, &baseline);
-        putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-        putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tot_time_size.width - RIGHT_ALIGN_OFFSET), (T_TIME_STR_Y + tot_time_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_LARGE, Scalar(0, 255, 0), HC_CHAR_THICKNESS);
+        Size tot_time_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_LARGE, TIME_THICKNESS, &baseline);
+        putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - tot_time_size.width -LEFT_ALIGN_OFFSET ), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ HALF_IMAGE_HEIGHT+ tot_time_size.height)), FONT_HERSHEY_TRIPLEX, 
+                        CHAR_SCALE_LARGE, Scalar(0, 128, 255), TIME_THICKNESS);
                         
         stream.str("");
-        stream << "Pre-Proc: " << fixed << setprecision(1)<< sum_pre_poc_time<<" ms";
+        stream << "Pre-proc: " << fixed << setprecision(1)<< sum_pre_poc_time<<" ms";
         str = stream.str();
-        Size pre_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-        putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-        putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+        Size pre_proc_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_SMALL, TIME_THICKNESS, &baseline);
+        putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - pre_proc_size.width -LEFT_ALIGN_OFFSET ), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ HALF_IMAGE_HEIGHT+ tot_time_size.height + 40+ pre_proc_size.height)), FONT_HERSHEY_TRIPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), TIME_THICKNESS);
 
         stream.str("");
         stream << "Inference: "<< fixed << setprecision(1) << sum_inf_time<<" ms";
         str = stream.str();
-        Size inf_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-        putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-        putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+        Size inf_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_SMALL, TIME_THICKNESS, &baseline);
+        putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - inf_size.width -LEFT_ALIGN_OFFSET), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ HALF_IMAGE_HEIGHT+ tot_time_size.height + 40 + pre_proc_size.height + 10 + inf_size.height)), FONT_HERSHEY_TRIPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), TIME_THICKNESS);
         
         stream.str("");
-        stream << "Post-Proc: "<< fixed << setprecision(1) << sum_post_proc_time<<" ms";
+        stream << "Post-proc: "<< fixed << setprecision(1) << sum_post_proc_time<<" ms";
         str = stream.str();
-        Size post_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-        putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-        putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
-                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+        Size post_proc_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_SMALL, TIME_THICKNESS, &baseline);
+        putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - post_proc_size.width - LEFT_ALIGN_OFFSET), (FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ HALF_IMAGE_HEIGHT+ tot_time_size.height + 40 + pre_proc_size.height + 10 + inf_size.height+10+post_proc_size.height)), FONT_HERSHEY_TRIPLEX, 
+                        CHAR_SCALE_SMALL, Scalar(255, 255, 255), TIME_THICKNESS);
         mtx1.unlock();
         stream.str("");
-        stream << "Temperature1: "<< fixed <<setprecision(1) << tmp << "C";
+        stream << "Temperature: "<< fixed <<setprecision(1) << tmp << "C";
         str = stream.str();
-        Size temp_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_LARGE, HC_CHAR_THICKNESS, &baseline);
-        putText(output_image, str,Point((DISP_INF_WIDTH - temp_size.width - RIGHT_ALIGN_OFFSET), (960 + temp_size.height)), FONT_HERSHEY_SIMPLEX,
-                    CHAR_SCALE_LARGE, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-        putText(output_image, str,Point((DISP_INF_WIDTH - temp_size.width - RIGHT_ALIGN_OFFSET), (960 + temp_size.height)), FONT_HERSHEY_SIMPLEX,
-                    CHAR_SCALE_LARGE, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
+        Size temp_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_LARGE, TIME_THICKNESS, &baseline);
+        putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - temp_size.width - LEFT_ALIGN_OFFSET), ( FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ HALF_IMAGE_HEIGHT+ tot_time_size.height + 40 + pre_proc_size.height + 10 + inf_size.height+10+post_proc_size.height+40 + temp_size.height)), FONT_HERSHEY_TRIPLEX,
+                    CHAR_SCALE_LARGE, Scalar(255, 255, 255), TIME_THICKNESS);
         cv::Mat bgra_image;
         cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
 
