@@ -1,9 +1,9 @@
 # 14_Multi_camera_vehicle_detection
 
 ## Application: Overview
-This application is used to detect 10 types of vehicles below from camera input.  
+This application is used to detect 9 types of vehicles below from camera input.  
 Also it can be used for these vehicles at 360 angle with multi cameras.
-- Car, policecar, ambulance, bicycle, bus, truck, bike, tractor , auto and fire engine
+- Car, policecar, ambulance, bicycle, bus, truck, bike, auto and fire engine
 
 The AI model used for the sample application is [YOLOX-l](https://github.com/Megvii-BaseDetection/YOLOX)
 
@@ -11,6 +11,10 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
+ ### Sample Video on Youtube
+ <a href="https://youtu.be/Ft-BGWEu5bY" target="_blank\">
+  <img src="./img/thumbnail.png" alt="Multi Camera vehicle demo" width="400" />
+</a>
 
 ## Application: Requirements
 
@@ -106,14 +110,14 @@ For the ease of deployment all the deployables file and folders are provided on 
 
 1. Follow the steps below to deploy the project on the board. 
 
-    1. Run the commands below to download the `14_Multi_camera_vehicle_detection_yoloxl_deploy_tvm-v230.so` from [Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)
+    1. Run the commands below to download the `14_Multi_camera_vehicle_detection_deploy_tvm-v230.so` from [Release v5.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.10)
     ```
     cd ${PROJECT_PATH}/14_Multi_camera_vehicle_detection/exe_v2h/Multi_camera_vehicle_detection_yoloxl/
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00/14_Multi_camera_vehicle_detection_yoloxl_deploy_tvm-v230.so
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.10/14_Multi_camera_vehicle_detection_deploy_tvm-v230.so
     ```
-    2. Rename the `14_Multi_camera_vehicle_detection_yoloxl_deploy_tvm-v230.so` to `deploy.so`.
+    2. Rename the `14_Multi_camera_vehicle_detection_deploy_tvm-v230.so` to `deploy.so`.
     ```
-    mv 14_Multi_camera_vehicle_detection_yoloxl_deploy_tvm-v230.so deploy.so
+    mv 14_Multi_camera_vehicle_detection_deploy_tvm-v230.so deploy.so
     1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/14_Multi_camera_vehicle_detection/exe_v2h/Multi_camera_vehicle_detection_yoloxl`
     
     2. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
