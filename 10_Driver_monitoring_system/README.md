@@ -23,7 +23,7 @@ It is recommended to setup the camera as shown in the image below. This applicat
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
- ### Sample video 
+ ### Sample video on Youtube
 <a href="https://youtu.be/Vrcq8KhxTzs" target="_blank\">
   <img src="./img/thumbnail.png" alt="Driver Monitoring System demo" width="400" />
 </a>
