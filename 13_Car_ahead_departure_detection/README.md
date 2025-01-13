@@ -14,7 +14,7 @@ The AI model used for the sample application is [TINYYOLOV3](https://arxiv.org/p
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
-### Sample Video
+### Sample Video on Youtube
 
  <a href="https://youtu.be/_2Hsvirss1Q" target="_blank\">
   <img src="./img/thumbnail.png" alt="Car ahead demo" width="400" />

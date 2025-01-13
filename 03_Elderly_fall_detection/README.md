@@ -9,7 +9,7 @@ The AI model used for the sample application is [TINYYOLOV2](https://arxiv.org/p
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
-### Sample Video
+### Sample Video on Youtube
 <a href="https://youtu.be/-euUDJJyUf0" target="_blank\">
   <img src="./img/thumbnail.png" alt="Elderly fall detection demo" width="400" />
 </a>

@@ -9,7 +9,7 @@ Line crossing object counting is a sample application that demonstrates counting
 ### Targeted product
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
-### Sample video 
+### Sample video on Youtube
 
 <a href="https://youtu.be/Y_C829DTFE8)" target="_blank\">
 <img src="./img/thumbnail.png" alt="Line crossing object counting demo" width="400" />
