@@ -12,7 +12,7 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
  ### Sample Video on Youtube
- <a href="https://youtu.be/Ft-BGWEu5bY" target="_blank\">
+ <a href="https://youtu.be/6iumtyCQpN4" target="_blank\">
   <img src="./img/thumbnail.png" alt="Multi Camera vehicle demo" width="400" />
 </a>
 
@@ -118,12 +118,11 @@ For the ease of deployment all the deployables file and folders are provided on 
     2. Rename the `14_Multi_camera_vehicle_detection_deploy_tvm-v230.so` to `deploy.so`.
     ```
     mv 14_Multi_camera_vehicle_detection_deploy_tvm-v230.so deploy.so
-    1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/14_Multi_camera_vehicle_detection/exe_v2h/Multi_camera_vehicle_detection_yoloxl`
-    
-    2. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
+    ```
+    3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
         -  `14_Multi_camera_vehicle_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
-    3. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
+    4. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
 
 2. Folder structure in the rootfs (SD Card) would look like:
 ```sh
@@ -184,8 +183,8 @@ cd /home/root/tvm
 ### AI Model
 - YOLOX-L: [Megvii-BaseDetection
 ](https://github.com/Megvii-BaseDetection/YOLOX)  
-- Datasets: *[Car1](https://universe.roboflow.com/hungdk-t8jb0/nhandienxeoto-udgcp), *[Car2](https://universe.roboflow.com/project-fjp7n/car-detection-vwdhg), *[policecar1](https://universe.roboflow.com/fyp-tc-idn2o/police-cars-sumfm), *[policecar2](https://universe.roboflow.com/maryam-mahmood-6hoeq/pol-tslhg), *[ambulance1](https://universe.roboflow.com/ambulance-k0z3x/ambulance-detection-azspv), *[ambulance2](https://universe.roboflow.com/school-87zwx/emegency-vehicle-detection), *[bicycle1](https://universe.roboflow.com/vtc-ywqwf/tt-aio6y), *[bicycle2](https://universe.roboflow.com/north-south-university-faox7/bicycle-bdti6), *[bicycle3](https://cocodataset.org/#download), *[bus1](https://universe.roboflow.com/titu/bus-jm7t3), *[bus2](https://universe.roboflow.com/final-year-project-shhpl/bus-detection-2wlyo), *[bus3](https://universe.roboflow.com/fyp-object-detection-tc8af/sya-bus), *[truck](https://images.cv/dataset/garbage-truck-image-classification-dataset), *[bike1](https://universe.roboflow.com/subham-bhansali-fedah/bike-detection-tzvlj), *[bike2](https://universe.roboflow.com/fyp-object-detection-tc8af/sya-bike), *[fireengine1](https://universe.roboflow.com/grad-project-tjt2u/fire-truck-xumw3) , 
-*[fireengine2](https://universe.roboflow.com/pouria-maleki/firetruck), *[auto1](https://universe.roboflow.com/rutviknirma/smart-traffic-management-system), *[auto2](https://universe.roboflow.com/graduation-project-rtgrc/tuk-tuk-labelling)
+- Datasets: *[Car1](https://universe.roboflow.com/hungdk-t8jb0/nhandienxeoto-udgcp), *[Car2](https://universe.roboflow.com/project-fjp7n/car-detection-vwdhg), *[policecar1](https://universe.roboflow.com/fyp-tc-idn2o/police-cars-sumfm), *[policecar2](https://universe.roboflow.com/maryam-mahmood-6hoeq/pol-tslhg), *[ambulance1](https://universe.roboflow.com/ambulance-k0z3x/ambulance-detection-azspv), *[ambulance2](https://universe.roboflow.com/school-87zwx/emegency-vehicle-detection), *[bicycle1](https://universe.roboflow.com/vtc-ywqwf/tt-aio6y), *[bicycle2](https://universe.roboflow.com/north-south-university-faox7/bicycle-bdti6), *[bicycle3](https://cocodataset.org/#download), *[bus1](https://universe.roboflow.com/titu/bus-jm7t3), *[bus2](https://universe.roboflow.com/final-year-project-shhpl/bus-detection-2wlyo), *[bus3](https://universe.roboflow.com/fyp-object-detection-tc8af/sya-bus), *[truck](https://images.cv/dataset/garbage-truck-image-classification-dataset), *[bike1](https://universe.roboflow.com/subham-bhansali-fedah/bike-detection-tzvlj), *[fireengine1](https://universe.roboflow.com/grad-project-tjt2u/fire-truck-xumw3) , 
+*[fireengine2](https://universe.roboflow.com/pouria-maleki/firetruck), *[fireengine3](https://universe.roboflow.com/hugo-drfu2/-500-pumqz-qhctg/dataset/2) , *[auto1](https://universe.roboflow.com/rutviknirma/smart-traffic-management-system), *[auto2](https://universe.roboflow.com/graduation-project-rtgrc/tuk-tuk-labelling)
   
 Input size:   1x3x320x320 
 
@@ -198,7 +197,7 @@ Output3 size: 1x14x10x10
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately 5ms per 1 camera |
+|RZ/V2H EVK | Approximately 15ms per 1 camera |
  
 ### Processing
  
