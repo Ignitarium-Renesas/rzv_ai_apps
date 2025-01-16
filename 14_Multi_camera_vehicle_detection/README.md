@@ -1,18 +1,18 @@
 # 14_Multi_camera_vehicle_detection
 
 ## Application: Overview
-This application is used to detect 10 types of vehicles below from camera input.  
+This application is used to detect 9 types of vehicles below from camera input.  
 Also it can be used for these vehicles at 360 angle with multi cameras.
-- Car, policecar, ambulance, bicycle, bus, truck, bike, tractor , auto and fire engine
+- Car, policecar, ambulance, bicycle, bus, truck, bike, auto and fire engine
 
-The AI model used for the sample application is [TINYYOLOV3](https://pjreddie.com/darknet/yolo/).
+The AI model used for the sample application is [YOLOX-l](https://github.com/Megvii-BaseDetection/YOLOX)
 
 ### Targeted product
 
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
- ### Sample Video
- <a href="https://youtu.be/Ft-BGWEu5bY" target="_blank\">
+ ### Sample Video on Youtube
+ <a href="https://youtu.be/6iumtyCQpN4" target="_blank\">
   <img src="./img/thumbnail.png" alt="Multi Camera vehicle demo" width="400" />
 </a>
 
@@ -105,16 +105,24 @@ For the ease of deployment all the deployables file and folders are provided on 
 
 |File | Details |
 |:---|:---|
-|Multi_camera_vehicle_detection_tinyyolov3 | Model object files for deployment.|
+|Multi_camera_vehicle_detection_yoloxl | Model object files for deployment.|
 |multi_camera_vehicle_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/14_Multi_camera_vehicle_detection/exe_v2h/Multi_camera_vehicle_detection_tinyyolov3`
-    
-    2. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
+
+    1. Run the commands below to download the `14_Multi_camera_vehicle_detection_deploy_tvm-v230.so` from [Release v5.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.10)
+    ```
+    cd ${PROJECT_PATH}/14_Multi_camera_vehicle_detection/exe_v2h/Multi_camera_vehicle_detection_yoloxl/
+    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.10/14_Multi_camera_vehicle_detection_deploy_tvm-v230.so
+    ```
+    2. Rename the `14_Multi_camera_vehicle_detection_deploy_tvm-v230.so` to `deploy.so`.
+    ```
+    mv 14_Multi_camera_vehicle_detection_deploy_tvm-v230.so deploy.so
+    ```
+    3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
         -  `14_Multi_camera_vehicle_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
-    3. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
+    4. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
 
 2. Folder structure in the rootfs (SD Card) would look like:
 ```sh
@@ -124,7 +132,7 @@ For the ease of deployment all the deployables file and folders are provided on 
 └── home/
     └── root/
         └── tvm/ 
-            ├── Multi_camera_vehicle_detection_tinyyolov3/
+            ├── Multi_camera_vehicle_detection_yoloxl/
             │   ├── preprocess
             │   ├── deploy.json
             │   ├── deploy.params
@@ -173,19 +181,20 @@ cd /home/root/tvm
 
 ## Application: Configuration 
 ### AI Model
-- TINYYOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/)  
-- Datasets: *[Car1](https://universe.roboflow.com/hungdk-t8jb0/nhandienxeoto-udgcp), *[Car2](https://universe.roboflow.com/project-fjp7n/car-detection-vwdhg), *[policecar1](https://universe.roboflow.com/fyp-tc-idn2o/police-cars-sumfm), *[policecar2](https://universe.roboflow.com/maryam-mahmood-6hoeq/pol-tslhg), *[ambulance1](https://universe.roboflow.com/ambulance-k0z3x/ambulance-detection-azspv), *[ambulance2](https://universe.roboflow.com/school-87zwx/emegency-vehicle-detection), *[bicycle1](https://universe.roboflow.com/vtc-ywqwf/tt-aio6y), *[bicycle2](https://universe.roboflow.com/north-south-university-faox7/bicycle-bdti6), *[bicycle3](https://cocodataset.org/#download), *[bus1](https://universe.roboflow.com/titu/bus-jm7t3), *[bus2](https://universe.roboflow.com/final-year-project-shhpl/bus-detection-2wlyo), *[bus3](https://universe.roboflow.com/fyp-object-detection-tc8af/sya-bus), *[truck](https://images.cv/dataset/garbage-truck-image-classification-dataset), *[bike1](https://universe.roboflow.com/subham-bhansali-fedah/bike-detection-tzvlj), *[bike2](https://universe.roboflow.com/fyp-object-detection-tc8af/sya-bike)
-*[tractor](https://images.cv/dataset/tractor-image-classification-dataset), *[fireengine1](https://universe.roboflow.com/grad-project-tjt2u/fire-truck-xumw3) , 
-*[fireengine2](https://universe.roboflow.com/pouria-maleki/firetruck), *[auto1](https://universe.roboflow.com/rutviknirma/smart-traffic-management-system), *[auto2](https://universe.roboflow.com/graduation-project-rtgrc/tuk-tuk-labelling)
+- YOLOX-L: [Megvii-BaseDetection
+](https://github.com/Megvii-BaseDetection/YOLOX)  
+- Datasets: *[Car1](https://universe.roboflow.com/hungdk-t8jb0/nhandienxeoto-udgcp), *[Car2](https://universe.roboflow.com/project-fjp7n/car-detection-vwdhg), *[policecar1](https://universe.roboflow.com/fyp-tc-idn2o/police-cars-sumfm), *[policecar2](https://universe.roboflow.com/maryam-mahmood-6hoeq/pol-tslhg), *[ambulance1](https://universe.roboflow.com/ambulance-k0z3x/ambulance-detection-azspv), *[ambulance2](https://universe.roboflow.com/school-87zwx/emegency-vehicle-detection), *[bicycle1](https://universe.roboflow.com/vtc-ywqwf/tt-aio6y), *[bicycle2](https://universe.roboflow.com/north-south-university-faox7/bicycle-bdti6), *[bicycle3](https://cocodataset.org/#download), *[bus1](https://universe.roboflow.com/titu/bus-jm7t3), *[bus2](https://universe.roboflow.com/final-year-project-shhpl/bus-detection-2wlyo), *[bus3](https://universe.roboflow.com/fyp-object-detection-tc8af/sya-bus), *[truck](https://images.cv/dataset/garbage-truck-image-classification-dataset), *[bike1](https://universe.roboflow.com/subham-bhansali-fedah/bike-detection-tzvlj), *[fireengine1](https://universe.roboflow.com/grad-project-tjt2u/fire-truck-xumw3) , 
+*[fireengine2](https://universe.roboflow.com/pouria-maleki/firetruck), *[fireengine3](https://universe.roboflow.com/hugo-drfu2/-500-pumqz-qhctg/dataset/2) , *[auto1](https://universe.roboflow.com/rutviknirma/smart-traffic-management-system), *[auto2](https://universe.roboflow.com/graduation-project-rtgrc/tuk-tuk-labelling)
   
-Input size: 1x3x416x416  
-Output1 size: 1x45x13x13  
-Output2 size: 1x45x26x26 
+Input size:   1x3x320x320 \
+Output1 size: 1x14x40x40 \
+Output2 size: 1x14x20x20\
+Output3 size: 1x14x10x10
  
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately 5ms per 1 camera |
+|RZ/V2H EVK | Approximately 15ms per 1 camera |
  
 ### Processing
  
