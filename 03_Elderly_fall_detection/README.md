@@ -157,8 +157,8 @@ cd /home/root/tvm
 Input size: 1x3x416x416  
 Output size: 1x13x13x30  
  
-- HRNet: [HRNet](https://github.com/HRNet/HRNet-Human-Pose-Estimation)
-- Dataset: *[MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/)
+- HRNet: [HRNet](https://github.com/PINTO0309/PINTO_model_zoo/tree/main/271_HRNet) 
+- Dataset: *[MPII Human Pose Dataset]( https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/software-and-datasets/mpii-human-pose-dataset/download)
   
 Input size: 1x3x256x256  
 Output size: 1x16x16x64  

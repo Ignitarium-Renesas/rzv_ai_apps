@@ -12,7 +12,7 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
  - RZ/V2H Evaluation Board Kit (RZ/V2H EVK)
 
  ### Sample Video on Youtube
- <a href="https://youtu.be/6iumtyCQpN4" target="_blank\">
+ <a href="https://youtu.be/gsh461URVpY" target="_blank\">
   <img src="./img/thumbnail.png" alt="Multi Camera vehicle demo" width="400" />
 </a>
 
