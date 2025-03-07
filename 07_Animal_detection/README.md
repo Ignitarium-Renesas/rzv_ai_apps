@@ -26,7 +26,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.00** |
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v5.00** | 
 
-### Sample video on Youtube
+### Sample video for RZ/V2H on Youtube
 <a href="https://youtu.be/IS6Nm8H6U9o" target="_blank\">
   <img src="./img/thumbnail.png" alt="Animal detection demo" width="400" />
 </a>

@@ -94,8 +94,8 @@ E.g., for RZ/V2H, use the `rzv2h_ai_sdk_container` as the name of container, cre
     make -j$(nproc)
     ```
 5. The following application file would be genarated in the `${PROJECT_PATH}/02_Line_crossing_object_counting/src/build` directory
-- line_crossing_app
-  >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same source code can be used.
+   - line_crossing_app   
+    >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same source code can be used.
 
 
 ## Application: Deploy Stage
