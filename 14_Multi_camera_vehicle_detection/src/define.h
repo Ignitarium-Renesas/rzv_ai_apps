@@ -54,14 +54,14 @@
 #include <numeric>
 
 /*****************************************
-* Static Variables for Tinyyolov3
+* Static Variables for yolox
 * Following variables need to be changed in order to custormize the AI model
 ******************************************/
 /*****************************************
-* Tinyyolov3
+* yolox
 ******************************************/
 /* Model Binary */
-const static std::string model_dir = "Multi_camera_vehicle_detection_tinyyolov3";
+const static std::string model_dir = "Multi_camera_vehicle_detection_yoloxl";
 /* Pre-processing Runtime Object */
 const static std::string pre_dir = model_dir + "/preprocess";
 
@@ -69,42 +69,31 @@ const static std::string pre_dir = model_dir + "/preprocess";
 #define DRPAI_MEM_OFFSET            (0)
 
 /*****************************************
-* Macro for Tinyyolov3
+* Macro for yolox
 ******************************************/
 /* Number of class to be detected */
-#define NUM_CLASS                   (10)
+#define NUM_CLASS                   (9)
 /* Number for [region] layer num parameter */
-#define NUM_BB                      (3)
+#define NUM_BB                      (1)
 /* Number of output layers. This value MUST match with the length of num_grids[] below */
-#define NUM_INF_OUT_LAYER           (2)
+#define NUM_INF_OUT_LAYER           (3)
 /* Number of grids in the image. The length of this array MUST match with the NUM_INF_OUT_LAYER */
-const static uint8_t num_grids[] = { 13,26 };
+const static uint8_t num_grids[] = { 40,20,10 };
 
 /* Number of DRP-AI output */
 const static uint32_t INF_OUT_SIZE = (NUM_CLASS + 5) * NUM_BB * num_grids[0] * num_grids[0]
-                                   + (NUM_CLASS + 5) * NUM_BB * num_grids[1] * num_grids[1];
+                                   + (NUM_CLASS + 5) * NUM_BB * num_grids[1] * num_grids[1]
+                                   + (NUM_CLASS + 5) * NUM_BB * num_grids[2] * num_grids[2];
 
-/* Anchor box information */
-const static double anchors[] =
-{
-    10, 14,
-    23, 27,
-    37, 58,
-    81, 82,
-    135, 169,
-    344, 319
-};
 
 /* Thresholds */
 #define TH_PROB                     (0.5f)
 #define TH_NMS                      (0.3f)
 /* Size of input image to the model */
-#define MODEL_IN_W                  (416)
-#define MODEL_IN_H                  (416)
+#define MODEL_IN_W                  (320)
+#define MODEL_IN_H                  (320)
 
 /*DRP-AI Input image information*/
-#define DRP_RESIZE_WIDTH            (640)
-#define DRP_RESIZE_HEIGHT           (480)
 #define IMAGE_WIDTH                 (640)
 #define IMAGE_HEIGHT                (480)
 #define DRPAI_IN_WIDTH              (IMAGE_WIDTH)
@@ -113,36 +102,24 @@ const static double anchors[] =
 #define BGR_CHANNEL                 (3)
 #define DISP_OUTPUT_WIDTH           (1920)
 #define DISP_OUTPUT_HEIGHT          (1080)
-#define DISP_INF_WIDTH              (1920)
-#define DISP_INF_HEIGHT             (1080)
-
-#define DISP_RESIZE_WIDTH            (1550)
-#define DISP_RESIZE_HEIGHT           (1080)
 
 /*Image:: Text information to be drawn on image*/
-#define BOX_LINE_SIZE               (3)
-#define BOX_HEIGHT_OFFSET           (20)
-#define BOX_TEXT_HEIGHT_OFFSET      (17)
-#define CLASS_LABEL_HEIGHT          (10)
-#define CLASS_LABEL_WIDTH           (100)
-#define PRE_TIME_STR_Y              (550)
-#define P_TIME_STR_X                (645)
-#define APP_NAME_X                  (0)
-#define P_TIME_STR_Y                (650)
-#define I_TIME_STR_X                (645)
-#define I_TIME_STR_Y                (600)
-#define T_TIME_STR_Y                (500)
-#define CHAR_SCALE_LARGE            (1.6)
-#define CHAR_SCALE_SMALL            (1.2)
-#define CHAR_SCALE_APP_NAME         (1.0)
-#define CHAR_SCALE_XS               (0.5)
-#define BOX_THICKNESS               (2)
-#define BOX_CHAR_THICKNESS          (0.5)
-#define HC_CHAR_THICKNESS           (4)
-#define FPS_CHAR_THICKNESS          (4)
-#define RIGHT_ALIGN_OFFSET          (20)
-#define HEIGHT_OFFSET               (20)
 
+#define CHAR_SCALE_LARGE            (0.8)
+#define CHAR_SCALE_SMALL            (0.7)
+#define CHAR_SCALE_APP_NAME         (1.0)
+#define CLASS_NAME_FONT             (0.5)
+#define CLASS_NAME_THICKNESS        (0.5)
+#define APP_NAME_THICKNESS          (2.1)
+#define TIME_THICKNESS              (1.3)
+#define APP_NAME_X                  (0)
+#define APP_NAME_Y                  (30)
+#define FIRST_FRAME_X_COORDINATE    (320)
+#define FIRST_FRAME_Y_COORDINATE    (80)
+#define CAM_NAME_THICKNESS          (1.9)
+#define FRAME_THICKNESS             (2)
+#define LEFT_ALIGN_OFFSET           (20)
+#define HALF_IMAGE_HEIGHT           (240)
 /*Waiting Time*/
 #define WAIT_TIME                   (1000) /* microseconds */
 #define AI_THREAD_TIMEOUT           (20)  /* seconds */
