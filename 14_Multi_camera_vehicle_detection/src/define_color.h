@@ -23,25 +23,22 @@ const static std::vector<std::string> label_file_map =
     "police car",
     "truck",
     "auto",
-    "bus",
-    "tractor"
+    "bus"
 };
 
 /* box color list */
 const static unsigned int box_color[] =
 {
-    (0xFFFF00u),
-    (0xFF0000u),
-    (0xC0C0C0u),
-    (0xFFA07Au),
-    (0xFF1493u),
-    (0x006400u),
-    (0x00BFFFu),
-    (0xDAA520u),
-    (0xFF00FFu),
-    (0xFFC0CBu)
+    (0x00FF00u),
+    (0x00FF00u),
+    (0x00FF00u),
+    (0x00FF00u),
+    (0x00FF00u),
+    (0x00FF00u),
+    (0x00FF00u),
+    (0x00FF00u),
+    (0x00FF00u)
 };
 
 
 #endif
-
