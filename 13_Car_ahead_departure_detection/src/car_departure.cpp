@@ -40,10 +40,12 @@
 #include <opencv2/opencv.hpp>
 #include "wayland.h"
 #include <numeric>
-
-/*tracker */
-#include "tracker.h"
-#include "utils.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <linux/input.h>
+#include <linux/uinput.h>
+#include "sort.h"
 #include <set>
 
 using namespace std;
@@ -69,8 +71,6 @@ uint64_t drpaimem_addr_start = 0;
 bool runtime_status = false; 
 static vector<detection> det;
 
-std::vector<float> Areas; 
-
 float fps = 0;
 float TOTAL_TIME = 0;
 float INF_TIME= 0;
@@ -78,26 +78,19 @@ float POST_PROC_TIME = 0;
 float PRE_PROC_TIME = 0;
 
 /*Tracker Variables*/
-TRACKER tracker;
-std::vector<cv::Rect> boxes;
 static std::map<int,vector<float>> Area_MAP;
 static std::map<int,float> Avg_Area_MAP;
-
-static std::set<int>DONE_IDS;   /*ids that have moved */
 static std::set<int>MOVE_IDS; 
+static cv::Mat trackerbbox = cv::Mat(0, 6, CV_32F);
+sort::Sort::Ptr mot = std::make_shared<sort::Sort>(1, 3, 0.3f);
 
 int32_t x__min;
 int32_t y__min;
 
-static float ai_time = 0;
-/*Audio selection*/
-int sel_aud;
 
 /*Global frame */
 Mat g_frame;
 VideoCapture cap;
-
-cv::Mat output_image;
 
 /* Map to store input source list */
 std::map<std::string, int> input_source_map ={    
@@ -321,7 +314,7 @@ void R_Post_Proc(float *floatarr)
 
                     /* Store the result into the list if the probability is more than the threshold */
                     probability = max_pred * objectness;
-                    if ((probability > TH_PROB) && ((pred_class == 2)||(pred_class == 5)||(pred_class == 6)))
+                    if ((probability > TH_PROB) && (pred_class == 2))
                     {
                         d = {bb, pred_class, probability};
                         det.push_back(d);
@@ -346,22 +339,11 @@ void R_Post_Proc(float *floatarr)
  ******************************************/
 void draw_bounding_box(void)
 {
-    
-    std::stringstream stream;
-    string str = "";
-    std::string result_str;
     float close_point =-1;
-    int32_t result_cnt =0;
     int selected = -1;
-    boxes.clear();
-    /* Draw bounding box on RGB image. */
     int32_t i = 0;
-    std::vector<string> label_file_map = load_label_file(label_list);
-    if (label_file_map.empty())
-    {
-        fprintf(stderr,"[ERROR] Failed to load label file: %s\n", label_list.c_str());
-        return;
-    }
+    int tracker_id;
+    trackerbbox = cv::Mat(0, 6, CV_32F);
 
     for (i = 0; i < det.size(); i++)
     {
@@ -369,15 +351,8 @@ void draw_bounding_box(void)
         if (det[i].prob == 0)
         {
             continue;
-        }
-                result_cnt++;
-        /* Clear string stream for bounding box labels */
-        stream.str("");
-        /* Draw the bounding box on the image */
-        stream << fixed << setprecision(2) << det[i].prob;
-        result_str = label_file_map[det[i].c] + " " + stream.str();    
-
-       if ((det[i].bbox.x >= 220) && ( det[i].bbox.x <= 400)){
+        } 
+        if ((det[i].bbox.x >= 220) && ( det[i].bbox.x <= 400)){
             if ((det[i].bbox.y+det[i].bbox.h/2) > close_point){
                 close_point = (det[i].bbox.y+det[i].bbox.h/2);
                 selected = i;
@@ -385,72 +360,65 @@ void draw_bounding_box(void)
         }
         
     }
-    if (selected != -1){
-        /* Clear string stream for bounding box labels */
-        result_str = label_file_map[det[selected].c];
-        boxes.push_back({(int)det[selected].bbox.x, (int)det[selected].bbox.y, (int)det[selected].bbox.w, (int)det[selected].bbox.h});
+    if (selected != -1)
+    {
+    cv::Mat bbox = (cv::Mat_<float>(1, 6) << det[selected].bbox.x, det[selected].bbox.y, det[selected].bbox.w, det[selected].bbox.h, det[selected].prob, det[selected].c);
+    cv::vconcat(trackerbbox, bbox, trackerbbox);
     }
 
-    tracker.Run(boxes);
-    const auto tracks = tracker.GetTracks();
-    for (auto &trk : tracks) {
-        const auto &box_trk = trk.second.GetStateAsBbox();
-        std::string ID = std::to_string(trk.first);
-        float x = box_trk.tl().x;
-        float y = box_trk.tl().y;
-        int I_ID = std::atoi(ID.c_str());
-        if (trk.second.coast_cycles_ < kMaxCoastCycles&& trk.second.hit_streak_ >= kMinHits)
+    cv::Mat tracks = mot->update(trackerbbox);
+    
+    for (int i = 0; i < tracks.rows; ++i)
+    {
+        bbox_t dat;
+        tracker_id = int(tracks.at<float>(i, 8));
+        dat.X = tracks.at<float>(i, 0);
+        dat.Y = tracks.at<float>(i, 1);
+        dat.W = tracks.at<float>(i, 2);
+        dat.H = tracks.at<float>(i, 3);
+        float area = dat.W * dat.H;
+        std::vector<float> Areas;
+        /*Takes the area of bounding box for three frames*/
+        while(Area_MAP[tracker_id].size() < 3)
         {
-                
-            float area = box_trk.width * box_trk.width;
-            std::vector<float> Areas;
-            /*Takes the area of bounding box for three frames*/
-            while(Area_MAP[I_ID].size() <= 3){
-                Area_MAP[I_ID].push_back(area);
-            }
-            /*Calculates the average area of bounding box for three frames*/
-            if(Avg_Area_MAP.find(I_ID)==Avg_Area_MAP.end()){
-                float avg_area = std::accumulate( Area_MAP[I_ID].begin(), Area_MAP[I_ID].end(), 0.0)/Area_MAP[I_ID].size();   
-                Avg_Area_MAP.insert({I_ID, avg_area});
-            }
-            while(Areas.size() <= 3){
-                Areas.push_back(area);
-            }
-            /*Current average area*/
-            float avg_areas = std::accumulate(Areas.begin(), Areas.end(), 0.0)/Areas.size(); 
-
-            if (avg_areas <= (0.8*Avg_Area_MAP[I_ID])){
-                MOVE_IDS.insert(I_ID);
-                if (DONE_IDS.find(I_ID) == DONE_IDS.end())
-                {
-                    DONE_IDS.insert(I_ID);
-                }
-            }
-            
-            Areas.erase(Areas.begin());
+            Area_MAP[tracker_id].push_back(area);
+        }
+        /*Calculates the average area of bounding box for three frames*/
+        if(Avg_Area_MAP.find(tracker_id)==Avg_Area_MAP.end())
+        {
+            float avg_area = std::accumulate( Area_MAP[tracker_id].begin(), Area_MAP[tracker_id].end(), 0.0)/Area_MAP[tracker_id].size();   
+            Avg_Area_MAP.insert({tracker_id, avg_area});
+        }
+        while(Areas.size() <3)
+        {
             Areas.push_back(area);
-            int32_t x_min = (int)box_trk.tl().x - round((int)box_trk.width / 2.);
-            int32_t y_min = (int)box_trk.tl().y - round((int)box_trk.height / 2.);
-            int32_t x_max = (int)box_trk.tl().x + round((int)box_trk.width / 2.) - 1;
-            int32_t y_max = (int)box_trk.tl().y + round((int)box_trk.height / 2.) - 1;
+        }
+        /*Current average area*/
+        float avg_areas = std::accumulate(Areas.begin(), Areas.end(), 0.0)/Areas.size(); 
+        if (avg_areas <= (0.8*Avg_Area_MAP[tracker_id]))
+        {
+            MOVE_IDS.insert(tracker_id);
+        }
 
-            /* Check the bounding box is in the image range */
-            x_min = x_min < 1 ? 1 : x_min;
-            x_max = ((DRPAI_IN_WIDTH - 2) < x_max) ? (DRPAI_IN_WIDTH - 2) : x_max;
-            y_min = y_min < 1 ? 1 : y_min;
-            y_max = ((DRPAI_IN_HEIGHT - 2) < y_max) ? (DRPAI_IN_HEIGHT - 2) : y_max;
-            x__min=x_min;
-            y__min=y_min;
-            Point topLeft(x_min, y_min);
-            Point bottomRight(x_max, y_max);
+        int32_t x_min = (int)dat.X - round((int)dat.W / 2.);
+        int32_t y_min = (int)dat.Y - round((int)dat.H / 2.);
+        int32_t x_max = (int)dat.X + round((int)dat.W / 2.) - 1;
+        int32_t y_max = (int)dat.Y + round((int)dat.H / 2.) - 1;
 
-            /* Creating bounding box and class labels */
-            rectangle(g_frame, topLeft, bottomRight, Scalar(0, 255, 0), CAR_CHAR_SCALE_LARGE);
+        /* Check the bounding box is in the image range */
+        x_min = x_min < 1 ? 1 : x_min;
+        x_max = ((DRPAI_IN_WIDTH - 2) < x_max) ? (DRPAI_IN_WIDTH - 2) : x_max;
+        y_min = y_min < 1 ? 1 : y_min;
+        y_max = ((DRPAI_IN_HEIGHT - 2) < y_max) ? (DRPAI_IN_HEIGHT - 2) : y_max;
+        x__min=x_min;
+        y__min=y_min;
+        Point topLeft(x_min, y_min);
+        Point bottomRight(x_max, y_max);
 
-        } 
-        
-    }
-  
+        /* Creating bounding box and class labels */
+        rectangle(g_frame, topLeft, bottomRight, Scalar(0, 255, 0), CAR_CHAR_SCALE_LARGE);
+
+    }    
     return ;
 
 } 
@@ -468,7 +436,7 @@ int Car_Detection()
 
     Size size(MODEL_IN_H, MODEL_IN_W);
 
-/* Preprocess time start */
+    /* Preprocess time start */
     auto t0 = std::chrono::high_resolution_clock::now();
     /*resize the image to the model input size*/
     resize(g_frame, frame1, size);
@@ -956,7 +924,6 @@ int main(int argc, char *argv[])
     int32_t ret = 0;
     int8_t main_proc = 0;
     int32_t sem_create = -1;
-    int val = 0;
     std::string input_source = argv[1];
     std::cout << "Starting Car ahead departure Application" << std::endl;
 
@@ -1032,10 +999,11 @@ int main(int argc, char *argv[])
     }    
 
     std::cout << "[INFO] loaded runtime model :" << model_dir << "\n\n";
-        switch (input_source_map[input_source])
+    switch (input_source_map[input_source])
     {
-/* Input Source : USB*/
-        case 1:{
+        /* Input Source : USB*/
+        case 1:
+        {
             std::cout << "[INFO] USB CAMERA \n";
             media_port = query_device_status("usb");
             gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink";
@@ -1057,12 +1025,12 @@ int main(int argc, char *argv[])
 
             create_thread_ai = pthread_create(&ai_inf_thread, NULL, R_Inf_Thread, NULL);
             if (0 != create_thread_ai)
-                {
+            {
                     sem_trywait(&terminate_req_sem);
                 fprintf(stderr, "[ERROR] Failed to create AI Inference Thread.\n");
                 ret_main = -1;
                 goto end_threads;
-    }
+            }
         }
         break;
 
