@@ -7,12 +7,12 @@ Line crossing object counting is a sample application that demonstrates counting
 
 #### <ins>Working of SORT tracker</ins>
 **<ins>SORT Tracker</ins>** : SORT Tracker is a visual multiple object tracking framework based on rudimentary data association and state estimation techniques. It is designed for online tracking applications where only past and current frames are available and the method produces object identities on the fly.
-- Tracker:[SORT](https://github.com/yasenh/sort-cpp)
+- Tracker:[SORT](https://github.com/yasenh/sort-cpp) (GPLv3)
 
 ### Targeted product
 | Product | Supported AI SDK version |
 | ---- | ---- |
-| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.00** |
+| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v5.00** | 
 
 ### Sample video for RZ/V2H on Youtube
