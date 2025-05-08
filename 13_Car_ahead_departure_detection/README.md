@@ -195,4 +195,4 @@ Please refer to following URL for how to change camera input to MIPI camera.
 [https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi).
 
 ## Note
-This application less than v5.10 inludes source code with GPLv3.0.
+This application less than v5.10 includes source code with GPLv3.0.
