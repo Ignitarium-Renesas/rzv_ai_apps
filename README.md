@@ -18,7 +18,7 @@ The [Head_count](./01_Head_count) application is used to count the human heads p
 <br>
 <br>
 ### 02. Line_crossing_object_counting
-The [Line_crossing_object_counting](./02_Line_crossing_object_counting) is a sample application that demonstrates counting of the objects when they cross a virtual line drawn by the user. Application uses a deep learning based object detector YoloV3 to detect the objects and a SORT based tracker to track the objects.
+The [Line_crossing_object_counting](./02_Line_crossing_object_counting) is a sample application that demonstrates counting of the objects when they cross a virtual line drawn by the user. Application uses a deep learning based object detector YoloV3 to detect and track the objects.
 <br>
 <br>
 ### 03. Elderly_fall_detection
