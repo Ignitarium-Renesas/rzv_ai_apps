@@ -8,7 +8,7 @@ The AI model used for the sample application is [Unet](https://github.com/qubvel
 ### Targeted product
 | Product | Supported AI SDK version |
 | ---- | ---- |
-| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.00** |
+| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v5.00** | 
 
 ### Sample Video for RZ/V2H on Youtube
@@ -163,7 +163,7 @@ Output size: 1x1x224x224
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately 13ms  |
+|RZ/V2H EVK | Approximately 25ms  |
 |RZ/V2N EVK | Approximately 32ms  |
  
 ### Processing

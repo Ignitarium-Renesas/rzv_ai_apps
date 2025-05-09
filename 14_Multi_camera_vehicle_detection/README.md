@@ -10,7 +10,7 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
 ### Targeted product
 | Product | Supported AI SDK version |
 | ---- | ---- |
-| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.00** |
+| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v5.00** | 
 
  ### Sample Video for RZ/V2H on Youtube
