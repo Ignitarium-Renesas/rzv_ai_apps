@@ -53,6 +53,9 @@
 #include <math.h>
 #include <numeric>
 
+
+#define MIPI_CAM_RES "640x480"
+
 /*****************************************
 * Static Variables for yolox
 * Following variables need to be changed in order to custormize the AI model
