@@ -2026,7 +2026,7 @@ int main(int argc, char *argv[])
                             }
                         }
                     }
-                    else
+                    if(number_of_cameras==2)
                     {
                         std::string sw_cmd1 = format("media-ctl -d /dev/media0 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
                         std::string sw_cmd2 = format("media-ctl -d /dev/media0 -V \"'imx462 0-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
@@ -2084,6 +2084,198 @@ int main(int argc, char *argv[])
                     
                     }
 
+                    if(number_of_cameras==3)
+                    {
+                        std::string sw_cmd1 = format("media-ctl -d /dev/media0 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd2 = format("media-ctl -d /dev/media0 -V \"'imx462 0-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd3 = format("media-ctl -d /dev/media0 -V \"'cru-ip-16000000.cru0':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd4 = format("media-ctl -d /dev/media0 -V \"'cru-ip-16000000.cru0':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        const char* commands[9] =
+                        {
+                            "v4l2-ctl -d 0 -c framerate=30",
+                            "v4l2-ctl -d 0 -c white_balance_auto_preset=0",
+                            "media-ctl -d /dev/media0 -r",
+                            "media-ctl -d /dev/media0 -l \"'csi-16000400.csi20':1 -> 'cru-ip-16000000.cru0':0 [1]\"",
+                            "media-ctl -d /dev/media0 -l \"'cru-ip-16000000.cru0':1 -> 'CRU output':0 [1]\"",
+                            sw_cmd1.c_str(),
+                            sw_cmd2.c_str(),
+                            sw_cmd3.c_str(),
+                            sw_cmd4.c_str(),
+                        };
+                        int cmd_count = 9;
+                        for (i = 0; i < cmd_count; i++)
+                        {
+                            ret = system(commands[i]);
+                            if (ret < 0)
+                            {
+                                printf("%s: failed media-ctl commands. index = %d\n", __func__, i);
+                                return -1;
+                            }
+                        }
+
+                        std::string sw_cmd5 = format("media-ctl -d /dev/media1 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd6 = format("media-ctl -d /dev/media1 -V \"'imx462 1-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd7 = format("media-ctl -d /dev/media1 -V \"'cru-ip-16000000.cru0':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd8 = format("media-ctl -d /dev/media1 -V \"'cru-ip-16000000.cru0':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        const char* command[9] =
+                        {
+                            "v4l2-ctl -d 1 -c framerate=30",
+                            "v4l2-ctl -d 1 -c white_balance_auto_preset=0",
+                            "media-ctl -d /dev/media1 -r",
+                            "media-ctl -d /dev/media1 -l \"'csi-16000400.csi20':1 -> 'cru-ip-16000000.cru0':0 [1]\"",
+                            "media-ctl -d /dev/media1 -l \"'cru-ip-16000000.cru0':1 -> 'CRU output':0 [1]\"",
+                            sw_cmd5.c_str(),
+                            sw_cmd6.c_str(),
+                            sw_cmd7.c_str(),
+                            sw_cmd8.c_str(),
+                        };
+                        cmd_count = 9;
+                        for (i = 0; i < cmd_count; i++)
+                        {
+                            ret = system(command[i]);
+                            if (ret < 0)
+                            {
+                                printf("%s: failed media-ctl commands. index = %d\n", __func__, i);
+                                return -1;
+                            }
+                        }
+                        std::string sw_cmd9 = format("media-ctl -d /dev/media2 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd10 = format("media-ctl -d /dev/media2 -V \"'imx462 2-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd11 = format("media-ctl -d /dev/media2 -V \"'cru-ip-16000000.cru0':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd12 = format("media-ctl -d /dev/media2 -V \"'cru-ip-16000000.cru0':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        const char* command_third[9] =
+                        {
+                            "v4l2-ctl -d 2 -c framerate=30",
+                            "v4l2-ctl -d 2 -c white_balance_auto_preset=0",
+                            "media-ctl -d /dev/media2 -r",
+                            "media-ctl -d /dev/media2 -l \"'csi-16000400.csi20':1 -> 'cru-ip-16000000.cru0':0 [1]\"",
+                            "media-ctl -d /dev/media2 -l \"'cru-ip-16000000.cru0':1 -> 'CRU output':0 [1]\"",
+                            sw_cmd9.c_str(),
+                            sw_cmd10.c_str(),
+                            sw_cmd11.c_str(),
+                            sw_cmd12.c_str(),
+                        };
+                        cmd_count = 9;
+                        for (i = 0; i < cmd_count; i++)
+                        {
+                            ret = system(command_third[i]);
+                            if (ret < 0)
+                            {
+                                printf("%s: failed media-ctl commands. index = %d\n", __func__, i);
+                                return -1;
+                            }
+                        }
+                    
+                    }
+                    if(number_of_cameras==4)
+                    {
+                        std::string sw_cmd1 = format("media-ctl -d /dev/media0 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd2 = format("media-ctl -d /dev/media0 -V \"'imx462 0-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd3 = format("media-ctl -d /dev/media0 -V \"'cru-ip-16000000.cru0':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd4 = format("media-ctl -d /dev/media0 -V \"'cru-ip-16000000.cru0':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        const char* commands[9] =
+                        {
+                            "v4l2-ctl -d 0 -c framerate=30",
+                            "v4l2-ctl -d 0 -c white_balance_auto_preset=0",
+                            "media-ctl -d /dev/media0 -r",
+                            "media-ctl -d /dev/media0 -l \"'csi-16000400.csi20':1 -> 'cru-ip-16000000.cru0':0 [1]\"",
+                            "media-ctl -d /dev/media0 -l \"'cru-ip-16000000.cru0':1 -> 'CRU output':0 [1]\"",
+                            sw_cmd1.c_str(),
+                            sw_cmd2.c_str(),
+                            sw_cmd3.c_str(),
+                            sw_cmd4.c_str(),
+                        };
+                        int cmd_count = 9;
+                        for (i = 0; i < cmd_count; i++)
+                        {
+                            ret = system(commands[i]);
+                            if (ret < 0)
+                            {
+                                printf("%s: failed media-ctl commands. index = %d\n", __func__, i);
+                                return -1;
+                            }
+                        }
+
+                        std::string sw_cmd5 = format("media-ctl -d /dev/media1 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd6 = format("media-ctl -d /dev/media1 -V \"'imx462 1-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd7 = format("media-ctl -d /dev/media1 -V \"'cru-ip-16000000.cru0':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd8 = format("media-ctl -d /dev/media1 -V \"'cru-ip-16000000.cru0':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        const char* command[9] =
+                        {
+                            "v4l2-ctl -d 1 -c framerate=30",
+                            "v4l2-ctl -d 1 -c white_balance_auto_preset=0",
+                            "media-ctl -d /dev/media1 -r",
+                            "media-ctl -d /dev/media1 -l \"'csi-16000400.csi20':1 -> 'cru-ip-16000000.cru0':0 [1]\"",
+                            "media-ctl -d /dev/media1 -l \"'cru-ip-16000000.cru0':1 -> 'CRU output':0 [1]\"",
+                            sw_cmd5.c_str(),
+                            sw_cmd6.c_str(),
+                            sw_cmd7.c_str(),
+                            sw_cmd8.c_str(),
+                        };
+                        cmd_count = 9;
+                        for (i = 0; i < cmd_count; i++)
+                        {
+                            ret = system(command[i]);
+                            if (ret < 0)
+                            {
+                                printf("%s: failed media-ctl commands. index = %d\n", __func__, i);
+                                return -1;
+                            }
+                        }
+                        std::string sw_cmd9 = format("media-ctl -d /dev/media2 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd10 = format("media-ctl -d /dev/media2 -V \"'imx462 2-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd11 = format("media-ctl -d /dev/media2 -V \"'cru-ip-16000000.cru0':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd12 = format("media-ctl -d /dev/media2 -V \"'cru-ip-16000000.cru0':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        const char* command_third[9] =
+                        {
+                            "v4l2-ctl -d 2 -c framerate=30",
+                            "v4l2-ctl -d 2 -c white_balance_auto_preset=0",
+                            "media-ctl -d /dev/media2 -r",
+                            "media-ctl -d /dev/media2 -l \"'csi-16000400.csi20':1 -> 'cru-ip-16000000.cru0':0 [1]\"",
+                            "media-ctl -d /dev/media2 -l \"'cru-ip-16000000.cru0':1 -> 'CRU output':0 [1]\"",
+                            sw_cmd9.c_str(),
+                            sw_cmd10.c_str(),
+                            sw_cmd11.c_str(),
+                            sw_cmd12.c_str(),
+                        };
+                        cmd_count = 9;
+                        for (i = 0; i < cmd_count; i++)
+                        {
+                            ret = system(command_third[i]);
+                            if (ret < 0)
+                            {
+                                printf("%s: failed media-ctl commands. index = %d\n", __func__, i);
+                                return -1;
+                            }
+                        }
+                        std::string sw_cmd13 = format("media-ctl -d /dev/media3 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd14 = format("media-ctl -d /dev/media3 -V \"'imx462 2-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd15 = format("media-ctl -d /dev/media3 -V \"'cru-ip-16000000.cru0':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd16 = format("media-ctl -d /dev/media3 -V \"'cru-ip-16000000.cru0':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        const char* command_fourth[9] =
+                        {
+                            "v4l2-ctl -d 3 -c framerate=30",
+                            "v4l2-ctl -d 3 -c white_balance_auto_preset=0",
+                            "media-ctl -d /dev/media3 -r",
+                            "media-ctl -d /dev/media3 -l \"'csi-16000400.csi20':1 -> 'cru-ip-16000000.cru0':0 [1]\"",
+                            "media-ctl -d /dev/media3 -l \"'cru-ip-16000000.cru0':1 -> 'CRU output':0 [1]\"",
+                            sw_cmd13.c_str(),
+                            sw_cmd14.c_str(),
+                            sw_cmd15.c_str(),
+                            sw_cmd16.c_str(),
+                        };
+                        cmd_count = 9;
+                        for (i = 0; i < cmd_count; i++)
+                        {
+                            ret = system(command_fourth[i]);
+                            if (ret < 0)
+                            {
+                                printf("%s: failed media-ctl commands. index = %d\n", __func__, i);
+                                return -1;
+                            }
+                        }
+                    
+                    }
                 #else  // not V2N
                     for(i=0;i<number_of_cameras;i++)
                     {
