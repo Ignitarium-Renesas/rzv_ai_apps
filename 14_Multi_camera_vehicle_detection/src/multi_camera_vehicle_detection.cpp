@@ -2249,7 +2249,7 @@ int main(int argc, char *argv[])
                             }
                         }
                         std::string sw_cmd13 = format("media-ctl -d /dev/media3 -V \"'csi-16000400.csi20':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
-                        std::string sw_cmd14 = format("media-ctl -d /dev/media3 -V \"'imx462 2-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
+                        std::string sw_cmd14 = format("media-ctl -d /dev/media3 -V \"'imx462 3-001f':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
                         std::string sw_cmd15 = format("media-ctl -d /dev/media3 -V \"'cru-ip-16000000.cru0':0 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
                         std::string sw_cmd16 = format("media-ctl -d /dev/media3 -V \"'cru-ip-16000000.cru0':1 [fmt:UYVY8_2X8/%s field:none]\"", MIPI_CAM_RES);
                         const char* command_fourth[9] =
