@@ -123,7 +123,7 @@ Each folder contains following items.
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
     |:---|:---|:---|:---|:---|
     |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00`</span>  |<span style="font-size: small">`11_Head_count_topview_deploy_tvm-v230.so`</span> |[Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)  |
-    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.0`</span>  |<span style="font-size: small">`11_Head_count_topview_deploy_tvm_v2n-v251.so`</span> |[Release v6.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.0)  |
+    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.00`</span>  |<span style="font-size: small">`11_Head_count_topview_deploy_tvm_v2n-v251.so`</span> |[Release v6.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.00)  |
 
     2. Rename the `11_Head_count_topview_deploy_tvm*.so` to `deploy.so`.
     ```
@@ -181,7 +181,7 @@ Each folder contains following items.
     cd /home/weston/tvm
     ```
 2. Run the application with USB camera input.
-   - For RZ/V2L and RZ/V2H
+   - For RZ/V2H
     ```sh
     ./head_count_topview_app USB
     ```
