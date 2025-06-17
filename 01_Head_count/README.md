@@ -9,7 +9,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v5.00** |
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
 
 ### Sample video for RZ/V2H on Youtube
 -<a href="https://youtu.be/h0ddFFAJuQQ" target="_blank\">
@@ -57,10 +57,11 @@ After completion of Getting Started, the user is expected of following condition
 
    | Board| Docker container |
    | ---- | ---- |
-   | RZ/V2H, RZ/V2N EVK | rzv2h_ai_sdk_container |
+   | RZ/V2H EVK | rzv2h_ai_sdk_container |
+   | RZ/V2N EVK | rzv2n_ai_sdk_container |
 
     >**Note 1:** Docker environment is required for building the application.  
-    >**Note 2:** Since RZ/V2N is a brother chip of RZ/V2H, the same environment can be used.  
+<!--    >**Note 2:** Since RZ/V2N is a brother chip of RZ/V2H, the same environment can be used.  -->
 
 #### Application File Generation
 1. On your host machine, download the repository from the GitHub to the desired location. 
@@ -89,42 +90,51 @@ E.g., for RZ/V2H, use the `rzv2h_ai_sdk_container` as the name of container, cre
 5. Build the application by following the commands below.  
     ```sh
     mkdir -p build && cd build
-    cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake -DV2H=ON ..
+    cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake ..
     make -j$(nproc)
     ```
 6. The following application file would be genarated in the `${PROJECT_PATH}/01_Head_count/src/build` directory
    - head_count_app
      
-    >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same source code can be used.
+<!--    >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same source code can be used.  -->
 
 
 ## Application: Deploy Stage
-For the ease of deployment all the deployables file and folders are provided on the [exe_v2h](./exe_v2h) folder.
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.
+For the ease of deployment all the deployables file and folders are provided in following folder.
+|Board | `EXE_DIR` |
+|:---|:---|
+|RZ/V2H EVK|[exe_v2h](./exe_v2h)  |
+|RZ/V2N EVK|[exe_v2n](./exe_v2n)  |
+<!-- >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.  -->
 
+Each folder contains following items.
 |File | Details |
 |:---|:---|
 |head_count_yolov3 | Model object files for deployment.|
 |head_count_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `01_Head_count_deploy_tvm-v230.so` from [Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)
+    1. Run the commands below to download the necessary file.
     ```
-    cd ${PROJECT_PATH}/01_Head_count/exe_v2h/head_count_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00/01_Head_count_deploy_tvm-v230.so
+    cd ${PROJECT_PATH}/01_Head_count/<EXE_DIR>/head_count_yolov3
+    wget <URL>/<SO_FILE>
     ```
-    2. Rename the `01_Head_count_deploy_tvm-v230.so` to `deploy.so`.
+    |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
+    |:---|:---|:---|:---|:---|
+    |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00`</span>  |<span style="font-size: small">`01_Head_count_deploy_tvm-v230.so`</span> |[Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)  |
+    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.0`</span>  |<span style="font-size: small">`01_Head_count_deploy_tvm_v2n-v251.so`</span> |[Release v6.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.0)  |
+
+    2. Rename the `01_Head_count_deploy_tvm*.so` to `deploy.so`.
     ```
-    mv 01_Head_count_deploy_tvm-v230.so deploy.so
+    mv <SO_FILE> deploy.so
     ```
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
-        -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
+        -  All files in <EXE_DIR> directory. (Including `deploy.so` file.)
         -  `01_Head_count` application file if you generated the file according to [Application File Generation](#application-file-generation)
-        >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.
 
-    4. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
-
-2. Folder structure in the rootfs (SD Card) would look like:
+2. Folder structure in the rootfs (SD Card) is shown below.<br>
+   Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
+- For RZ/V2H
 ```sh
 ├── usr/
 │   └── lib64/
@@ -139,20 +149,50 @@ For the ease of deployment all the deployables file and folders are provided on 
             ├── labels.txt
             └── head_count_app
 ```
+   - For RZ/V2N
+```sh
+    ├── usr/
+    │   └── lib/
+    │       └── libtvm_runtime.so
+    │
+    └──  home/
+        └──  weston/
+            └──  tvm/
+            ├── head_count_yolov3/
+            │   ├── deploy.json
+            │   ├── deploy.params
+            │   └── deploy.so
+            ├── labels.txt
+            └── head_count_app
+```
+
 >**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
 
 ## Application: Run Stage
 
 1. On the board terminal, go to the `tvm` directory of the rootfs.
-```sh
-cd /home/root/tvm
-```
-2. Run the application.
-
-   - Application with USB camera input
+   - For RZ/V2H
+    ```sh
+    cd /home/root/tvm
+    ```
+   - For RZ/V2N
+    ```sh
+    cd /home/weston/tvm
+    ```
+2. Run the application with USB camera input.
+   - For RZ/V2H
     ```sh
     ./head_count_app USB
     ```
+   - For RZ/V2N
+    ```sh
+    su
+    ./head_count_app USB
+    exit    # After pressing ENTER key to terminate the application.
+    ```
+>**Note:** For RZ/V2N AI SDK v6.00 and later, you need to switch to the root user with the 'su' command when running an application.<br>
+This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+
 3. Following window shows up on HDMI screen*.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
@@ -162,7 +202,6 @@ cd /home/root/tvm
 
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same execution environment is used, which causes inconsistencies in display contents, i.e., RZ/V2N application log contains "RZ/V2H". This may be solved in the future version.
 ## Application: Configuration 
 ### AI Model
 - YOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/)  
@@ -177,7 +216,7 @@ Output3 size: 1x52x52x18
 |Board | AI inference time|
 |:---|:---|
 |RZ/V2H EVK | Approximately 25ms  |
-|RZ/V2N EVK | Approximately 80ms  |
+|RZ/V2N EVK | Approximately 65ms  | 
  
 ### Processing
  

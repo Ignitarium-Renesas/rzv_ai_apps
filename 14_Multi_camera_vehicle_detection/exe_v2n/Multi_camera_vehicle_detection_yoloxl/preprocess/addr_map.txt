@@ -1,0 +1,12 @@
+data_in 0 e1000
+data e1000 177000
+data_out 258000 12c000
+work 384000 80
+weight 384080 80
+drp_config 384100 117f30
+aimac_param_cmd 49c040 20
+aimac_param_desc 49c080 20
+aimac_cmd 49c0c0 180
+aimac_desc 49c240 60
+drp_param 49c300 f0
+drp_desc 49c400 110

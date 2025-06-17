@@ -9,7 +9,7 @@ The AI model used for the sample application is [Unet](https://github.com/qubvel
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v5.00** | 
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
 
 ### Sample Video for RZ/V2H on Youtube
 <a href="https://youtu.be/5Vys9i1_nqM" target="_blank\">
@@ -55,12 +55,14 @@ After completion of Getting Started, the user is expected of following condition
 - The board setup is done.
 - SD card is prepared.
 - Following docker container is running on the host machine.
+
    | Board| Docker container |
    | ---- | ---- |
-   | RZ/V2H, RZ/V2N EVK | rzv2h_ai_sdk_container |
+   | RZ/V2H EVK | rzv2h_ai_sdk_container |
+   | RZ/V2N EVK | rzv2n_ai_sdk_container |
 
     >**Note 1:** Docker environment is required for building the application.  
-    >**Note 2:** Since RZ/V2N is a brother chip of RZ/V2H, the same environment can be used.  
+<!--    >**Note 2:** Since RZ/V2N is a brother chip of RZ/V2H, the same environment can be used.  -->
 
 #### Application File Generation
 1. On your host machine, download the repository from the GitHub to the desired location. 
@@ -89,32 +91,41 @@ E.g., for RZ/V2H, use the `rzv2h_ai_sdk_container` as the name of container, cre
 5. Build the application by following the commands below.  
     ```sh
     mkdir -p build && cd build
-    cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake -DV2H=ON ..
+    cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake ..
     make -j$(nproc)
     ```
 6. The following application file would be genarated in the `${PROJECT_PATH}/15_Road_lane_segmentation/src/build` directory
    - road_lane_segmentation_app
-   >**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same source code can be used.
+   
+<!--    >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same source code can be used.  -->
+
 
 ## Application: Deploy Stage
-For the ease of deployment all the deployables file and folders are provided on the [exe_v2h](./exe_v2h) folder.
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same execution environment can be used.
+For the ease of deployment all the deployables file and folders are provided in following folder.
+|Board | `EXE_DIR` |
+|:---|:---|
+|RZ/V2H EVK|[exe_v2h](./exe_v2h)  |
+|RZ/V2N EVK|[exe_v2n](./exe_v2n)  |
+<!-- >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.  -->
 
+Each folder contains following items.
 |File | Details |
 |:---|:---|
 |unet_onnx | Model object files for deployment.|
 |road_lane_segmentation_app | application file. |
+  
+1. Follow the steps below to deploy the project on the board.
+   1. For RZ/V2H
+      1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2h/unet_onnx`
+   2. For RZ/V2N
+      1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2n/unet_onnx`
+   3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board:
+      - All files in `<EXE_DIR>` directory (including `deploy.so` file)
+      - `15_Road_lane_segmentation` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
-1. Follow the steps below to deploy the project on the board. 
-    1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2h/unet_onnx`
-    2. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
-        -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
-        -  `15_Road_lane_segmentation` application file if you generated the file according to [Application File Generation](#application-file-generation)
-        >**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same execution environment can be used.
-    3. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
-
-
-2. Folder structure in the rootfs (SD Card) would look like:
+2. Folder structure in the rootfs (SD Card) is shown below.<br>
+   Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
+- For RZ/V2H
 ```sh
 ├── usr/
 │   └── lib64/
@@ -128,29 +139,57 @@ For the ease of deployment all the deployables file and folders are provided on 
             │   └── deploy.so
             └── road_lane_segmentation_app
 ```
+   - For RZ/V2N
+```sh
+    ├── usr/
+    │   └── lib/
+    │       └── libtvm_runtime.so
+    │
+    └──  home/
+        └──  weston/
+            └──  tvm/
+            ├── unet_onnx/
+            │   ├── deploy.json
+            │   ├── deploy.params
+            │   └── deploy.so
+            └── road_lane_segmentation_app
+```
+
 >**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
 
 ## Application: Run Stage
 
 1. On the board terminal, go to the `tvm` directory of the rootfs.
-```sh
-cd /home/root/tvm
-```
-2. Run the application.
-
-   - Application with USB camera input
+   - For RZ/V2H
+    ```sh
+    cd /home/root/tvm
+    ```
+   - For RZ/V2N
+    ```sh
+    cd /home/weston/tvm
+    ```
+2. Run the application with USB camera input.
+   - For RZ/V2H
     ```sh
     ./road_lane_segmentation_app USB
     ```
+   - For RZ/V2N
+    ```sh
+    su
+    ./road_lane_segmentation_app USB
+    exit    # After pressing ENTER key to terminate the application.
+    ```
+>**Note:** For RZ/V2N AI SDK v6.00 and later, you need to switch to the root user with the 'su' command when running an application.<br>
+This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+
 3. Following window shows up on HDMI screen*.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
      height=334px />  
-   *Performance in the screenshot is for RZ/V2H EVK.
-        
+*Performance in the screenshot is for RZ/V2H EVK.
+
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same execution environment is used, which causes inconsistencies in display contents, i.e., RZ/V2N application log contains "RZ/V2H". This may be solved in the future version.
 
 ## Application: Configuration 
 ### AI Model
@@ -164,7 +203,7 @@ Output size: 1x1x224x224
 |Board | AI inference time|
 |:---|:---|
 |RZ/V2H EVK | Approximately 25ms  |
-|RZ/V2N EVK | Approximately 32ms  |
+|RZ/V2N EVK | Approximately 35ms  |
  
 ### Processing
  
