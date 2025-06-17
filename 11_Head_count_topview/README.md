@@ -191,9 +191,6 @@ Each folder contains following items.
     ./head_count_topview_app USB
     exit    # After pressing ENTER key to terminate the application.
     ```
->**Note:** For RZ/V2N AI SDK v6.00 and later, you need to switch to the root user with the 'su' command when running an application.<br>
-This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
-
 3. Following window shows up on HDMI screen*.  
    <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
