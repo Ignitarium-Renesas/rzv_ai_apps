@@ -200,7 +200,6 @@ Each folder contains following items.
         
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same execution environment is used, which causes inconsistencies in display contents, i.e., RZ/V2N application log contains "RZ/V2H". This may be solved in the future version.
 ## Application: Configuration 
 ### AI Model
 - YOLOv3: [Darknet](https://pjreddie.com/darknet/yolo/)  
