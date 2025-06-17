@@ -117,7 +117,7 @@ Each folder contains following items.
 1. Follow the steps below to deploy the project on the board. 
     - For RZ/V2H
     1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2h/unet_onnx`
-    - For RZ/V2H
+    - For RZ/V2N
     2. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2n/unet_onnx`   
     
     3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
@@ -170,7 +170,7 @@ Each folder contains following items.
     cd /home/weston/tvm
     ```
 2. Run the application with USB camera input.
-   - For RZ/V2L and RZ/V2H
+   - For RZ/V2H
     ```sh
     ./road_lane_segmentation_app USB
     ```
