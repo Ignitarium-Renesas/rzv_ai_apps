@@ -141,12 +141,12 @@ Each folder contains following items.
 ```
    - For RZ/V2N
 ```sh
-    ├── usr/
-    │   └── lib/
-    │       └── libtvm_runtime.so
-    └── home/
-        └── weston/
-            └── tvm/
+├── usr/
+│   └── lib/
+│       └── libtvm_runtime.so
+└── home/
+　　└── weston/
+　　　　└── tvm/
             ├── unet_onnx/
             │   ├── deploy.json
             │   ├── deploy.params
