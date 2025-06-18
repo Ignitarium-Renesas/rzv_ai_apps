@@ -165,13 +165,12 @@ Each folder contains following items.
 ```
    - For RZ/V2N
 ```sh
-    ├── usr/
-    │   └── lib/
-    │       └── libtvm_runtime.so
-    │
-    └──  home/
-        └──  weston/
-            └──  tvm/
+├── usr/
+│   └── lib/
+│       └── libtvm_runtime.so
+└── home/
+　　└── weston/
+　　　　└──  tvm/
             ├── Multi_camera_vehicle_detection_yoloxl/
                 ├── preprocess
             │   ├── deploy.json
