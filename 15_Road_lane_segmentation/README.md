@@ -144,10 +144,9 @@ Each folder contains following items.
     ├── usr/
     │   └── lib/
     │       └── libtvm_runtime.so
-    │
-    └──  home/
-        └──  weston/
-            └──  tvm/
+    └── home/
+        └── weston/
+            └── tvm/
             ├── unet_onnx/
             │   ├── deploy.json
             │   ├── deploy.params
