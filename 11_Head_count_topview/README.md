@@ -152,13 +152,12 @@ Each folder contains following items.
 ```
    - For RZ/V2N
 ```sh
-    ├── usr/
-    │   └── lib/
-    │       └── libtvm_runtime.so
-    │
-    └──  home/
-        └──  weston/
-            └──  tvm/
+├── usr/
+│   └── lib/
+│       └── libtvm_runtime.so
+└──  home/
+　　　└── weston/
+　　　　　└──  tvm/
             ├── topview_head_count_yolov3/
             │   ├── deploy.json
             │   ├── deploy.params
