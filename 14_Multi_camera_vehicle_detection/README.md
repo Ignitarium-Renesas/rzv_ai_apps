@@ -172,7 +172,7 @@ Each folder contains following items.
 　　└── weston/
 　　　　└──  tvm/
             ├── Multi_camera_vehicle_detection_yoloxl/
-                ├── preprocess
+            │   ├── preprocess
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
