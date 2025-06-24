@@ -35,7 +35,7 @@ Prepare the following equipments referring to [Getting Started](https://renesas-
 | microSD Card | Must have over 16GB capacity of blank space.<br>Operating Environment: Transcend UHS-I microSD 300S 16GB |
 | Linux PC | Used to build application and setup microSD card.<br>Operating Environment: Ubuntu 20.04 |
 | SD card reader | Used for setting up microSD card. |
-| USB Hub | Used for connecting USB Mouse and USB Keyboard to the board. |
+| USB Hub | Used for connecting USB Mouse and USB Keyboard to the board. <br> Recommended model number : SANWA USB-3H703BK|
 | USB Mouse | Used for HDMI screen control. |
 | USB Keyboard | Used for terminal input. |
 >**Note:**
