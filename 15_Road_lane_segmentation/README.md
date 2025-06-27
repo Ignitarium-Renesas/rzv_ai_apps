@@ -119,7 +119,7 @@ Each folder contains following items.
       1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2h/unet_onnx`
    2. For RZ/V2N
       1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2n/unet_onnx`
-   3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board:
+   3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board:
       - All files in `<EXE_DIR>` directory (including `deploy.so` file)
       - `15_Road_lane_segmentation` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
