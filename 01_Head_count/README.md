@@ -128,7 +128,7 @@ Each folder contains following items.
     ```
     mv <SO_FILE> deploy.so
     ```
-    3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
+    3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in <EXE_DIR> directory. (Including `deploy.so` file.)
         -  `01_Head_count` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
