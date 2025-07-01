@@ -9,7 +9,7 @@ Line crossing object counting is a sample application that demonstrates counting
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.10** |
 
 ### Sample video for RZ/V2H on Youtube
 
@@ -125,13 +125,13 @@ Each folder contains following items.
     |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00`</span>  |<span style="font-size: small">`02_Line_crossing_deploy_tvm-v230.so`</span> |[Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)  |
     |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.00`</span>  |<span style="font-size: small">`02_Line_crossing_deploy_tvm_v2n-v251.so`</span> |[Release v6.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.00)  |
 
-    2. Rename the `01_Head_count_deploy_tvm*.so` to `deploy.so`.
+    2. Rename the `02_Line_crossing_deploy_tvm*.so` to `deploy.so`.
     ```
     mv <SO_FILE> deploy.so
     ```
     3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in <EXE_DIR> directory. (Including `deploy.so` file.)
-        -  `01_Head_count` application file if you generated the file according to [Application File Generation](#application-file-generation)
+        -  `02_Line_crossing_object_counting` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
 2. Folder structure in the rootfs (SD Card) is shown below.<br>
    Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
@@ -212,7 +212,6 @@ This is because when you run an application from a weston-terminal, you are swit
 *Performance in the screenshot is for RZ/V2H EVK.
 
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same execution environment is used, which causes inconsistencies in display contents, i.e., RZ/V2N application log contains "RZ/V2H". This may be solved in the future version.
 
 ## Application: Configuration 
 ### AI Model
@@ -228,7 +227,7 @@ This is because when you run an application from a weston-terminal, you are swit
 |Board | AI inference time|
 |:---|:---|
 |RZ/V2H EVK | Approximately  25ms |
-|RZ/V2N EVK | Approximately  80ms |
+|RZ/V2N EVK | Approximately  65ms |
 
 ### Processing
  
