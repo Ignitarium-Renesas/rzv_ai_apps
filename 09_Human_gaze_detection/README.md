@@ -3,7 +3,7 @@
 ## Application: Overview
 Gaze Detection is a task to predict where a person is looking at. Human gaze is important information for applications such as Driver Monitor Systems to monitor driver's attentiveness. It can also help to analyse viewer's attention data in case of digital signage and retail industry.
 
-The AI model used for the sample application is [TINYYOLOV2](https://arxiv.org/pdf/1910.01271.pdf) ,[ResNet18](https://arxiv.org/pdf/1512.03385.pdf).
+The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1804.02767.pdf), [ResNet18](https://arxiv.org/pdf/1512.03385.pdf).
 
 ### Targeted product
 | Product | Supported AI SDK version |
@@ -111,20 +111,30 @@ For the ease of deployment all the deployables file and folders are provided in 
 Each folder contains following items.
 |File | Details |
 |:---|:---|
-|human_gaze_tinyyolov2| Model object files for deployment.|
+|human_gaze_yolov3| Model object files for deployment.|
 |human_gaze_resnet18| Model object files for deployment.|
 |human_gaze_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board.
-   1. For RZ/V2H
-      1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/09_Human_gaze_detection/exe_v2h/human_gaze_*`
-   2. For RZ/V2N
-      1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/09_Human_gaze_detection/exe_v2n/human_gaze_*`
+    1. Run the commands below to download the necessary file.
+    ```
+    cd ${PROJECT_PATH}/01_Head_count/<EXE_DIR>/head_count_yolov3
+    wget <URL>/<SO_FILE>
+    ```
+    |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
+    |:---|:---|:---|:---|:---|
+    |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00`</span>  |<span style="font-size: small">`09_Human_gaze_detection_deploy_tvm-v230.so`</span> |[Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)  |
+    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.10`</span>  |<span style="font-size: small">`09_Human_gaze_detection_deploy_tvm_v2n-v251.so`</span> |[Release v6.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.10)  |
+
+    2. Rename the `01_Head_count_deploy_tvm*.so` to `deploy.so`.
+    ```
+    mv <SO_FILE> deploy.so
+    ```
    3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board:
       - All files in `<EXE_DIR>` directory (including `deploy.so` file)
       - `09_Human_gaze_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
-2. Folder structure in the rootfs (SD Card) is shown below.<br>
+3. Folder structure in the rootfs (SD Card) is shown below.<br>
    Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
 - For RZ/V2H
 ```sh
@@ -134,7 +144,7 @@ Each folder contains following items.
 └── home/
     └── root/
         └── tvm/ 
-            ├── human_gaze_tinyyolov2/
+            ├── human_gaze_yolov3/
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
@@ -153,7 +163,7 @@ Each folder contains following items.
 └── home/
 　　└── weston/
 　　　　└── tvm/
-            ├── human_gaze_tinyyolov2/
+            ├── human_gaze_yolov3/
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
@@ -204,12 +214,14 @@ This is because when you run an application from a weston-terminal, you are swit
 ## Application: Configuration 
 
 ## AI Model
-- TinyYOLOV2: [Darknet](https://pjreddie.com/darknet/yolo/)  
-- Dataset: *[WIDERFACE](http://shuoyang1213.me/WIDERFACE/)
+- YOLOV3: [Darknet](https://pjreddie.com/darknet/yolo/)  
+- Dataset: *[HollywoodHeads](https://www.di.ens.fr/willow/research/headdetection/)
   
 Input size: 1x3x416x416  
-Output size: 1x13x13x30  
- 
+Output1 size: 1x13x13x18  
+Output2 size: 1x26x26x18  
+Output3 size: 1x52x52x18   
+
 - ResNet-18: [ResNet](https://arxiv.org/pdf/1512.03385.pdf)
 - Dataset: *[ETH-XGaze](https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/research/gaze-based-human-computer-interaction/appearance-based-gaze-estimation-in-the-wild)
   
@@ -219,8 +231,8 @@ Output size: 1x2
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately <br> Tinyyolov2: 5.5ms <br> Resnet-18: 2.3ms|
-|RZ/V2N EVK | Approximately <br> Tinyyolov2: 18ms <br> Resnet-18: 9ms|
+|RZ/V2H EVK | Approximately <br> Yolov3: 5.5ms <br> Resnet-18: 2.3ms|
+|RZ/V2N EVK | Approximately <br> Yolov3: 65ms <br> Resnet-18: 9ms|
 ### Processing
  
 |Processing | Details |
