@@ -40,7 +40,7 @@
 #include <builtin_fp16.h>
 #include <opencv2/opencv.hpp>
 #include "wayland.h"
-
+#include <algorithm>
 
 using namespace std;
 using namespace cv;
@@ -57,7 +57,7 @@ static int32_t drpai_freq;
 
 
 /*Global Variables*/
-static float drpai_output_buf[INF_OUT_SIZE_TINYYOLOV2];
+static float drpai_output_buf[num_inf_out];
 static float drpai_output_buf1[INF_OUT_SIZE_RESNET];
 
 static atomic<uint8_t> hdmi_obj_ready   (0);
@@ -81,12 +81,12 @@ float TOTAL_TIME_GAZE = 0;
 int32_t HEAD_COUNT= 0;
 int fd;
 
-float POST_PROC_TIME_TINYYOLO =0;
+float POST_PROC_TIME_YOLO =0;
 float POST_PROC_TIME_GAZE =0;
-float PRE_PROC_TIME_TINYYOLO =0;
+float PRE_PROC_TIME_YOLO =0;
 float PRE_PROC_TIME_GAZE =0;
 float INF_TIME_GAZE = 0;
-float INF_TIME_TINYYOLO = 0;
+float INF_TIME_YOLO = 0;
 
 /*Cropping parameters*/
 static int16_t cropx1[NUM_MAX_FACE];
@@ -160,64 +160,46 @@ vector<string> load_label_file(string label_file_name)
  ******************************************/
 double sigmoid(double x)
 {
-    return 1.0 / (1.0 + exp(-x));
+    return 1.0/(1.0 + exp(-x));
 }
 
 /*****************************************
-* Function Name : softmax
-* Description   : Helper function for YOLO Post Processing
-* Arguments     : val[] = array to be computed softmax
-* Return value  : -
-******************************************/
-static void softmax(float val[NUM_CLASS])
-{
-    float max_num = -FLT_MAX;
-    float sum = 0;
-    int32_t i;
-    for ( i = 0 ; i<NUM_CLASS ; i++ )
-    {
-        max_num = std::max(max_num, val[i]);
-    }
-
-    for ( i = 0 ; i<NUM_CLASS ; i++ )
-    {
-        val[i]= (float) exp(val[i] - max_num);
-        sum+= val[i];
-    }
-
-    for ( i = 0 ; i<NUM_CLASS ; i++ )
-    {
-        val[i]= val[i]/sum;
-    }
-    return;
-}
-
-
-/*****************************************
-* Function Name : index
+* Function Name : yolo_index
 * Description   : Get the index of the bounding box attributes based on the input offset
-* Arguments     : offs = offset to access the bounding box attributes
+* Arguments     : n = output layer number
+                  offs = offset to access the bounding box attributes
 *                 channel = channel to access each bounding box attribute.
 * Return value  : index to access the bounding box attribute.
 ******************************************/
-static int32_t index(int32_t offs, int32_t channel)
+int32_t yolo_index(uint8_t n, int32_t offs, int32_t channel)
 {
-    return offs + channel * NUM_GRID_X * NUM_GRID_Y;
+    uint8_t num_grid = num_grids[n];
+    return offs + channel * num_grid * num_grid;
 }
-
 /*****************************************
-* Function Name : offset_yolo
+* Function Name : yolo_offset
 * Description   : Get the offset number to access the bounding box attributes
-*                 To get the actual value of bounding box attributes, use index() after this function.
-* Arguments     : b = Number to indicate which bounding box in the region [0~4]
+*                 To get the actual value of bounding box attributes, use yolo_index() after this function.
+* Arguments     : n = output layer number [0~2].
+                  b = Number to indicate which bounding box in the region [0~4]
 *                 y = Number to indicate which region [0~13]
 *                 x = Number to indicate which region [0~13]
 * Return value  : offset to access the bounding box attributes.
-*******************************************/
-static int offset_yolo(int b, int y, int x)
+******************************************/
+int32_t yolo_offset(uint8_t n, int32_t b, int32_t y, int32_t x)
 {
-    return b *(NUM_CLASS + 5)* NUM_GRID_X * NUM_GRID_Y + y * NUM_GRID_X + x;
+    uint8_t num = num_grids[n];
+    uint32_t prev_layer_num = 0;
+    int32_t i = 0;
+
+    for (i = 0 ; i < n; i++)
+    {
+        prev_layer_num += NUM_BB *(NUM_CLASS + 5)* num_grids[i] * num_grids[i];
+    }
+    return prev_layer_num + b *(NUM_CLASS + 5)* num * num + y * num + x;
 }
+
+
 
 static int8_t wait_join(pthread_t *p_join_thread, uint32_t join_time)
 {
@@ -283,19 +265,17 @@ void R_ResNet18_Coord_Convert(uint8_t n_pers)
  * Arguments     : floatarr = drpai output address
  * Return value  : -
  ******************************************/
-void R_Post_Proc(float *floatarr)
+void R_Post_Proc(float* floatarr)
 {
-    /* Following variables are required for correct_region_boxes in Darknet implementation*/
-    /* Note: This implementation refers to the "darknet detector test" */
-    
-    float new_w, new_h;
     int32_t result_cnt =0;
-    int32_t count =0;
+    /* Following variables are required for correct_yolo/region_boxes in Darknet implementation*/
+    /* Note: This implementation refers to the "darknet detector test" */
+    float new_w, new_h;
     float correct_w = 1.;
     float correct_h = 1.;
-    if ((float)(MODEL_IN_W / correct_w) < (float)(MODEL_IN_H / correct_h))
+    if ((float) (MODEL_IN_W / correct_w) < (float) (MODEL_IN_H/correct_h) )
     {
-        new_w = (float)MODEL_IN_W;
+        new_w = (float) MODEL_IN_W;
         new_h = correct_h * MODEL_IN_W / correct_w;
     }
     else
@@ -304,7 +284,8 @@ void R_Post_Proc(float *floatarr)
         new_h = MODEL_IN_H;
     }
 
-int32_t b = 0;
+    int32_t n = 0;
+    int32_t b = 0;
     int32_t y = 0;
     int32_t x = 0;
     int32_t offs = 0;
@@ -319,7 +300,8 @@ int32_t b = 0;
     float box_w = 0;
     float box_h = 0;
     float objectness = 0;
-    Box bb;
+    uint8_t num_grid = 0;
+    uint8_t anchor_offset = 0;
     float classes[NUM_CLASS];
     float max_pred = 0;
     int32_t pred_class = -1;
@@ -328,90 +310,97 @@ int32_t b = 0;
     /* Clear the detected result list */
     det.clear();
 
-    /*Post Processing Start*/
-    for(b = 0; b < NUM_BB; b++)
+    for (n = 0; n<NUM_INF_OUT_LAYER; n++)
     {
-        for(y = 0; y < NUM_GRID_Y; y++)
+        num_grid = num_grids[n];
+        anchor_offset = 2 * NUM_BB * (NUM_INF_OUT_LAYER - (n + 1));
+
+        for (b = 0;b<NUM_BB;b++)
         {
-            for(x = 0; x < NUM_GRID_X; x++)
+            for (y = 0;y<num_grid;y++)
             {
-                offs = offset_yolo(b, y, x);
-                tx = floatarr[offs];
-                ty = floatarr[index(offs, 1)];
-                tw = floatarr[index(offs, 2)];
-                th = floatarr[index(offs, 3)];
-                tc = floatarr[index(offs, 4)];
-
-                /* Compute the bounding box */
-                /*get_region_box*/
-                center_x = ((float) x + sigmoid(tx)) / (float) NUM_GRID_X;
-                center_y = ((float) y + sigmoid(ty)) / (float) NUM_GRID_Y;
-                box_w = (float) exp(tw) * anchors[2*b+0] / (float) NUM_GRID_X;
-                box_h = (float) exp(th) * anchors[2*b+1] / (float) NUM_GRID_Y;
-
-                /* Adjustment for VGA size */
-                /* correct_region_boxes */
-                center_x = (center_x - (MODEL_IN_W - new_w) / 2. / MODEL_IN_W) / ((float) new_w / MODEL_IN_W);
-                center_y = (center_y - (MODEL_IN_H - new_h) / 2. / MODEL_IN_H) / ((float) new_h / MODEL_IN_H);
-                box_w *= (float) (MODEL_IN_W / new_w);
-                box_h *= (float) (MODEL_IN_H / new_h);
-
-                center_x = round(center_x * DRPAI_IN_WIDTH);
-                center_y = round(center_y * DRPAI_IN_HEIGHT);
-                box_w = round(box_w * DRPAI_IN_WIDTH);
-                box_h = round(box_h * DRPAI_IN_HEIGHT);
-
-                objectness = sigmoid(tc);
-
-                bb = {center_x, center_y, box_w, box_h};
-                /* Get the class prediction */
-                for (i = 0; i < NUM_CLASS; i++)
+                for (x = 0;x<num_grid;x++)
                 {
-                    classes[i] = floatarr[index(offs, 5+i)];
-                }
-                softmax(classes);
-                max_pred = 0;
-                pred_class = -1;
-                for (i = 0; i < NUM_CLASS; i++)
-                {
-                    if (classes[i] > max_pred)
+                    offs = yolo_offset(n, b, y, x);
+                    tx = floatarr[offs];
+                    ty = floatarr[yolo_index(n, offs, 1)];
+                    tw = floatarr[yolo_index(n, offs, 2)];
+                    th = floatarr[yolo_index(n, offs, 3)];
+                    tc = floatarr[yolo_index(n, offs, 4)];
+
+                    /* Compute the bounding box */
+                    /*get_yolo_box/get_region_box in paper implementation*/
+                    center_x = ((float) x + sigmoid(tx)) / (float) num_grid;
+                    center_y = ((float) y + sigmoid(ty)) / (float) num_grid;
+                    box_w = (float) exp(tw) * anchors[anchor_offset+2*b+0] / (float) MODEL_IN_W;
+                    box_h = (float) exp(th) * anchors[anchor_offset+2*b+1] / (float) MODEL_IN_W;
+
+                    /* Adjustment for VGA size */
+                    /* correct_yolo/region_boxes */
+                    center_x = (center_x - (MODEL_IN_W - new_w) / 2. / MODEL_IN_W) / ((float) new_w / MODEL_IN_W);
+                    center_y = (center_y - (MODEL_IN_H - new_h) / 2. / MODEL_IN_H) / ((float) new_h / MODEL_IN_H);
+                    box_w *= (float) (MODEL_IN_W / new_w);
+                    box_h *= (float) (MODEL_IN_H / new_h);
+
+                    center_x = round(center_x * DRPAI_IN_WIDTH);
+                    center_y = round(center_y * DRPAI_IN_HEIGHT);
+                    box_w = round(box_w * DRPAI_IN_WIDTH);
+                    box_h = round(box_h * DRPAI_IN_HEIGHT);
+
+                    objectness = sigmoid(tc);
+
+                    Box bb = {center_x, center_y, box_w, box_h};
+                    /* Get the class prediction */
+                    for (i = 0;i < NUM_CLASS;i++)
                     {
-                        pred_class = i;
-                        max_pred = classes[i];
+                        classes[i] = sigmoid(floatarr[yolo_index(n, offs, 5+i)]);
                     }
-                }
 
-                /* Store the result into the list if the probability is more than the threshold */
-                probability = max_pred * objectness;
-                if ((probability > TH_PROB))
-                {
-              
-                    d = {bb, pred_class, probability};
-                    det.push_back(d);
+                    max_pred = 0;
+                    pred_class = -1;
+                    for (i = 0; i < NUM_CLASS; i++)
+                    {
+                        if (classes[i] > max_pred)
+                        {
+                            pred_class = i;
+                            max_pred = classes[i];
+                        }
+                    }
+
+                    /* Store the result into the list if the probability is more than the threshold */
+                    probability = max_pred * objectness;
+                    /*printf("probability : %f", probability);*/
+                    if (probability >= TH_PROB)
+                    {
+                        d = {bb, pred_class, probability};
+                        det.push_back(d);
+                    }
                 }
             }
         }
     }
     /* Non-Maximum Supression filter */
     filter_boxes_nms(det, det.size(), TH_NMS);
+    /*overlapping bbox */
+    det.erase(
+        std::remove_if(det.begin(), det.end(), [](const detection& d) {
+            return d.prob == 0.0f;
+        }),
+        det.end()
+    );
 
     for (i = 0; i < det.size(); i++)
     {
-        /* Skip the overlapped bounding boxes */
-        if (det[i].prob == 0)
+        result_cnt++;
+        if(result_cnt > 2)
         {
-            continue;
-        }
-        else{
-            result_cnt++;
-            if(count > 2)
-            {
-                break;
-            }
+            break;
         }
     }
-    HEAD_COUNT = result_cnt++;
-    return;
+
+    HEAD_COUNT = result_cnt;
+
+    return ;
 }
 
 /*****************************************
@@ -426,43 +415,22 @@ void draw_bounding_box(void)
     stringstream stream;
     string str = "";
     string result_str;
-    int32_t result_cnt =0;
     uint32_t x = HEAD_COUNT_STR_X;
     uint32_t y = HEAD_COUNT_STR_X;
     /* Draw bounding box on RGB image. */
     int32_t i = 0;
     for (i = 0; i < HEAD_COUNT; i++)
     {
-        /* Skip the overlapped bounding boxes */
-        if (det[i].prob == 0)
-        {
-            continue;
-        }
-        result_cnt++;
         /* Clear string stream for bounding box labels */
         stream.str("");
         /* Draw the bounding box on the image */
         stream << fixed << setprecision(2) << det[i].prob;
         result_str = label_file_map[det[i].c] + " " + stream.str();    
         
-        int32_t x2_min = cropx1[i] + BOX_THICKNESS;
-        int32_t y2_min = cropy1[i] + BOX_THICKNESS;
-        int32_t x2_max = cropx2[i] - BOX_THICKNESS;
-        int32_t y2_max = cropy2[i] - BOX_THICKNESS;
-
-        int32_t height = (y2_max - y2_min)*1.6;
-        int32_t width = (x2_max - x2_min)*1.6;
-
-        x2_min = (x2_min + x2_max)/2 - width/2;
-        x2_max = (x2_min + x2_max)/2 + width/2;
-        y2_max = (y2_min + y2_max)/2 + height/2;
-        y2_min = (y2_min + y2_max)/2 - height/2;
-        
-        x2_min = ((DRPAI_IN_WIDTH - 2) < x2_min) ? (DRPAI_IN_WIDTH - 2) : x2_min;
-        x2_max = x2_max < 1 ? 1 : x2_max;
-        y2_min = ((DRPAI_IN_HEIGHT - 2) < y2_min) ? (DRPAI_IN_HEIGHT - 2) : y2_min;
-        y2_max = y2_max < 1 ? 1 : y2_max;
-
+        int32_t x2_min = cropx1[i];
+        int32_t y2_min = cropy1[i];
+        int32_t x2_max = cropx2[i];
+        int32_t y2_max = cropy2[i];
 
         Point topLeft2(x2_min, y2_min);
         Point bottomRight2(x2_max, y2_max);
@@ -493,12 +461,13 @@ void draw_bounding_box(void)
  ******************************************/
 int Gaze_Detection()
 {   
+    int32_t result_cnt =0;
     int wait_key;
      /* Temp frame */
     Mat frame1;
 
     Size size(MODEL_IN_H, MODEL_IN_W);
-    /*Pre process start time for tinyyolo model */
+    /*Pre process start time for yolo model */
     auto t0 = std::chrono::high_resolution_clock::now();
     /*resize the image to the model input size*/
     resize(g_frame, frame1, size);
@@ -525,21 +494,21 @@ int Gaze_Detection()
     Mat frame = frameCHW;
     int ret = 0;
 
-    /* Preprocess time ends for tinyyolo model*/
+    /* Preprocess time ends for yolo model*/
     auto t1 = std::chrono::high_resolution_clock::now();
     
-     /* tinyyolov2 inference*/
+    /* yolov3 inference*/
     /*start inference using drp runtime*/
     runtime.SetInput(0, frame.ptr<float>());
     
-    /* Inference start time for tinyyolo model*/
+    /* Inference start time for yolo model*/
     auto t2 = std::chrono::high_resolution_clock::now();
     runtime.Run(drpai_freq);
-    /* Inference time end for tinyyolo model */
+    /* Inference time end for yolo model */
     auto t3 = std::chrono::high_resolution_clock::now();
     auto inf_duration = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count();
 
-    /* Postprocess time start for tinyyolo model */
+    /* Postprocess time start for yolo model */
     auto t4 = std::chrono::high_resolution_clock::now();
     /*load inference out on drpai_out_buffer*/
     int32_t i = 0;
@@ -594,9 +563,9 @@ int Gaze_Detection()
         return -1;
     }
 
-   /* Do post process to get bounding boxes */
+    /* Do post process to get bounding boxes */
     R_Post_Proc(drpai_output_buf);
-    /*/* Postprocess time end for tinyyolo model*/
+    /*Postprocess time end for yolo model*/
     auto t5 = std::chrono::high_resolution_clock::now();
 
     if (HEAD_COUNT > 0){
@@ -605,9 +574,8 @@ int Gaze_Detection()
        float PRE_PROC_TIME_GAZE_MICRO =0;
        float INF_TIME_GAZE_MICRO = 0;
         
-        for (int i = 0 ; i < HEAD_COUNT; i++)
-        {
-        
+        for (int i = 0; i < HEAD_COUNT; i++)
+        {   
             /* Preprocess time start for gaze model*/
             auto t0_gaze = std::chrono::high_resolution_clock::now();
 
@@ -661,7 +629,7 @@ int Gaze_Detection()
             auto t3_gaze = std::chrono::high_resolution_clock::now();
             auto inf_duration_gaze = std::chrono::duration_cast<std::chrono::microseconds>(t3_gaze - t2_gaze).count();
         
-        /*Postprocess time start for gaze model*/
+            /*Postprocess time start for gaze model*/
             auto t4_gaze = std::chrono::high_resolution_clock::now();
             /*load inference out on drpai_out_buffer*/
             int32_t l = 0;
@@ -740,14 +708,13 @@ int Gaze_Detection()
     auto r_post_proc_time = std::chrono::duration_cast<std::chrono::microseconds>(t5 - t4).count();
     auto pre_proc_time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
 
-    POST_PROC_TIME_TINYYOLO = r_post_proc_time/1000.0;
-    PRE_PROC_TIME_TINYYOLO = pre_proc_time/1000.0;
-    INF_TIME_TINYYOLO = inf_duration/1000.0;
+    POST_PROC_TIME_YOLO = r_post_proc_time/1000.0;
+    PRE_PROC_TIME_YOLO = pre_proc_time/1000.0;
+    INF_TIME_YOLO = inf_duration/1000.0;
 
-    float total_time_tinyyolo = float(POST_PROC_TIME_TINYYOLO) + float(PRE_PROC_TIME_TINYYOLO) + float(INF_TIME_TINYYOLO);
-    TOTAL_TIME = TOTAL_TIME_GAZE + total_time_tinyyolo;
+    float total_time_yolo = float(POST_PROC_TIME_YOLO) + float(PRE_PROC_TIME_YOLO) + float(INF_TIME_YOLO);
+    TOTAL_TIME = TOTAL_TIME_GAZE + total_time_yolo;
 
-    /*Calculating the fps*/
     return 0;
 }
 
@@ -836,16 +803,16 @@ void capture_frame(std::string gstreamer_pipeline )
                         CHAR_SCALE_LARGE, Scalar(0, 255, 0), HC_CHAR_THICKNESS);
 
             stream.str("");
-            stream << "TinyYolov2";
+            stream << "Yolov3";
             str = stream.str();
-            Size tinyyolov2_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
-            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tinyyolov2_size.width - RIGHT_ALIGN_OFFSET), (MODEL_NAME_1_Y + tinyyolov2_size.height)), FONT_HERSHEY_SIMPLEX, 
+            Size yolov3_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - yolov3_size.width - RIGHT_ALIGN_OFFSET), (MODEL_NAME_1_Y + yolov3_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*HC_CHAR_THICKNESS);
-            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - tinyyolov2_size.width - RIGHT_ALIGN_OFFSET), (MODEL_NAME_1_Y + tinyyolov2_size.height)), FONT_HERSHEY_SIMPLEX, 
+            putText(output_image, str,Point((DISP_OUTPUT_WIDTH - yolov3_size.width - RIGHT_ALIGN_OFFSET), (MODEL_NAME_1_Y + yolov3_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
 
             stream.str("");
-            stream << "Pre-Proc: "  << fixed << setprecision(2)<< PRE_PROC_TIME_TINYYOLO<<" ms";
+            stream << "Pre-Proc: "  << fixed << setprecision(2)<< PRE_PROC_TIME_YOLO<<" ms";
             str = stream.str();
             Size pre_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -853,7 +820,7 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - pre_proc_size.width - RIGHT_ALIGN_OFFSET), (PRE_TIME_STR_Y + pre_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Inference: " << fixed << setprecision(2)<< INF_TIME_TINYYOLO<<" ms";
+            stream << "Inference: " << fixed << setprecision(2)<< INF_TIME_YOLO<<" ms";
             str = stream.str();
             Size inf_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
@@ -861,7 +828,7 @@ void capture_frame(std::string gstreamer_pipeline )
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - inf_size.width - RIGHT_ALIGN_OFFSET), (I_TIME_STR_Y + inf_size.height)), FONT_HERSHEY_SIMPLEX, 
                         CHAR_SCALE_SMALL, Scalar(255, 255, 255), HC_CHAR_THICKNESS);
             stream.str("");
-            stream << "Post-Proc: " << fixed << setprecision(2) << POST_PROC_TIME_TINYYOLO << " ms";
+            stream << "Post-Proc: " << fixed << setprecision(2) << POST_PROC_TIME_YOLO << " ms";
             str = stream.str();
             Size post_proc_size = getTextSize(str, FONT_HERSHEY_SIMPLEX,CHAR_SCALE_SMALL, HC_CHAR_THICKNESS, &baseline);
             putText(output_image, str,Point((DISP_OUTPUT_WIDTH - post_proc_size.width - RIGHT_ALIGN_OFFSET), (P_TIME_STR_Y + post_proc_size.height)), FONT_HERSHEY_SIMPLEX, 
