@@ -133,7 +133,7 @@ Each folder contains following items.
     ```
    3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board:
       - All files in `<EXE_DIR>` directory (including `deploy.so` file)
-      - `09_Human_gaze_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
+      - `05_Age_gender_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
 3. Folder structure in the rootfs (SD Card) is shown below.<br>
    Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
