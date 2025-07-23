@@ -102,7 +102,7 @@ const static std::string label_list = "labels.txt";
 static std::vector<std::string> label_file_map = {};
 
 /* DRP-AI memory offset for model object file*/
-#define DRPAI_MEM_OFFSET            (0x9000000)
+#define DRPAI_MEM_OFFSET            (0x7000000)
 #define DRPAI_MEM_OFFSET1           (0x0000000)
 
 /*****************************************
