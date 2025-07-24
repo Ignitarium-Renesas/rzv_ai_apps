@@ -381,7 +381,7 @@ void R_Post_Proc(float* floatarr)
     for (i = 0; i < det.size(); i++)
     {
         result_cnt++;
-        if(result_cnt > 6)
+        if(result_cnt > (NUM_MAX_FACE -1))
         {
             break;
         }
