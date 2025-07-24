@@ -30,6 +30,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 <a href="https://youtu.be/IS6Nm8H6U9o" target="_blank\">
   <img src="./img/thumbnail.png" alt="Animal detection demo" width="400" />
 </a>
+
 ## Application: Requirements
 
 #### Hardware Requirements
@@ -131,13 +132,13 @@ Each folder contains following items.
 1. Follow the steps below to deploy the project on the board. 
     1. Run the commands below to download the necessary file.
     ```
-    cd ${PROJECT_PATH}/01_Head_count/<EXE_DIR>/head_count_yolov3
+    cd ${PROJECT_PATH}/07_Animal_detection/<EXE_DIR>/animal_yolov3_onnx
     wget <URL>/<SO_FILE>
     ```
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
     |:---|:---|:---|:---|:---|
     |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00`</span>  |<span style="font-size: small">`07_Animal_detection_deploy_tvm-v230.so`</span> |[Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)  |
-    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.10`</span>  |<span style="font-size: small">`07_Animal_detection_deploy_tvm_v2n-v251.so`</span> |[Release v6.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.10)  |
+    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.10`</span>  |<span style="font-size: small">`07_Animal_detection_deploy_tvm_v2n-v251.so`</span> |[Release v6.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.10)  |
 
     2. Rename the `07_Animal_detection_deploy_tvm*.so` to `deploy.so`.
     ```
