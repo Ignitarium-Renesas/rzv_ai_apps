@@ -223,7 +223,7 @@ static int8_t wait_join(pthread_t *p_join_thread, uint32_t join_time)
 ******************************************/
 static void R_Post_Proc_ResNet34(float* floatarr, uint8_t n_pers)
 {
-    float max = std::numeric_limits<float>::min();
+    float max = std::numeric_limits<float>::lowest();
     int8_t index = -1;
     for(int8_t i=9;i<INF_OUT_SIZE_FAIRFACE;i++)
     {
