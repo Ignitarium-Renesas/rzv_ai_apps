@@ -20,11 +20,10 @@ It is recommended to setup the camera as shown in the image below. This applicat
      height=723px />
 
 ### Targeted product
-
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v5.00** | 
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.10** |
 
  ### Sample video for RZ/V2H on Youtube
 <a href="https://youtu.be/Vrcq8KhxTzs" target="_blank\">
@@ -70,11 +69,14 @@ After completion of Getting Started, the user is expected of following condition
 - The board setup is done.
 - SD card is prepared.
 - Following docker container is running on the host machine.
+
    | Board| Docker container |
    | ---- | ---- |
-   | RZ/V2H, RZ/V2N EVK | rzv2h_ai_sdk_container |
+   | RZ/V2H EVK | rzv2h_ai_sdk_container |
+   | RZ/V2N EVK | rzv2n_ai_sdk_container |
+
     >**Note 1:** Docker environment is required for building the application.  
-    >**Note 2:** Since RZ/V2N is a brother chip of RZ/V2H, the same environment can be used.  
+<!--    >**Note 2:** Since RZ/V2N is a brother chip of RZ/V2H, the same environment can be used.  -->
 
 #### Application File Generation
 1. On your host machine, download the repository from the GitHub to the desired location. 
@@ -88,7 +90,7 @@ After completion of Getting Started, the user is expected of following condition
     > Note 2: This command will download whole repository, which include all other applications.<br>
      If you have already downloaded the repository of the same version, you may not need to run this command.
     
-2. Run (or start) the docker container and open the bash terminal on the container.   
+2. Run (or start) the docker container and open the bash terminal on the container.  
 E.g., for RZ/V2H, use the `rzv2h_ai_sdk_container` as the name of container, created from  `rzv2h_ai_sdk_image` docker image.  
     > Note that all the build steps/commands listed below are executed on the docker container bash terminal.  
 
@@ -103,43 +105,52 @@ E.g., for RZ/V2H, use the `rzv2h_ai_sdk_container` as the name of container, cre
 5. Build the application by following the commands below.  
     ```sh
     mkdir -p build && cd build
-    cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake -DV2H=ON ..
+    cmake -DCMAKE_TOOLCHAIN_FILE=./toolchain/runtime.cmake ..
     make -j$(nproc)
     ```
 6. The following application file would be genarated in the `${PROJECT_PATH}/10_Driver_monitoring_system/src/build` directory
    - driver_monitoring_system_app
-   >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same source code can be used.
+     
+<!--    >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same source code can be used.  -->
 
 
 ## Application: Deploy Stage
-For the ease of deployment all the deployables file and folders are provided on the [exe_v2h](./exe_v2h) folder.
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.
+For the ease of deployment all the deployables file and folders are provided in following folder.
+|Board | `EXE_DIR` |
+|:---|:---|
+|RZ/V2H EVK|[exe_v2h](./exe_v2h)  |
+|RZ/V2N EVK|[exe_v2n](./exe_v2n)  |
+<!-- >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.  -->
 
+Each folder contains following items.
 |File | Details |
 |:---|:---|
 |DMS_yolov3| Model object files for deployment.|
 |DMS_deeppose| Model object files for deployment.|
 |driver_monitoring_system_app | application file. |
 
-1. Follow the steps below to deploy the project on the board. 
-    1. Run the commands below to download the `10_Driver_monitoring_system_deploy_tvm-v230.so` from [Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)
+1. Follow the steps below to deploy the project on the board.
+    1. Run the commands below to download the necessary file.
     ```
-    cd ${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3
-    wget https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00/10_Driver_monitoring_system_deploy_tvm-v230.so
+    cd ${PROJECT_PATH}/10_Driver_monitoring_system/<EXE_DIR>/DMS_yolov3
+    wget <URL>/<SO_FILE>
     ```
-    2. Rename the `10_Driver_monitoring_system_deploy_tvm-v230.so` to `deploy.so`.
-    ```
-    mv 10_Driver_monitoring_system_deploy_tvm-v230.so deploy.so
-    ```
+    |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
+    |:---|:---|:---|:---|:---|
+    |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.00`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm-v230.so`</span> |[Release v5.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.00)  |
+    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.10`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2n-v251.so`</span> |[Release v6.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.10)  |
 
-    3. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_yolov3` & `${PROJECT_PATH}/10_Driver_monitoring_system/exe_v2h/DMS_deeppose`
-    4. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board.
-        -  All files in [exe_v2h](./exe_v2h) directory. (Including `deploy.so` file.)
-        -  `10_Driver_monitoring_system` application file if you generated the file according to [Application File Generation](#application-file-generation)
-        >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.
-    5. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
+    2. Rename the `10_Driver_monitoring_system_deploy_tvm*.so` to `deploy.so`.
+    ```
+    mv <SO_FILE> deploy.so
+    ```
+   3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board:
+      - All files in `<EXE_DIR>` directory (including `deploy.so` file)
+      - `10_Driver_monitoring_system` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
-2. Folder structure in the rootfs (SD Card) would look like:
+3. Folder structure in the rootfs (SD Card) is shown below.<br>
+   Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
+- For RZ/V2H
 ```sh
 ├── usr/
 │   └── lib64/
@@ -159,30 +170,62 @@ For the ease of deployment all the deployables file and folders are provided on 
             ├── driver_monitoring_system_app
             └── rf_gaze_dir.xml
 ```
->**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
+   - For RZ/V2N
+```sh
+├── usr/
+│   └── lib/
+│       └── libtvm_runtime.so
+└── home/
+　　└── weston/
+　　　　└── tvm/
+            ├── DMS_yolov3/
+            │   ├── deploy.json
+            │   ├── deploy.params
+            │   └── deploy.so
+            ├── DMS_deeppose/
+            │   ├── deploy.json
+            │   ├── deploy.params
+            │   └── deploy.so
+            ├── labels.txt
+            ├── driver_monitoring_system_app
+            └── rf_gaze_dir.xml
+```
 
+>**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
 
 ## Application: Run Stage
 
 1. On the board terminal, go to the `tvm` directory of the rootfs.
-```sh
-cd /home/root/tvm
-```
-2. Run the application.
-
-   - Application with USB camera input
+   - For RZ/V2H
     ```sh
-    ./driver_monitoring_system_app USB 
+    cd /home/root/tvm
     ```
+   - For RZ/V2N
+    ```sh
+    cd /home/weston/tvm
+    ```
+2. Run the application with USB camera input.
+   - For RZ/V2H
+    ```sh
+    ./driver_monitoring_system_app USB
+    ```
+   - For RZ/V2N
+    ```sh
+    su
+    ./driver_monitoring_system_app USB
+    exit    # After pressing ENTER key to terminate the application.
+    ```
+>**Note:** For RZ/V2N AI SDK v6.00 and later, you need to switch to the root user with the 'su' command when running an application.<br>
+This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+
 3. Following window shows up on HDMI screen*.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
      height=334px />  
-   *Performance in the screenshot is for RZ/V2H EVK.   
-        
+*Performance in the screenshot is for RZ/V2H EVK.
+
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same execution environment is used, which causes inconsistencies in display contents, i.e., RZ/V2N application log contains "RZ/V2H". This may be solved in the future version.
 
 ## Application: Configuration 
 
@@ -207,7 +250,7 @@ Output2 size: 1x196
 |Board | AI inference time|
 |:---|:---|
 |RZ/V2H EVK | Approximately <br> Yolov3: 25ms <br> Deeppose: 6ms|
-|RZ/V2N EVK | Approximately <br> Yolov3: 80ms <br> Deeppose: 27ms|
+|RZ/V2N EVK | Approximately <br> Yolov3: 65ms <br> Deeppose: 17ms|
 
 ### Processing
  
