@@ -61,7 +61,7 @@
 * YOLOv3
 ******************************************/
 /* Model Binary */
-const static std::string model_dir = "human_gaze_tinyyolov2";
+const static std::string model_dir = "human_gaze_yolov3";
 /* Pre-processing Runtime Object */
 const static std::string pre_dir = model_dir + "/preprocess";
 
@@ -72,7 +72,7 @@ const static std::string label_list = "labels.txt";
 static std::vector<std::string> label_file_map = {};
 
 /* DRP-AI memory offset for model object file*/
-#define DRPAI_MEM_OFFSET            (0x2000000)
+#define DRPAI_MEM_OFFSET            (0x7000000)
 #define DRPAI_MEM_OFFSET1           (0x0000000)
 
 
@@ -82,24 +82,32 @@ static std::vector<std::string> label_file_map = {};
 /* Number of class to be detected */
 #define NUM_CLASS                   (1)
 /* Number for [region] layer num parameter */
-#define NUM_BB                      (5)
-#define NUM_GRID_X                  (13)
-#define NUM_GRID_Y                  (13)
-#define INF_OUT_SIZE_TINYYOLOV2     (84500)
-
+#define NUM_BB                      (3)
+#define NUM_INF_OUT_LAYER           (3)
+/* Number of grids in the image. The length of this array MUST match with the NUM_INF_OUT_LAYER */
+const static uint8_t num_grids[] = { 13, 26, 52};
+/* Number of DRP-AI output */
+const static uint32_t num_inf_out =  (NUM_CLASS + 5) * NUM_BB * num_grids[0] * num_grids[0]
+                                + (NUM_CLASS + 5) * NUM_BB * num_grids[1] * num_grids[1]
+                                + (NUM_CLASS + 5) * NUM_BB * num_grids[2] * num_grids[2];
+/* Anchor box information */
 const static double anchors[] =
 {
-    1.08,   1.19,
-    3.42,   4.41,
-    6.63,   11.38,
-    9.42,   5.11,
-    16.62,  10.52
+    10, 13,
+    16, 30,
+    33, 23,
+    30, 61,
+    62, 45,
+    59, 119,
+    116, 90,
+    156, 198,
+    373, 326
 };
 
 
 /* Thresholds */
-#define TH_PROB                     (0.3f)
-#define TH_NMS                      (0.2f)
+#define TH_PROB                     (0.2f)
+#define TH_NMS                      (0.3f)
 /* Size of input image to the model */
 #define MODEL_IN_W                  (416)
 #define MODEL_IN_H                  (416)
@@ -126,7 +134,7 @@ const static std::string pre_dir1 = model_dir1 + "/preprocess";
 #define BGRA_CHANNEL                (4)
 #define DISP_OUTPUT_WIDTH           (1920)
 #define DISP_OUTPUT_HEIGHT          (1080)
-#define NUM_MAX_FACE (3)
+#define NUM_MAX_FACE                (3)
 #define DISP_INF_WIDTH              (1280)
 #define DISP_INF_HEIGHT             (960)
 /*Total Display out*/
