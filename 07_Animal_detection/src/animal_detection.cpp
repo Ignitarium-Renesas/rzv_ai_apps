@@ -538,6 +538,8 @@ void capture_frame(std::string gstreamer_pipeline )
     uint8_t * img_buffer0;
 
     img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
+    cv::Mat output_image = cv::Mat(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3);
+    cv::Mat bgra_image = cv::Mat(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH,CV_8UC4);
     
     /* Capture stream of frames from camera using Gstreamer pipeline */
     cap.open(gstreamer_pipeline, CAP_GSTREAMER);
@@ -553,7 +555,7 @@ void capture_frame(std::string gstreamer_pipeline )
         string result_str;
         int32_t result_cnt =0;
         cap >> g_frame;
-        cv::Mat output_image(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3, cv::Scalar(0, 0, 0));
+        output_image.setTo(cv::Scalar(0, 0, 0));
         double fps = cap.get(CAP_PROP_FPS);
         ret = sem_getvalue(&terminate_req_sem, &inf_sem_check);
         if (0 != ret)
@@ -652,7 +654,6 @@ void capture_frame(std::string gstreamer_pipeline )
             g_frame.copyTo(output_image(Rect(0, 60, DISP_INF_WIDTH, DISP_INF_HEIGHT)));
             namedWindow("Output Image", WND_PROP_FULLSCREEN);
             setWindowProperty("Output Image", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-            cv::Mat bgra_image;
             cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
            
             memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);
