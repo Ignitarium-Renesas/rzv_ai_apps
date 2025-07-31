@@ -116,8 +116,11 @@ Each folder contains following items.
 |elderly_fall_detection_app | application file. |
 
 1. Follow the steps below to deploy the project on the board. 
-    1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/03_Elderly_fall_detection/exe_v2h/elderly_fall_detection_hrnet` &  `${PROJECT_PATH}/03_Elderly_fall_detection/exe_v2h/elderly_fall_detection_tinyyolov2`
-   2. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board:
+    1. For RZ/V2H
+      1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/03_Elderly_fall_detection/exe_v2h/elderly_fall_detection_hrnet` &  `${PROJECT_PATH}/03_Elderly_fall_detection/exe_v2h/elderly_fall_detection_tinyyolov2`
+    2. For RZ/V2N
+      1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/03_Elderly_fall_detection/exe_v2n/elderly_fall_detection_hrnet` &  `${PROJECT_PATH}/03_Elderly_fall_detection/exe_v2n/elderly_fall_detection_tinyyolov2`
+    3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board:
       - All files in `<EXE_DIR>` directory (including `deploy.so` file)
       - `03_Elderly_fall_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
