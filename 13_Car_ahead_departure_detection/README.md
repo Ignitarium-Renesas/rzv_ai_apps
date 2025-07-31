@@ -117,7 +117,7 @@ Each folder contains following items.
 
 1. Follow the steps below to deploy the project on the board. 
    1. For RZ/V2H
-      1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/13_Car_ahead_departure_detection/exe_v2n/tinyyolov3_car_ahead`
+      1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/13_Car_ahead_departure_detection/exe_v2h/tinyyolov3_car_ahead`
    2. For RZ/V2N
       1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/13_Car_ahead_departure_detection/exe_v2n/tinyyolov3_car_ahead`
    3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board.
