@@ -1261,6 +1261,8 @@ int8_t R_Main_Process()
     stringstream stream;
     string str = "";
     int32_t baseline = 10;
+    cv::Mat output_image = cv::Mat(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3);
+    cv::Mat bgra_image = cv::Mat(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH,CV_8UC4);
     uint8_t * img_buffer0;
 
     string sensor_str = "";
@@ -1295,7 +1297,7 @@ int8_t R_Main_Process()
             usleep(WAIT_TIME);
         }
 
-        cv::Mat output_image(1080, 1920 , CV_8UC3, cv::Scalar(0, 0, 0));
+        output_image.setTo(cv::Scalar(0, 0, 0));
 
         /* Draw bounding box and Mosaic on the frame */
         draw_bounding_box();
@@ -1580,7 +1582,6 @@ int8_t R_Main_Process()
         Size temp_size = getTextSize(str, FONT_HERSHEY_TRIPLEX,CHAR_SCALE_LARGE, TIME_THICKNESS, &baseline);
         putText(output_image, str,Point((FIRST_FRAME_X_COORDINATE - temp_size.width - LEFT_ALIGN_OFFSET), ( FIRST_FRAME_Y_COORDINATE+IMAGE_HEIGHT+ HALF_IMAGE_HEIGHT+ tot_time_size.height + 40 + pre_proc_size.height + 10 + inf_size.height+10+post_proc_size.height+40 + temp_size.height)), FONT_HERSHEY_TRIPLEX,
                     CHAR_SCALE_LARGE, Scalar(255, 255, 255), TIME_THICKNESS);
-        cv::Mat bgra_image;
         cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
 
         memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);

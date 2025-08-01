@@ -549,6 +549,7 @@ void *R_Inf_Thread(void *threadid)
 {
     int32_t ret = 0;
     int32_t inf_sem_check = 0;
+    cv::Mat result_image;
 
     printf("Inference Loop Starting\n");
     /*Inference Loop Start*/
@@ -578,7 +579,7 @@ void *R_Inf_Thread(void *threadid)
             usleep(WAIT_TIME);
         }
 
-        cv::Mat result_image = lane_segmentation(inf_frame);
+        result_image = lane_segmentation(inf_frame);
         if (result_image.empty())
         {
             std::cerr << "[ERROR] Inference Not working !!!" << std::endl;
@@ -614,6 +615,9 @@ int8_t R_Main_Process() {
     std::stringstream stream;
     std::string str;
     int32_t baseline = 10;
+    cv::Mat output_image = cv::Mat(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3);
+    cv::Mat bgra_image = cv::Mat(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH,CV_8UC4);
+    cv::Mat pre_image = cv::Mat(DISP_INF_HEIGHT, DISP_INF_WIDTH , CV_8UC3);
     printf("Main Loop Starts\n");
 
     while(1)
@@ -639,8 +643,8 @@ int8_t R_Main_Process() {
 
         }
             
-        cv::Mat output_image = cv::Mat(DISP_OUTPUT_HEIGHT, DISP_OUTPUT_WIDTH, CV_8UC3, cv::Scalar(0, 0, 0));
-        cv::Mat pre_image(DISP_INF_HEIGHT, DISP_INF_WIDTH , CV_8UC3, cv::Scalar(0, 0, 0));
+        output_image.setTo(cv::Scalar(0, 0, 0));
+        pre_image.setTo(cv::Scalar(0, 0, 0));
 
         if (!g_result_image.empty())
         {
@@ -702,7 +706,6 @@ int8_t R_Main_Process() {
                     CHAR_SCALE_SMALL, Scalar(0, 0, 0), 1.5*LANE_CHAR_THICKNESS);        
         putText(output_image, str,Point((DISP_OUTPUT_WIDTH - temp_size.width - RIGHT_ALIGN_OFFSET), (TEMP_STR_Y + temp_size.height)), FONT_HERSHEY_SIMPLEX, 
                     CHAR_SCALE_SMALL, Scalar(255, 255, 255), LANE_CHAR_THICKNESS);
-        cv::Mat bgra_image;
         cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);
         wayland.commit(bgra_image.data, NULL);
 
