@@ -121,8 +121,8 @@ Each folder contains following items.
     2. For RZ/V2N
        1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/03_Elderly_fall_detection/exe_v2n/elderly_fall_detection_hrnet` &  `${PROJECT_PATH}/03_Elderly_fall_detection/exe_v2n/elderly_fall_detection_tinyyolov2`
     3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board:
-      - All files in `<EXE_DIR>` directory (including `deploy.so` file)
-      - `03_Elderly_fall_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
+       - All files in `<EXE_DIR>` directory (including `deploy.so` file)
+       - `03_Elderly_fall_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
 2. Folder structure in the rootfs (SD Card) is shown below.<br>
    Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
