@@ -972,6 +972,8 @@ void capture_frame(std::string gstreamer_pipeline )
     int32_t ret = 0;
     int32_t i = 0;
     int32_t baseline = 10;
+    cv::Mat output_image = cv::Mat(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3);
+    cv::Mat bgra_image = cv::Mat(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH,CV_8UC4);
     uint8_t * img_buffer0;
 
     img_buffer0 = (unsigned char*) (malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL));
@@ -985,7 +987,7 @@ void capture_frame(std::string gstreamer_pipeline )
     while (true)
     {
         cap >> g_frame;
-        cv::Mat output_image(DISP_OUTPUT_HEIGHT,DISP_OUTPUT_WIDTH , CV_8UC3, cv::Scalar(0, 0, 0));
+        output_image.setTo(cv::Scalar(0, 0, 0));
         fps = cap.get(CAP_PROP_FPS);
         ret = sem_getvalue(&terminate_req_sem, &inf_sem_check);
         if (0 != ret)
@@ -1120,9 +1122,7 @@ void capture_frame(std::string gstreamer_pipeline )
             /*resize the image to the keep ratio size*/
             resize(g_frame, g_frame, size);            
             g_frame.copyTo(output_image(Rect(0, 0, DISP_INF_WIDTH, DISP_INF_HEIGHT)));
-            cv::Mat bgra_image;
-            cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);            
-            
+            cv::cvtColor(output_image, bgra_image, cv::COLOR_BGR2BGRA);             
             memcpy(img_buffer0, bgra_image.data, DISP_OUTPUT_WIDTH * DISP_OUTPUT_HEIGHT * BGRA_CHANNEL);
             wayland.commit(img_buffer0, NULL);            
         }
