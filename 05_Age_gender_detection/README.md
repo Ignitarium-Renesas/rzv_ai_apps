@@ -10,7 +10,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.10** |
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
 
 ### Sample video for RZ/V2H on Youtube
  <a href="https://youtu.be/ryyOjTx9ttw" target="_blank\">
@@ -251,4 +251,5 @@ Output size: 1x18
 FHD resolution is supported by e-CAM22_CURZH camera (MIPI).  
 Please refer to following URL for how to change camera input to MIPI camera.  
 [https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 
+
 
