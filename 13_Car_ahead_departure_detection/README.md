@@ -193,7 +193,6 @@ This is because when you run an application from a weston-terminal, you are swit
 
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
->**Note:** Since RZ/V2N is a brother chip of RZ/V2H, the same execution environment is used, which causes inconsistencies in display contents, i.e., RZ/V2N application log contains "RZ/V2H". This may be solved in the future version.
 ## Application: Configuration 
 ### AI Model
 - TinyYoloV3: [ Official Yolo website](https://pjreddie.com/darknet/yolo/)  
