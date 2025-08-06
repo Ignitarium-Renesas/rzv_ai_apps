@@ -133,7 +133,6 @@ Each folder contains following items.
         -  All files in <EXE_DIR> directory. (Including `deploy.so` file.)
         -  `04_Safety_helmet_vest_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
         >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.
-    4. Check if `libtvm_runtime.so` is there on `/usr/lib64` directory of the rootfs (SD card) on the board.
 
 2. Folder structure in the rootfs (SD Card) is shown below.<br>
    Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
