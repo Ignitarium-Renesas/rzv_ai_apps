@@ -24,7 +24,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.10** |
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
 
 ### Sample video for RZ/V2H on Youtube
 <a href="https://youtu.be/IS6Nm8H6U9o" target="_blank\">
