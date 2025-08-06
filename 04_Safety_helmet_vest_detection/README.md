@@ -132,7 +132,7 @@ Each folder contains following items.
     3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board.
         -  All files in <EXE_DIR> directory. (Including `deploy.so` file.)
         -  `04_Safety_helmet_vest_detection` application file if you generated the file according to [Application File Generation](#application-file-generation)
-        >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.
+   <!--     >**Note:** Since RZ/V2N is a brother chip of RZ/V2H,  the same execution environment can be used.　-->
 
 2. Folder structure in the rootfs (SD Card) is shown below.<br>
    Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
