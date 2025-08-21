@@ -166,7 +166,7 @@ Each folder contains following items.
             └── line_crossing_app
 ```
 
->**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
+>**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `EXE_DIR` folder on the board. You are not required to rename it `tvm`.
 
 ## How line crossing/counting works
 - User gives the co-ordinates to draw the line (x1,y1),(x2,y2) and flow of direction(0/1). ( 0 means left to right, 1 means right to left).
