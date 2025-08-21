@@ -165,7 +165,7 @@ Each folder contains following items.
             └── elderly_fall_detection_app
 ```
 
->**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
+>**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `EXE_DIR` folder on the board. You are not required to rename it `tvm`.
 
 ## Application: Run Stage
 
