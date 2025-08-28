@@ -222,7 +222,7 @@ Output1 size: 1x13x13x18
 Output2 size: 1x26x26x18  
 Output3 size: 1x52x52x18   
 
-- ResNet-18: [ResNet](https://arxiv.org/pdf/1512.03385.pdf)
+- ResNet-18: [ResNet](https://github.com/hysts/pytorch_mpiigaze_demo/releases/download/v0.2.2/eth-xgaze_resnet18.pth)
   
 Input size: 1x3x224x224  
 Output size: 1x2  
