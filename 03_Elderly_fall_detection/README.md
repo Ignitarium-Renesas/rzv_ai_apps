@@ -210,8 +210,7 @@ This is because when you run an application from a weston-terminal, you are swit
 Input size: 1x3x416x416  
 Output size: 1x13x13x30  
  
-- HRNet: [HRNet](https://github.com/PINTO0309/PINTO_model_zoo/tree/main/271_HRNet) 
-- Dataset: *[MPII Human Pose Dataset]( https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/software-and-datasets/mpii-human-pose-dataset/download)
+- HRNet: [hrnet_mpii_w32_256x256.onnx](https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/271_HRNet/resources.tar.gz) 
   
 Input size: 1x3x256x256  
 Output size: 1x16x16x64  

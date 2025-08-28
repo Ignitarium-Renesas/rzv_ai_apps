@@ -223,7 +223,7 @@ Output1 size: 1x13x13x18
 Output2 size: 1x26x26x18  
 Output3 size: 1x52x52x18   
 
-- FairFace: [FairFace model](https://github.com/dchen236/FairFace)
+- FairFace: [FairFace model](https://drive.google.com/file/d/113QMzQzkBDmYMs9LwzvD-jxEZdBQ5J4X/view?usp=drive_link)
   
 Input size: 1x3x224x224  
 Output size: 1x18  

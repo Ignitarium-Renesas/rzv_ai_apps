@@ -223,7 +223,6 @@ Output2 size: 1x26x26x18
 Output3 size: 1x52x52x18   
 
 - ResNet-18: [ResNet](https://arxiv.org/pdf/1512.03385.pdf)
-- Dataset: *[ETH-XGaze](https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/research/gaze-based-human-computer-interaction/appearance-based-gaze-estimation-in-the-wild)
   
 Input size: 1x3x224x224  
 Output size: 1x2  
