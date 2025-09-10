@@ -168,7 +168,7 @@ Each folder contains following items.
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
-            ├── age_gender_resnet18/
+            ├── age_gender_fairface/
             │   ├── deploy.json
             │   ├── deploy.params
             │   └── deploy.so
@@ -251,6 +251,7 @@ Output size: 1x18
 FHD resolution is supported by e-CAM22_CURZH camera (MIPI).  
 Please refer to following URL for how to change camera input to MIPI camera.  
 [https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 
+
 
 
 
