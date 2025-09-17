@@ -44,7 +44,7 @@ Prepare the following equipments referring to [Getting Started](https://renesas-
 | HDMI cable | Connect HDMI monitor and RZ/V2H, RZ/V2N Board. |
 | AC Adapter | USB Power Delivery adapter for the board power supply.<br>100W is required. |
 | microSD Card | Must have over 16GB capacity of blank space.<br>Operating Environment: Transcend UHS-I microSD 300S 16GB |
-| Linux PC | Used to build application and setup microSD card.<br>Operating Environment: Ubuntu 20.04 |
+| Linux PC | Used to build application and setup microSD card.<br>Operating Environment: Ubuntu 22.04 |
 | SD card reader | Used for setting up microSD card. |
 | USB Hub | Used for connecting USB Mouse and USB Keyboard to the board. |
 | USB Mouse | Used for HDMI screen control. |
