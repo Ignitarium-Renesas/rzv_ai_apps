@@ -119,7 +119,7 @@ Each folder contains following items.
 1. Follow the steps below to deploy the project on the board.
     1. Run the commands below to download the necessary file.
     ```
-    cd ${PROJECT_PATH}/01_Head_count/<EXE_DIR>/head_count_yolov3
+    cd ${PROJECT_PATH}/05_Age_gender_detection/<EXE_DIR>/age_gender_yolov3
     wget <URL>/<SO_FILE>
     ```
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
@@ -251,6 +251,7 @@ Output size: 1x18
 FHD resolution is supported by e-CAM22_CURZH camera (MIPI).  
 Please refer to following URL for how to change camera input to MIPI camera.  
 [https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 
+
 
 
 
