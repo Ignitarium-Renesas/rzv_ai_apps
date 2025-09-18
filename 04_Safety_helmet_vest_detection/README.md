@@ -117,7 +117,7 @@ Each folder contains following items.
 1. Follow the steps below to deploy the project on the board. 
     1. Run the commands below to download the necessary file.
     ```
-    cd ${PROJECT_PATH}/07_Animal_detection/<EXE_DIR>/animal_yolov3_onnx
+    cd ${PROJECT_PATH}/04_Safety_helmet_vest_detection/<EXE_DIR>/helmet_vest_yolov3
     wget <URL>/<SO_FILE>
     ```
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
