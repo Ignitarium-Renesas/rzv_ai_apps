@@ -118,7 +118,7 @@ Each folder contains following items.
 1. Follow the steps below to deploy the project on the board.
     1. Run the commands below to download the necessary file.
     ```
-    cd ${PROJECT_PATH}/01_Head_count/<EXE_DIR>/head_count_yolov3
+    cd ${PROJECT_PATH}/09_Human_gaze_detection/<EXE_DIR>/human_gaze_yolov3
     wget <URL>/<SO_FILE>
     ```
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
@@ -126,7 +126,7 @@ Each folder contains following items.
     |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.10`</span>  |<span style="font-size: small">`09_Human_gaze_detection_deploy_tvm-v230.so`</span> |[Release v6.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.10)  |
     |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.10`</span>  |<span style="font-size: small">`09_Human_gaze_detection_deploy_tvm_v2n-v251.so`</span> |[Release v6.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.10)  |
 
-    2. Rename the `01_Head_count_deploy_tvm*.so` to `deploy.so`.
+    2. Rename the `09_Human_gaze_detection_deploy_tvm*.so` to `deploy.so`.
     ```
     mv <SO_FILE> deploy.so
     ```
