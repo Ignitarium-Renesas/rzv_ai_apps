@@ -231,7 +231,7 @@ Output size: 1x18
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately <br> Yolov3: 5.5ms <br> FairFace: 4ms|
+|RZ/V2H EVK | Approximately <br> Yolov3: 25ms <br> FairFace: 4ms|
 |RZ/V2N EVK | Approximately <br> Yolov3: 65ms <br> FairFace: 5ms|
 
 ### Processing
@@ -251,6 +251,7 @@ Output size: 1x18
 FHD resolution is supported by e-CAM22_CURZH camera (MIPI).  
 Please refer to following URL for how to change camera input to MIPI camera.  
 [https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications](https://renesas-rz.github.io/rzv_ai_sdk/latest/about-applications#mipi). 
+
 
 
 
