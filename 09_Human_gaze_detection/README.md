@@ -230,7 +230,7 @@ Output size: 1x2
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately <br> Yolov3: 5.5ms <br> Resnet-18: 3ms|
+|RZ/V2H EVK | Approximately <br> Yolov3: 25ms <br> Resnet-18: 3ms|
 |RZ/V2N EVK | Approximately <br> Yolov3: 65ms <br> Resnet-18: 9ms|
 ### Processing
  
