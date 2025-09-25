@@ -16,6 +16,7 @@ Line crossing object counting is a sample application that demonstrates counting
 <a href="https://youtu.be/Y_C829DTFE8)" target="_blank\">
 <img src="./img/thumbnail.png" alt="Line crossing object counting demo" width="400" />
 </a>
+
 ## Application: Requirements
 
 #### Hardware Requirements
