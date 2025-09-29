@@ -12,7 +12,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
 
 ### Sample video for RZ/V2H on Youtube
-<a href="https://youtu.be/JYbgbfT2N3Q" target="_blank\">
+<a href="https://youtu.be/4EnnbgB1ynE" target="_blank\">
   <img src="./img/thumbnail.png" alt="Gaze detection demo" width="400" />
 </a>
 

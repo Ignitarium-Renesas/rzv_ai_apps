@@ -13,7 +13,7 @@ The AI model used for the sample application is [YOLOV3](https://arxiv.org/pdf/1
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
 
 ### Sample video for RZ/V2H on Youtube
- <a href="https://youtu.be/ryyOjTx9ttw" target="_blank\">
+ <a href="https://youtu.be/JgCP7XbFjMs" target="_blank\">
   <img src="./img/thumbnail.png" alt="Age Gender demo" width="400" />
 </a>
 
