@@ -29,7 +29,7 @@ Prepare the following equipments referring to [Getting Started](https://renesas-
 | HDMI cable | Connect HDMI monitor and RZ/V2H, RZ/V2N Board. |
 | AC Adapter | USB Power Delivery adapter for the board power supply.<br>100W is required. |
 | microSD Card | Must have over 16GB capacity of blank space.<br>Operating Environment: Transcend UHS-I microSD 300S 16GB |
-| Linux PC | Used to build application and setup microSD card.<br>Operating Environment: Ubuntu 20.04 |
+| Linux PC | Used to build application and setup microSD card.<br>Operating Environment: Ubuntu 22.04 |
 | SD card reader | Used for setting up microSD card. |
 | USB Hub | Used for connecting USB Mouse and USB Keyboard to the board. |
 | USB Mouse | Used for HDMI screen control. |
@@ -119,7 +119,7 @@ Each folder contains following items.
       1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2h/unet_onnx`
    2. For RZ/V2N
       1. Verify the presence of `deploy.so` file in `${PROJECT_PATH}/15_Road_lane_segmentation/exe_v2n/unet_onnx`
-   3. Copy the following files to the `/home/root/tvm` directory of the rootfs (SD Card) for the board:
+   3. Copy the following files to the `/home/*/tvm` directory of the rootfs (SD Card) for the board:
       - All files in `<EXE_DIR>` directory (including `deploy.so` file)
       - `15_Road_lane_segmentation` application file if you generated the file according to [Application File Generation](#application-file-generation)
 
@@ -141,13 +141,12 @@ Each folder contains following items.
 ```
    - For RZ/V2N
 ```sh
-    ├── usr/
-    │   └── lib/
-    │       └── libtvm_runtime.so
-    │
-    └──  home/
-        └──  weston/
-            └──  tvm/
+├── usr/
+│   └── lib/
+│       └── libtvm_runtime.so
+└── home/
+　　└── weston/
+　　　　└── tvm/
             ├── unet_onnx/
             │   ├── deploy.json
             │   ├── deploy.params
@@ -155,7 +154,7 @@ Each folder contains following items.
             └── road_lane_segmentation_app
 ```
 
->**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `exe_v2h` folder on the board. You are not required to rename it `tvm`.
+>**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `EXE_DIR` folder on the board. You are not required to rename it `tvm`.
 
 ## Application: Run Stage
 
@@ -203,7 +202,7 @@ Output size: 1x1x224x224
 |Board | AI inference time|
 |:---|:---|
 |RZ/V2H EVK | Approximately 25ms  |
-|RZ/V2N EVK | Approximately 35ms  |
+|RZ/V2N EVK | Approximately 25ms  |
  
 ### Processing
  
