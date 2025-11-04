@@ -907,11 +907,19 @@ int main(int argc, char *argv[])
     std::cout << "Starting Head Count Application" << std::endl;
 
     /*Disable OpenCV Accelerator due to the use of multithreading */
-    unsigned long OCA_list[16];
-    for (int i=0; i < 16; i++)
+    #ifdef V2N
+    unsigned long OCA_list[OCA_LIST_NUM];
+    for (int i=0; i < OCA_LIST_NUM; i++)
     {
         OCA_list[i] = 0;
     }
+    #else /*for V2H*/
+    unsigned long OCA_list[OCA_LIST_NUM];
+    for (int i=0; i < OCA_LIST_NUM; i++)
+    {
+        OCA_list[i] = 0;
+    }
+    #endif
     OCA_Activate( &OCA_list[0] );
 
     if (strcmp(argv[1],"USB")==0)
