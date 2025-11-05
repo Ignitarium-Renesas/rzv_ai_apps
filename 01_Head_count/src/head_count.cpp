@@ -921,6 +921,7 @@ int main(int argc, char *argv[])
     }
     #endif
     OCA_Activate( &OCA_list[0] );
+    printf("Disable OpenCVA\n");
 
     if (strcmp(argv[1],"USB")==0)
     {   
