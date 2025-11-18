@@ -34,7 +34,6 @@ else()
 endif()
 add_executable(${EXE_NAME} ${SOURCE})
 
-target_compile_options(${EXE_NAME} PRIVATE -O3 -mtune=cortex-a55 -Wall)
 TARGET_LINK_LIBRARIES(${EXE_NAME} pthread glib-2.0 mmngr gobject-2.0 gstreamer-1.0  gstbase-1.0 gstapp-1.0 
 	opencv_imgcodecs opencv_imgproc opencv_core opencv_highgui
 	jpeg webp tiff z tbb gtk-3 png16 gdk-3 cairo
