@@ -908,7 +908,8 @@ int query_device_status(std::string device_type)
         {
             fgets(buffer, sizeof(buffer), pipe);
             response_string = std::string(buffer);
-            device_paths.push_back(response_string);    
+            device_paths.push_back(response_string);   
+
         } 
     }
     pclose(pipe);
@@ -1613,7 +1614,7 @@ int main(int argc, char *argv[])
     int32_t ret = 0;
     int8_t main_proc = 0;
     int32_t sem_create = -1;
-    std::string command,white_space;
+    std::string command;
     int32_t i,status = 0;
     int x=6;
     int y=7;
@@ -1632,12 +1633,20 @@ int main(int argc, char *argv[])
         goto end_close_drpai;
     }
 
-    unsigned long OCA_list[16];
     /*Disable OpenCV Accelerator due to the use of multithreading */
-    for (int i=0; i<16; i++)
+    #ifdef V2N
+    unsigned long OCA_list[16];
+    for (int i=0; i < 16; i++)
     {
-        OCA_list[i] = 0;    //disable
+        OCA_list[i] = 0;
     }
+    #else /*for V2H*/
+    unsigned long OCA_list[OCA_LIST_NUM];
+    for (int i=0; i < OCA_LIST_NUM; i++)
+    {
+        OCA_list[i] = 0;
+    }
+    #endif
     OCA_Activate( &OCA_list[0] );
 
     if (strcmp(argv[1],"USB")==0 || strcmp(argv[1],"MIPI")==0)
@@ -1918,7 +1927,7 @@ int main(int argc, char *argv[])
             {
                 for(i=0;i<number_of_cameras;i++)
                 {
-                gstreamer_pipeline.push_back("v4l2src device=" + device_paths[i] + " ! video/x-raw, width=640, height=480, framerate=10/1 ! videoconvert ! appsink -v");
+                gstreamer_pipeline.push_back("v4l2src device=" + device_paths[i] + " ! video/x-raw, format=YUY2, width=640, height=480, framerate=10/1 ! videoconvert ! appsink -v");
                 }
                 /* Initialize waylad */
                 ret = wayland.init(DISP_OUTPUT_WIDTH, DISP_OUTPUT_HEIGHT, BGRA_CHANNEL);
@@ -1995,7 +2004,7 @@ int main(int argc, char *argv[])
             {
                 for(i=0;i<number_of_cameras;i++)
                 {
-                gstreamer_pipeline.push_back("v4l2src device=" + device_paths[i] + " ! video/x-raw, width=640, height=480, framerate=30/1 ! videoconvert ! appsink -v");
+                gstreamer_pipeline.push_back("v4l2src device=" + device_paths[i] + " ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1 ! videoconvert ! appsink -v");
                 }
                 #ifdef V2N
                     if(number_of_cameras==1)
@@ -2279,49 +2288,41 @@ int main(int argc, char *argv[])
                         }
                     
                     }
-                #else  // not V2N
+                #else  // V2H
                     for(i=0;i<number_of_cameras;i++)
                     {
-                        white_space="";
-                        //removal of white space from string 
-                        for (char ch : device_paths[i]) 
-                        {
-                            if (!isspace(ch)) 
-                            {
-                                white_space += ch;
-                            }
-                        }
-
-                        command = "v4l2-ctl -d " + white_space + " -c framerate=30";
+                        command = "v4l2-ctl -d " + std::to_string(i) + " -c framerate=30";
                         std::system(command.c_str());
-
-                        command = "v4l2-ctl -d " + white_space + " -c white_balance_auto_preset=0";
+                        command = "v4l2-ctl -d " + std::to_string(i) + " -c white_balance_auto_preset=0";
                         std::system(command.c_str());
-
                         command = "media-ctl -d /dev/media" + std::to_string(i) + " -r";
                         std::system(command.c_str());
-
-                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -l \"\'rzg2l_csi2 160" + std::to_string(i) + "0400.csi2" + std::to_string(i) + "\':1 -> \'CRU output\':0 [1]\"";       
+                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -l \"'csi-160" + std::to_string(i) + "0400.csi2" + std::to_string(i) + "':1 -> 'cru-ip-160" + std::to_string(i) + "0000.video" + std::to_string(i) + "':0 [1]\"";
                         std::system(command.c_str());
-                        
-                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"\'rzg2l_csi2 160" + std::to_string(i) + "0400.csi2" + std::to_string(i) + "\':1 [fmt:UYVY8_2X8/640x480 field:none]\"";             
+                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -l \"'cru-ip-160" + std::to_string(i) + "0000.video" + std::to_string(i) + "':1 -> 'CRU output':0 [1]\"";
                         std::system(command.c_str());
-
+                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"'csi-160" + std::to_string(i) + "0400.csi2" + std::to_string(i) + "':1 [fmt:UYVY8_2X8/640x480 field:none]\"";
+                        std::system(command.c_str());
                         if(i==0 || i==1)
                         {
-                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"\'imx462 " + std::to_string(i) + "-001f\':0 [fmt:UYVY8_2X8/640x480 field:none]\"";     
-                        std::system(command.c_str());
+                            command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"'imx462 " + std::to_string(i) + "-001f':0 [fmt:UYVY8_2X8/640x480 field:none]\"";
+                            std::system(command.c_str());
                         }
                         else if(i==2)
                         {
-                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"\'imx462 " + std::to_string(x) + "-001f\':0 [fmt:UYVY8_2X8/640x480 field:none]\"";     
-                        std::system(command.c_str());
+                            command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"'imx462 " + std::to_string(x) + "-001f':0 [fmt:UYVY8_2X8/640x480 field:none]\"";
+                            std::system(command.c_str());
+
                         }
                         else
                         {
-                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"\'imx462 " + std::to_string(y) + "-001f\':0 [fmt:UYVY8_2X8/640x480 field:none]\"";     
+                            command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"'imx462 " + std::to_string(y) + "-001f':0 [fmt:UYVY8_2X8/640x480 field:none]\"";
+                            std::system(command.c_str());
+                        }
+                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"'cru-ip-160" + std::to_string(i) + "0000.video" + std::to_string(i) + "':0 [fmt:UYVY8_2X8/640x480 field:none]\"";
                         std::system(command.c_str());
-                        }                    
+                        command = "media-ctl -d /dev/media" + std::to_string(i) + " -V \"'cru-ip-160" + std::to_string(i) + "0000.video" + std::to_string(i) + "':1 [fmt:UYVY8_2X8/640x480 field:none]\"";
+                        std::system(command.c_str());
                     }
                 #endif
                     /* Initialize waylad */
