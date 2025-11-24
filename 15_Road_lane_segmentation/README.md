@@ -8,7 +8,7 @@ The AI model used for the sample application is [Unet](https://github.com/qubvel
 ### Targeted product
 | Product | Supported AI SDK version |
 | ---- | ---- |
-| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
+| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v6.00** |
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
 
 ### Sample Video for RZ/V2H on Youtube
@@ -128,10 +128,10 @@ Each folder contains following items.
 - For RZ/V2H
 ```sh
 ├── usr/
-│   └── lib64/
+│   └── lib/
 │       └── libtvm_runtime.so
 └── home/
-    └── root/
+    └── weston/
         └── tvm/ 
             ├── unet_onnx/
             │   ├── deploy.json
@@ -161,7 +161,7 @@ Each folder contains following items.
 1. On the board terminal, go to the `tvm` directory of the rootfs.
    - For RZ/V2H
     ```sh
-    cd /home/root/tvm
+    cd /home/weston/tvm
     ```
    - For RZ/V2N
     ```sh
@@ -170,7 +170,9 @@ Each folder contains following items.
 2. Run the application with USB camera input.
    - For RZ/V2H
     ```sh
+    su
     ./road_lane_segmentation_app USB
+    exit    # After pressing ENTER key to terminate the application.
     ```
    - For RZ/V2N
     ```sh
@@ -178,7 +180,7 @@ Each folder contains following items.
     ./road_lane_segmentation_app USB
     exit    # After pressing ENTER key to terminate the application.
     ```
->**Note:** For RZ/V2N AI SDK v6.00 and later, you need to switch to the root user with the 'su' command when running an application.<br>
+>**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
 This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
 
 3. Following window shows up on HDMI screen*.  
