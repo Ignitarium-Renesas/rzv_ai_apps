@@ -203,8 +203,8 @@ Output size: 1x1x224x224
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately 25ms  |
-|RZ/V2N EVK | Approximately 25ms  |
+|RZ/V2H EVK | Approximately 18ms  |
+|RZ/V2N EVK | Approximately 10ms  |
  
 ### Processing
  
