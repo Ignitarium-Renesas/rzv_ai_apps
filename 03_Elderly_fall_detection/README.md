@@ -220,7 +220,7 @@ Output size: 1x16x16x64
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately <br> Tinyyolov2: 5.7ms <br> HRNet: 17.4ms|
+|RZ/V2H EVK | Approximately <br> Tinyyolov2: 5.7ms <br> HRNet: 11.0ms|
 |RZ/V2N EVK | Approximately <br> Tinyyolov2: 12ms <br> HRNet: 34ms|
 
 ### Processing
