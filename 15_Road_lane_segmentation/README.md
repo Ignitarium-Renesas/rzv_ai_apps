@@ -12,7 +12,7 @@ The AI model used for the sample application is [Unet](https://github.com/qubvel
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** |
 
 ### Sample Video for RZ/V2H on Youtube
-<a href="https://youtu.be/5Vys9i1_nqM" target="_blank\">
+<a href="https://youtu.be/0jXHZ30bNyk" target="_blank\">
   <img src="./img/thumbnail.png" alt="Road Lane segmentation demo" width="400" />
 </a>
 
@@ -203,8 +203,8 @@ Output size: 1x1x224x224
 ### AI inference time
 |Board | AI inference time|
 |:---|:---|
-|RZ/V2H EVK | Approximately 18ms  |
-|RZ/V2N EVK | Approximately 10ms  |
+|RZ/V2H EVK | Approximately 8ms  |
+|RZ/V2N EVK | Approximately 20ms  |
  
 ### Processing
  
