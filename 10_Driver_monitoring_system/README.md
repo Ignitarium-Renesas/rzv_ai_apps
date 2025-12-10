@@ -211,7 +211,7 @@ Each folder contains following items.
     cd /home/weston/tvm
     ```
 
-2. Run the application. The 2nd argument (2) means the camera orientation.
+2. Run the application. The 2nd argument (2) means the camera's orientation either LEFT or RIGHT side.
    - For RZ/V2H
 
    - Application with USB camera orientation as LEFT
