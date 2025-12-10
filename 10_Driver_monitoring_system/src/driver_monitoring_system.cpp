@@ -24,9 +24,9 @@
  */
 
 /***********************************************************************************************************************
-* File Name    : multi_camera_dms_detection.cpp
+* File Name    : driver_monitoring_system.cpp
 * Version      : 1.0.0
-* Description  : DRP-AI DMS detection application
+* Description  : DRP-AI Driver monitoring system detection application
 ***********************************************************************************************************************/
 
 /*****************************************
@@ -73,7 +73,6 @@ static pthread_t kbhit_thread;
 static pthread_t capture_thread;
 static pthread_t memcpy_thread;
 static mutex mtx;
-static mutex mtx1;
 
 /*Flags*/
 static std::atomic<uint8_t> capture_start           (1);
@@ -535,7 +534,6 @@ int DMS_detection()
     if (0 < ret)
     {
         fprintf(stderr, "[ERROR] Failed to run Pre-processing Runtime Pre0()\n");
-        mtx1.unlock();
         return 0;
     }
 
@@ -608,15 +606,6 @@ int DMS_detection()
     sum_total_time      = total_time;
 
     return 0;
-}
-
-void click_event(int event, int x, int y, int flags, void* userdata)
-{
-    if (event == EVENT_LBUTTONDBLCLK)
-    {
-        std::cout<<"Exiting the event "<<std::endl;
-        exit(0);
-    }
 }
 
 /*****************************************
@@ -1401,7 +1390,6 @@ int main(int argc, char *argv[])
                 for(i=0;i<number_of_cameras;i++)
                 {
                 gstreamer_pipeline.push_back("v4l2src device=" + device_paths[i] + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink -v");
-                // gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink";
                 }
                 /* Initialize waylad */
                 ret = wayland.init(DISP_OUTPUT_WIDTH, DISP_OUTPUT_HEIGHT, BGRA_CHANNEL);

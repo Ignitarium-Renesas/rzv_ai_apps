@@ -26,7 +26,7 @@
 /***********************************************************************************************************************
 * File Name    : define.h
 * Version      : 1.0.0
-* Description  : DRP-AI Multi camera vehicle detection application
+* Description  : DRP-AI Driver monitoring system detection application
 ***********************************************************************************************************************/
 #ifndef DEFINE_MACRO_H
 #define DEFINE_MACRO_H

@@ -34,7 +34,7 @@
 /***********************************************************************************************************************
 * File Name    : wayland.cpp
 * Version      : v5.00
-* Description  : RZ/V AI SDK Sample Application for Object Detection
+* Description  : RZ/V AI SDK Sample Application for Driver Monitoring system detection
 ***********************************************************************************************************************/
 
 /*****************************************

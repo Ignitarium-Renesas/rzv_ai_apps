@@ -19,7 +19,7 @@
 /***********************************************************************************************************************
 * File Name    : dmabuf.h
 * Version      : v1.00
-* Description  : RZ/V2H Multi camera vehicle detection application
+* Description  : RZ/V2H Driver monitoring system detection application
 ***********************************************************************************************************************/
 
 #ifndef DMABUF_H

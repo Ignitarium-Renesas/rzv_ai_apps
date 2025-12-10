@@ -4,7 +4,7 @@
 /***********************************************************************************************************************
 * File Name    : define_color.h
 * Version      : 1.00
-* Description  : RZ/V2H DRP-AI Sample Application for Multi-camera streaming detection with MIPI/USB Camera
+* Description  : RZ/V2H DRP-AI Sample Application for Driver monitoring system detection with MIPI/USB Camera
 ***********************************************************************************************************************/
 #ifndef DEFINE_COLOR_H
 #define DEFINE_COLOR_H
