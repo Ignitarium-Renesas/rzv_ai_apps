@@ -1244,7 +1244,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    cout << "Enter camera's second argument as LEFT/RIGHT for camera's orientation" << endl;
+                    cout << "Enter camera's argument as LEFT/RIGHT for camera orientation" << endl;
                     goto end_close_drpai;
                 }
             }
