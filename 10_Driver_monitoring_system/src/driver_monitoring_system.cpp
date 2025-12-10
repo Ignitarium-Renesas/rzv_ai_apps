@@ -79,10 +79,15 @@ static mutex mtx1;
 static std::atomic<uint8_t> capture_start           (1);
 static std::atomic<uint8_t> inference_start         (0);
 static std::atomic<uint8_t> img_processing_start    (0);
-float sum_inf_time;
-float sum_pre_poc_time;
-float sum_post_proc_time;
-float sum_total_time;
+
+/* Flag set when user requests termination (Enter key). */
+/* Used to distinguish normal user-initiated shutdown from error conditions. */
+static std::atomic<bool> termination_requested(false);
+
+float sum_inf_time = 0.0;
+float sum_pre_poc_time = 0.0;
+float sum_post_proc_time = 0.0;
+float sum_total_time = 0.0;
 static int inference_frame_counter = 0;
 static auto last_inf_time = std::chrono::high_resolution_clock::now();
 float camera_fps = 0.0f;
@@ -494,7 +499,7 @@ void draw_bounding_box(void)
 }
 
 /*****************************************
- * Function Name : DMS detection
+ * Function Name : DMS_detection
  * Description   : Function to perform over all detection
  * Arguments     : -
  * Return value  : 0 if succeeded
@@ -520,7 +525,6 @@ int DMS_detection()
 
     uint32_t size_count  = 0;
     
-    mtx1.lock();
     auto t0 = std::chrono::high_resolution_clock::now();
     in_param.pre_in_shape_w = IMAGE_WIDTH;
     in_param.pre_in_shape_h = IMAGE_HEIGHT;
@@ -589,7 +593,6 @@ int DMS_detection()
     if (ret != 0)
     {
         std::cerr << "[ERROR] DRP Inference Not working !!! " << std::endl;
-        mtx1.unlock();
         return -1;
     }
 
@@ -604,7 +607,6 @@ int DMS_detection()
     sum_post_proc_time  = r_post_proc_time / 1000.0;
     sum_total_time      = total_time;
 
-    mtx1.unlock();
     return 0;
 }
 
@@ -756,6 +758,8 @@ void *R_Kbhit_Thread(void *threadid)
         {
             /* When key is pressed. */
             printf("key Detected.\n");
+            // Mark that termination was requested by the user (Enter key)
+            termination_requested.store(true);
             goto err;
         }
         else
@@ -787,8 +791,6 @@ void *R_Capture_Thread(void *threadid)
     /*Semaphore Variable*/
     int32_t capture_sem_check = 0;
     int8_t ret,i = 0;
-    static auto last_cam_time = std::chrono::high_resolution_clock::now();
-    static int cam_frame_counter = 0;
 
     printf("Capture Thread Starting\n");
 
@@ -810,6 +812,8 @@ void *R_Capture_Thread(void *threadid)
     {
         while(1)
         {
+            /*Gets the Termination request semaphore value. If different then 1 Termination was requested*/
+            /*Checks if sem_getvalue is executed without issue*/
             errno = 0;
             ret = sem_getvalue(&terminate_req_sem, &capture_sem_check);
             if (0 != ret)
@@ -817,11 +821,11 @@ void *R_Capture_Thread(void *threadid)
                 fprintf(stderr, "[ERROR] Failed to get Semaphore Value: errno=%d\n", errno);
                 goto err;
             }
+            /*Checks the semaphore value*/
             if (1 != capture_sem_check)
             {
                 goto capture_end;
             }
-
             for(i=0;i<number_of_cameras;i++)
             {
                 cap[i].read(cap_frame[i]); 
@@ -830,22 +834,22 @@ void *R_Capture_Thread(void *threadid)
                     std::cout << "[INFO] Video ended or corrupted frame from "<< device_paths[i] <<endl;
                     return 0;
                 }
+                /* Calculating the camera fps */
                 camera_fps  = cap[i].get(CAP_PROP_FPS);
             }
-
+            /*Checks if image frame from Capture Thread is ready.*/
             if (capture_start.load())
             {
                 break;
             }
             usleep(WAIT_TIME);
         }
-
         for(i=0;i<number_of_cameras;i++)
         {
             g_frame[i]=cap_frame[i].clone();
         }
         capture_start.store(0);
-    }
+    } /*End of Loop*/
 
 /*Error Processing*/
 err:
@@ -997,8 +1001,11 @@ ai_inf_end:
 
 int8_t R_Main_Process()
 {
+    /*Main Process Variables*/
     int8_t main_ret,i = 0;
+    /*Semaphore Related*/
     int32_t main_sem_check = 0;
+    /*Variable for checking return value*/
     int8_t ret = 0;
 
     stringstream stream;
@@ -1012,31 +1019,45 @@ int8_t R_Main_Process()
     img_buffer0 = (unsigned char*)malloc(DISP_OUTPUT_WIDTH*DISP_OUTPUT_HEIGHT*BGRA_CHANNEL);
 
     printf("Main Loop Starts\n");
-
-    namedWindow("Output Image", cv::WINDOW_NORMAL);
-    setWindowProperty("Output Image", cv::WND_PROP_FULLSCREEN, cv::WINDOW_FULLSCREEN);
-    setMouseCallback("Output Image", click_event, NULL);
+    /*Main Loop Start*/
 
     while(1)
     {
         while(1) 
         {
+            /*Gets the Termination request semaphore value. If different then 1 Termination was requested*/
+            /*Checks if sem_getvalue is executed wihtout issue*/
             errno = 0;
             ret = sem_getvalue(&terminate_req_sem, &main_sem_check);
-            if (ret != 0) goto err;
-            if (1 != main_sem_check) goto main_proc_end;
-            if (img_processing_start.load()) break;
+            if (0 != ret)
+            {
+                fprintf(stderr, "[ERROR] Failed to get Semaphore Value: errno=%d\n", errno);
+                goto err;
+            }
+            /*Checks the semaphore value*/
+            if (1 != main_sem_check)
+            {
+                goto main_proc_end;
+            }
+            /*Checks if image frame from Capture Thread is ready.*/
+            if (img_processing_start.load())
+            {
+                break;
+            }
             usleep(WAIT_TIME);
         }
 
         output_image.setTo(cv::Scalar(0, 0, 0));
 
+        /* Check if the captured frame is valid. This condition prevents processing 
+        when the camera has not yet delivered a frame,or a frame was dropped/corrupted.*/
         if (g_frame.empty())
         {
             img_processing_start.store(0);
             continue;
         }
 
+        /* Draw bounding box and Mosaic on the frame */
         draw_bounding_box();
 
         // Restore ORIGINAL image window size calculation
@@ -1152,7 +1173,15 @@ int8_t R_Main_Process()
 
 err:
     sem_trywait(&terminate_req_sem);
-    main_ret = 1;
+    /* If termination was explicitly requested by the user, treat as normal exit. */
+    if (termination_requested.load())
+    {
+        main_ret = 0; // normal termination
+    }
+    else
+    {
+        main_ret = 1; // error
+    }
     goto main_proc_end;
 
 main_proc_end:
@@ -1371,7 +1400,8 @@ int main(int argc, char *argv[])
             {
                 for(i=0;i<number_of_cameras;i++)
                 {
-                gstreamer_pipeline.push_back("v4l2src device=" + device_paths[i] + " ! video/x-raw, width=640, height=480, framerate=10/1 ! videoconvert ! appsink -v");
+                gstreamer_pipeline.push_back("v4l2src device=" + device_paths[i] + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink -v");
+                // gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw, width=640, height=480 ! videoconvert ! appsink";
                 }
                 /* Initialize waylad */
                 ret = wayland.init(DISP_OUTPUT_WIDTH, DISP_OUTPUT_HEIGHT, BGRA_CHANNEL);
@@ -1447,7 +1477,7 @@ int main(int argc, char *argv[])
                 
                 for(i=0;i<number_of_cameras;i++)
                 {
-                    command = "v4l2-ctl -d " + std::to_string(i) + " -c framerate=10";
+                    command = "v4l2-ctl -d " + std::to_string(i) + " -c framerate=30";
                     std::system(command.c_str());
                     command = "v4l2-ctl -d " + std::to_string(i) + " -c white_balance_auto_preset=0";
                     std::system(command.c_str());

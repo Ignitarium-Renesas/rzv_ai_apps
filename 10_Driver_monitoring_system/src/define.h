@@ -111,28 +111,10 @@ const static uint32_t INF_OUT_SIZE = (NUM_CLASS + 5) * NUM_BB * num_grids[0] * n
 /*Image:: Text information to be drawn on image*/
 #define CHAR_SCALE_LARGE            (1.6)
 #define CHAR_SCALE_SMALL            (1.2)
-#define CHAR_SCALE_APP_NAME         (1.0)
-#define CLASS_NAME_FONT             (0.5)
-#define CLASS_NAME_THICKNESS        (0.5)
-#define APP_NAME_THICKNESS          (2.1)
-#define TIME_THICKNESS              (1.3)
-#define APP_NAME_X                  (0)
-#define APP_NAME_Y                  (30)
 #define FIRST_FRAME_X_COORDINATE    (0)
 #define FIRST_FRAME_Y_COORDINATE    (60)
-#define CAM_NAME_THICKNESS          (1.9)
-#define FRAME_THICKNESS             (2)
-#define LEFT_ALIGN_OFFSET           (20)
-#define HALF_IMAGE_HEIGHT           (240)
 
 /*Total Display out*/
-#define DISP_RESIZE_WIDTH            (1550)
-#define DISP_RESIZE_HEIGHT           (1080)
-
-#define CLASS_LABEL_HEIGHT           (10)
-#define CLASS_LABEL_WIDTH           (90)
-#define HEAD_COUNT_STR_X            (645)
-#define HEAD_COUNT_STR_Y            (30)
 
 #define T_TIME_STR_X                (645)
 #define T_TIME_STR_Y                (120)
@@ -156,23 +138,13 @@ const static uint32_t INF_OUT_SIZE = (NUM_CLASS + 5) * NUM_BB * num_grids[0] * n
 #define BLINK_STR_Y                 (40)
 #define YAWN_STR_X                  (20)
 #define YAWN_STR_Y                  (60)
-#define MOBILE_STR_X                (20)
-#define MOBILE_STR_Y                (80)
-#define SEATBELT_STR_X              (20)
-#define SEATBELT_STR_Y              (100)
 
 #define CHAR_SCALE_LARGE            (1.6)
 #define CHAR_SCALE_SMALL            (1.2)
 #define DMS_CHAR_SCALE_SMALL        (0.5)
-#define CHAR_SCALE_XS               (0.5)
-#define BOX_THICKNESS               (2)
-#define BOX_CHAR_THICKNESS          (0.5)
 #define HC_CHAR_THICKNESS           (4)
 #define DMS_CHAR_THICKNESS          (1.9)
-#define FPS_CHAR_THICKNESS          (4)
 #define RIGHT_ALIGN_OFFSET          (20)
-#define LINE_HEIGHT                 (30) 
-#define LINE_HEIGHT_OFFSET          (20) 
 
 /*Waiting Time*/
 #define WAIT_TIME                   (1000) /* microseconds */

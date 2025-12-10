@@ -27,20 +27,4 @@ const static std::vector<std::string> label_file_map =
     "yawning"
 };
 
-/* box color list */
-const static unsigned int box_color[] =
-{
-    (0x00FF00u),
-    (0x00FF00u),
-    (0x00FF00u),
-    (0x00FF00u),
-    (0x00FF00u),
-    (0x00FF00u),
-    (0x00FF00u),
-    (0x00FF00u),
-    (0x00FF00u),
-    (0x00FF00u)
-};
-
-
 #endif
