@@ -154,7 +154,7 @@ Each folder contains following items.
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
     |:---|:---|:---|:---|:---|
     |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/prev6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2h-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/prev6.20)  |
-    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/prev6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2n-v251.so`</span> |[Release v6.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/prev6.20)  |
+    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/prev6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2n-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/prev6.20)  |
 
     2. Rename the 10_Driver_monitoring_system_deploy_tvm*.so` to `deploy.so`.
     ```
@@ -300,6 +300,10 @@ Output3 size: 1x15x9x9
 |Pre-processing | Processed by DRP-AI. <br> |
 |Inference | Processed by DRP-AI and CPU. |
 |Post-processing | Processed by CPU. |
+
+## Limitation
+
+- The camera should be placed at either LEFT or RIGHT side as an angle of 45° from the center of face as reference for better head pose detection
 
 ## Reference
 - For RZ/V2H, RZ/V2N EVK, this application supports USB camera only with 640x480 resolution.  
