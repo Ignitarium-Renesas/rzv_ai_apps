@@ -130,7 +130,7 @@ const static uint32_t INF_OUT_SIZE = (NUM_CLASS + 5) * NUM_BB * num_grids[0] * n
 #define P_TIME_STR_Y                (340)
 
 #define FPS_STR_X                   (645)
-#define FPS_STR_Y                   (630)
+#define FPS_STR_Y                   (440)
 
 #define HEAD_POSE_STR_X             (20)
 #define HEAD_POSE_STR_Y             (20)
