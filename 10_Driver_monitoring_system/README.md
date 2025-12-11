@@ -67,7 +67,7 @@ Prepare the following equipments referring to [Getting Started](https://renesas-
 All external devices will be attached to the board and does not require any driver installation (Plug n Play Type).
 
 Connect the hardware as shown below.  
-Regarding MIPI camera, please refer to the user manual of [e-con Systems](https://www.e-consystems.com/renesas/sony-starvis-imx462-ultra-low-light-camera-for-renesas-rz-v2h.asp).
+Regarding MIPI camera, please refer to the user manual of [e-con Systems](https://www.e-consystems.com/renesas/sony-starvis-imx462-ultra-low-light-camera-for-renesas-rz-v2h.asp) and [The hardware connection for using MIPI camera in 14_Multi_camera_vehicle_detection](https://github.com/Ignitarium-Renesas/rzv_ai_apps/tree/main/14_Multi_camera_vehicle_detection).
 
 
 |RZ/V2H EVK | RZ/V2N EVK |
