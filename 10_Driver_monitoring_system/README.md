@@ -211,53 +211,53 @@ Each folder contains following items.
     cd /home/weston/tvm
     ```
 
-2. Run the application. The 2nd argument (2) means the camera orientation in the same direction as the driver.
+2. Run the application. The 2nd argument (2) means the camera position as seen from the driver’s perspective.
    - For RZ/V2H
 
-   - Application with USB camera orientation as LEFT
+   - Application with USB camera position as LEFT
     ```sh
     su
     ./dms_detection_app USB LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with USB camera orientation as RIGHT
+    - Application with USB camera position as RIGHT
     ```sh
     su
     ./dms_detection_app USB RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with MIPI camera orientation as LEFT 
+    - Application with MIPI camera position as LEFT 
     ```sh
     su
     ./dms_detection_app MIPI LEFT 
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with MIPI camera orientation as RIGHT
+    - Application with MIPI camera position as RIGHT
     ```sh
     su
     ./dms_detection_app MIPI RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
     - For RZ/V2N
-    - Application with USB camera orientation as LEFT
+    - Application with USB camera position as LEFT
     ```sh
     su
     ./dms_detection_app USB LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with USB camera orientation as RIGHT
+    - Application with USB camera position as RIGHT
     ```sh
     su
     ./dms_detection_app USB RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with MIPI camera orientation as LEFT 
+    - Application with MIPI camera position as LEFT 
     ```sh
     su
     ./dms_detection_app MIPI LEFT 
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with MIPI camera orientation as RIGHT
+    - Application with MIPI camera position as RIGHT
     ```sh
     su
     ./dms_detection_app MIPI RIGHT
