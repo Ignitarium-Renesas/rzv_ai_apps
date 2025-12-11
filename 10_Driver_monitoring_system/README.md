@@ -153,8 +153,8 @@ Each folder contains following items.
     ```
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
     |:---|:---|:---|:---|:---|
-    |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/prev6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2h-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/prev6.20)  |
-    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/prev6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2n-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/prev6.20)  |
+    |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2h-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.20)  |
+    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2n-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.20)  |
 
     2. Rename the 10_Driver_monitoring_system_deploy_tvm*.so` to `deploy.so`.
     ```
