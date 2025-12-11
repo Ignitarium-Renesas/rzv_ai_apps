@@ -39,7 +39,7 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** | 
 
  ### Sample Video for RZ/V2H on Youtube
- <a href="https://youtu.be/gsh461URVpY" target="_blank\">
+ <a href="https://youtu.be/JMxwRNHf238" target="_blank\">
   <img src="./img/thumbnail.png" alt="Multi Camera vehicle demo" width="400" />
 </a>
 
