@@ -148,7 +148,7 @@ Each folder contains following items.
 
     1. Run the commands below to download the necessary file.
     ```
-    cd ${PROJECT_PATH}/10_Driver_monitoring_system/<EXE_DIR>/
+    cd ${PROJECT_PATH}/10_Driver_monitoring_system/<EXE_DIR>/dms_yolox-l_onnx
     wget <URL>/<SO_FILE>
     ```
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
