@@ -70,9 +70,17 @@ Connect the hardware as shown below.
 Regarding MIPI camera, please refer to the user manual of [e-con Systems](https://www.e-consystems.com/renesas/sony-starvis-imx462-ultra-low-light-camera-for-renesas-rz-v2h.asp).
 
 
+- For using MIPI camera
+
 |RZ/V2H EVK | RZ/V2N EVK |
 |:---|:---|
-|<img src=./img/hw_conf_v2h.png width=600>|<img src=./img/hw_conf_v2n.png width=600> |
+|<img src=./img/hw_conf_mipi_v2h.png width=600>|<img src=./img/hw_conf_mipi_v2n.png width=600> |
+
+- For using USB camera  
+
+|RZ/V2H EVK | RZ/V2N EVK |
+|:---|:---|
+|<img src=./img/hw_conf_usb_v2h.png width=600>|<img src=./img/hw_conf_usb_v2n.png width=600> |
 
 When using the keyboard connected to RZ/V Evaluation Board, the keyboard layout and language are fixed to English.
 
