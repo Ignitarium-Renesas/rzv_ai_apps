@@ -162,11 +162,16 @@ cv::Mat lane_segmentation(cv::Mat frame)
     cv::Mat input_frame,output_frame;
     input_frame = frame;
 
+    std::vector<float> mean = {0.485f, 0.456f, 0.406f};
+    std::vector<float> std  = {0.229f, 0.224f, 0.225f};
+
     /* Preprocess time start */
     auto t0 = std::chrono::high_resolution_clock::now();
     cv::Size size(MODEL_IN_H, MODEL_IN_W);
     /*resize the image to the model input size*/
     cv::resize(frame, frame, size);
+    cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+
     /* start pre-processing */
     vector<Mat> rgb_images;
     split(frame, rgb_images);
@@ -177,7 +182,20 @@ cv::Mat lane_segmentation(cv::Mat frame)
     Mat frameCHW;
     hconcat(matArray, 3, frameCHW);
 
-    frameCHW.convertTo(frameCHW, CV_32FC3,1.0 / 255.0, 0);
+    frameCHW.convertTo(frameCHW, CV_32FC1,1.0 / 255.0, 0);
+
+    int H = MODEL_IN_H;
+    int W = MODEL_IN_W;
+    int C = 3;
+
+    float* data = (float*)frameCHW.data;
+    for (int c = 0; c < C; ++c) {
+        float m = mean[c];
+        float s = std[c];
+        for (int i = 0; i < H*W; ++i) {
+            data[c*H*W + i] = (data[c*H*W + i] - m) / s;
+        }
+    }
     /*deep copy, if not continuous*/
     if (!frameCHW.isContinuous())
     frameCHW = frameCHW.clone();
@@ -741,11 +759,19 @@ int main(int argc, char **argv)
     std::cout << "Starting Road Lane Segmentation Application" << std::endl;
     
     /*Disable OpenCV Accelerator due to the use of multithreading */
+    #ifdef V2N
     unsigned long OCA_list[16];
     for (int i=0; i < 16; i++)
     {
         OCA_list[i] = 0;
     }
+    #else /*for V2H*/
+    unsigned long OCA_list[OCA_LIST_NUM];
+    for (int i=0; i < OCA_LIST_NUM; i++)
+    {
+        OCA_list[i] = 0;
+    }
+    #endif
     OCA_Activate( &OCA_list[0] );
 
     if (strcmp(argv[1],"USB")==0)

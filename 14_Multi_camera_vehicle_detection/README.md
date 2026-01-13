@@ -10,7 +10,7 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
 ### Targeted product
 | Product | Supported AI SDK version |
 | ---- | ---- |
-| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v5.20** |
+| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v6.00** |
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** | 
 
  ### Sample Video for RZ/V2H on Youtube
@@ -135,7 +135,7 @@ Each folder contains following items.
     ```
     |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
     |:---|:---|:---|:---|:---|
-    |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v5.10`</span>  |<span style="font-size: small">`14_Multi_camera_vehicle_detection_deploy_tvm-v230.so`</span> |[Release v5.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v5.10)  |
+    |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.20`</span>  |<span style="font-size: small">`14_Multi_camera_vehicle_detection_deploy_tvm_v2h-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.20)  |
     |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.00`</span>  |<span style="font-size: small">`14_Multi_camera_vehicle_detection_deploy_tvm_v2n-v251.so`</span> |[Release v6.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.00)  |
 
     2. Rename the `14_Multi_camera_vehicle_detection_deploy_tvm*.so` to `deploy.so`.
@@ -151,10 +151,10 @@ Each folder contains following items.
 - For RZ/V2H
 ```sh
 ├── usr/
-│   └── lib64/
+│   └── lib/
 │       └── libtvm_runtime.so
 └── home/
-    └── root/
+    └── weston/
         └── tvm/ 
             ├── Multi_camera_vehicle_detection_yoloxl/
             │   ├── preprocess
@@ -186,7 +186,7 @@ Each folder contains following items.
 1. On the board terminal, go to the `tvm` directory of the rootfs.
    - For RZ/V2H
     ```sh
-    cd /home/root/tvm
+    cd /home/weston/tvm
     ```
    - For RZ/V2N
     ```sh
@@ -198,19 +198,27 @@ Each folder contains following items.
 
    - Application with USB camera input
     ```sh
+    su
     ./multi_camera_vehicle_detection_app USB 2
+    exit    # After pressing ENTER key to terminate the application.
     ```
     - Application with USB camera input with flip mode
     ```sh
+    su
     ./multi_camera_vehicle_detection_app USB 2 FLIP
+    exit    # After pressing ENTER key to terminate the application.
     ```
     - Application with MIPI camera input 
     ```sh
+    su
     ./multi_camera_vehicle_detection_app MIPI 2 
+    exit    # After pressing ENTER key to terminate the application.
     ```
     - Application with MIPI camera input with flip mode
     ```sh
+    su
     ./multi_camera_vehicle_detection_app MIPI 2 FLIP
+    exit    # After pressing ENTER key to terminate the application.
     ```
     - For RZ/V2N
     - Application with USB camera input
@@ -237,7 +245,7 @@ Each folder contains following items.
     ./multi_camera_vehicle_detection_app MIPI 2 FLIP
     exit    # After pressing ENTER key to terminate the application.
     ```  
->**Note:** For RZ/V2N AI SDK v6.00 and later, you need to switch to the root user with the 'su' command when running an application.<br>
+>**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
 This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
 
 3. Following window shows up on HDMI screen*.  

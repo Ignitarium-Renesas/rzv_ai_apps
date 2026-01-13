@@ -4,7 +4,7 @@
 /***********************************************************************************************************************
  * File Name    : wayland.cpp
  * Version      : 1.00
- * Description  : RZ/V2H DRP-AI Sample Application for Lightnet YOLOv2 with MIPI/USB Camera
+ * Description  : RZ/V2H DRP-AI Sample Application for Driver Monitoring system detection with MIPI/USB Camera
  ***********************************************************************************************************************/
 
 /*****************************************
