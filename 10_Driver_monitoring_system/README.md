@@ -1,3 +1,4 @@
+
 # 10_Driver_monitoring_system
 
 
@@ -26,7 +27,7 @@ Driver Monitoring System application identifies attentiveness of a driver. This 
 
 This application 10_Driver_monitoring_system detects the following
 
-- Head poses (`CENTER`, `DOWN`, `LEFT` & `RIGHT`).
+- Head poses (`CENTER`, `DOWN`, `LEFT` & `RIGHT`).
 - Blink
 - Yawn
 
@@ -219,68 +220,84 @@ Each folder contains following items.
     cd /home/weston/tvm
     ```
 
-2. Run the application. The 2nd argument (2) means the camera position as seen from the driver’s perspective.
-   - For RZ/V2H
+2. Run the application. 
 
-   - Application with USB camera position as LEFT
+    The 2nd argument means the camera position as seen from the driver’s perspective.  
+    It is recommended to setup the camera as shown in the image below.  
+    The referenced image shows the camera at the LEFT postion, the same applies to the RIGHT position.   
+    Keep the camera at right side of the person at 45° angle towards the horizontal axis with respective to the human eyes.
+
+<img src=./img/DMS_reference.png width=600>
+
+- For RZ/V2H
+
+  - Application with USB camera position as LEFT
     ```sh
     su
     ./dms_detection_app USB LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with USB camera position as RIGHT
+
+  - Application with USB camera position as RIGHT
     ```sh
     su
     ./dms_detection_app USB RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with MIPI camera position as LEFT 
+
+  - Application with MIPI camera position as LEFT
     ```sh
     su
-    ./dms_detection_app MIPI LEFT 
+    ./dms_detection_app MIPI LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with MIPI camera position as RIGHT
+
+  - Application with MIPI camera position as RIGHT
     ```sh
     su
     ./dms_detection_app MIPI RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - For RZ/V2N
-    - Application with USB camera position as LEFT
+
+- For RZ/V2N
+
+  - Application with USB camera position as LEFT
     ```sh
     su
     ./dms_detection_app USB LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with USB camera position as RIGHT
+
+  - Application with USB camera position as RIGHT
     ```sh
     su
     ./dms_detection_app USB RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with MIPI camera position as LEFT 
+
+  - Application with MIPI camera position as LEFT
     ```sh
     su
-    ./dms_detection_app MIPI LEFT 
+    ./dms_detection_app MIPI LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
-    - Application with MIPI camera position as RIGHT
+
+  - Application with MIPI camera position as RIGHT
     ```sh
     su
     ./dms_detection_app MIPI RIGHT
     exit    # After pressing ENTER key to terminate the application.
-    ```  
+    ```
+
 >**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
 This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
 
-3. Following window shows up on HDMI screen*.  
+3. Following window shows up on HDMI screen.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
      height=334px />  
-
-*Performance in the screenshot is for RZ/V2H EVK.
+    *Performance in the screenshot is for RZ/V2H EVK.
 
 4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
