@@ -226,7 +226,7 @@ Each folder contains following items.
     It is recommended to setup the camera as shown in the image below.  
      - The referenced image shows the camera at the LEFT postion, the same applies to the RIGHT position.   
      - Keep the camera at right side of the person at 45° angle towards the horizontal axis with respective to the human eyes.  
-<img src=./img/DMS_reference.png width=600>
+       <img src=./img/DMS_reference.png width=600>
 
 - For RZ/V2H
 
