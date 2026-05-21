@@ -54,8 +54,6 @@
 #include <numeric>
 
 
-#define MIPI_CAM_RES "640x480"
-
 /*****************************************
 * Static Variables for yolox
 * Following variables need to be changed in order to custormize the AI model
@@ -122,7 +120,7 @@ const static uint32_t INF_OUT_SIZE = (NUM_CLASS + 5) * NUM_BB * num_grids[0] * n
 #define CAM_NAME_THICKNESS          (1.9)
 #define FRAME_THICKNESS             (2)
 #define LEFT_ALIGN_OFFSET           (20)
-#define HALF_IMAGE_HEIGHT           (240)
+#define HALF_IMAGE_HEIGHT           (IMAGE_HEIGHT / 2)
 /*Waiting Time*/
 #define WAIT_TIME                   (1000) /* microseconds */
 #define AI_THREAD_TIMEOUT           (20)  /* seconds */

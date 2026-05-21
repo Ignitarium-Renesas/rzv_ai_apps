@@ -219,8 +219,12 @@ Each folder contains following items.
     ```sh
     cd /home/weston/tvm
     ```
-
-2. Run the application. 
+2. If you use the MIPI camera, please enter commands below for Media Control settings.
+   ```sh
+   su
+   /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+   ```
+3. Run the application. 
 
     The 2nd argument means the camera position as seen from the driver’s perspective.  
     It is recommended to setup the camera as shown in the image below.  
@@ -232,28 +236,24 @@ Each folder contains following items.
 
   - Application with USB camera position as LEFT
     ```sh
-    su
     ./dms_detection_app USB LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
 
   - Application with USB camera position as RIGHT
     ```sh
-    su
     ./dms_detection_app USB RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
 
   - Application with MIPI camera position as LEFT
     ```sh
-    su
     ./dms_detection_app MIPI LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
 
   - Application with MIPI camera position as RIGHT
     ```sh
-    su
     ./dms_detection_app MIPI RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
@@ -262,28 +262,24 @@ Each folder contains following items.
 
   - Application with USB camera position as LEFT
     ```sh
-    su
     ./dms_detection_app USB LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
 
   - Application with USB camera position as RIGHT
     ```sh
-    su
     ./dms_detection_app USB RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
 
   - Application with MIPI camera position as LEFT
     ```sh
-    su
     ./dms_detection_app MIPI LEFT
     exit    # After pressing ENTER key to terminate the application.
     ```
 
   - Application with MIPI camera position as RIGHT
     ```sh
-    su
     ./dms_detection_app MIPI RIGHT
     exit    # After pressing ENTER key to terminate the application.
     ```
@@ -291,14 +287,14 @@ Each folder contains following items.
 >**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
 This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
 
-3. Following window shows up on HDMI screen.  
+4. Following window shows up on HDMI screen.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
      height=334px />  
     *Performance in the screenshot is for RZ/V2H EVK.
 
-4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
+5. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
 ## Application: Configuration 
 ### AI Model

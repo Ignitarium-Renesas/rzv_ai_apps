@@ -193,62 +193,95 @@ Each folder contains following items.
     cd /home/weston/tvm
     ```
 
-2. Run the application. The 2nd argument (2) means the number of cameras.
+2. If you use MIPI cameras, please enter commands below for Media Control settings. 
+   - For RZ/V2H : Up to 4 MIPI cameras
+     - 1 MIPI camera  
+       ```sh
+       su
+       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
+       ```
+     - 2 MIPI cameras 
+       ```sh
+       su
+       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN*.sh 640x480
+       ```        
+     - 3 MIPI cameras  
+       ```sh
+       su
+       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN*.sh 640x480      
+       /root/gstreamer_cam_test_CAM2_CN*.sh 640x480 
+       ```
+     - 4 MIPI cameras 
+       ```sh
+       su
+       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM2_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM3_CN*.sh 640x480      
+       ```               
+   - For RZ/V2N : Up to 2 MIPI cameras
+     - 1 MIPI camera  
+       ```sh
+       su
+       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
+       ```
+     - 2 MIPI cameras 
+       ```sh
+       su
+       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN*.sh 640x480
+       ```        
+   
+
+3. Run the application. The 2nd argument (2) means the number of cameras.
    - For RZ/V2H
-
-   - Application with USB camera input
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app USB 2
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with USB camera input with flip mode
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app USB 2 FLIP
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with MIPI camera input 
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app MIPI 2 
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with MIPI camera input with flip mode
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app MIPI 2 FLIP
-    exit    # After pressing ENTER key to terminate the application.
-    ```
+      - Application with USB camera input
+        ```sh
+        ./multi_camera_vehicle_detection_app USB 2
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with USB camera input with flip mode
+        ```sh
+        ./multi_camera_vehicle_detection_app USB 2 FLIP
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with MIPI camera input 
+        ```sh
+        ./multi_camera_vehicle_detection_app MIPI 2 
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with MIPI camera input with flip mode
+        ```sh
+        ./multi_camera_vehicle_detection_app MIPI 2 FLIP
+        exit    # After pressing ENTER key to terminate the application.
+        ```
     - For RZ/V2N
-    - Application with USB camera input
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app USB 2
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with USB camera input with flip mode
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app USB 2 FLIP
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with MIPI camera input 
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app MIPI 2 
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with MIPI camera input with flip mode
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app MIPI 2 FLIP
-    exit    # After pressing ENTER key to terminate the application.
-    ```  
->**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
-This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+      - Application with USB camera input
+        ```sh
+        ./multi_camera_vehicle_detection_app USB 2
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with USB camera input with flip mode
+        ```sh
+        ./multi_camera_vehicle_detection_app USB 2 FLIP
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with MIPI camera input 
+        ```sh
+        ./multi_camera_vehicle_detection_app MIPI 2 
+        exit    # After pressing ENTER key to terminate the application.
+        ``` 
+      - Application with MIPI camera input with flip mode
+        ```sh
+        ./multi_camera_vehicle_detection_app MIPI 2 FLIP
+        exit    # After pressing ENTER key to terminate the application.
+        ```  
+     >**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
+         This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
 
-3. Following window shows up on HDMI screen*.  
+4. Following window shows up on HDMI screen*.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
@@ -259,9 +292,9 @@ This is because when you run an application from a weston-terminal, you are swit
      width=600px;
     height=334px />
 
-*Performance in the screenshot is for RZ/V2H EVK.
+   *Performance in the screenshot is for RZ/V2H EVK.
 
-4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
+5. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
 ## Application: Configuration 
 ### AI Model
