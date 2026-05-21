@@ -198,40 +198,40 @@ Each folder contains following items.
      - 1 MIPI camera  
        ```sh
        su
-       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
        ```
      - 2 MIPI cameras 
        ```sh
        su
-       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
-       /root/gstreamer_cam_test_CAM1_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
        ```        
      - 3 MIPI cameras  
        ```sh
        su
-       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
-       /root/gstreamer_cam_test_CAM1_CN*.sh 640x480      
-       /root/gstreamer_cam_test_CAM2_CN*.sh 640x480 
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN8.sh 640x480      
+       /root/gstreamer_cam_test_CAM2_CN9.sh 640x480 
        ```
      - 4 MIPI cameras 
        ```sh
        su
-       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
-       /root/gstreamer_cam_test_CAM1_CN*.sh 640x480
-       /root/gstreamer_cam_test_CAM2_CN*.sh 640x480
-       /root/gstreamer_cam_test_CAM3_CN*.sh 640x480      
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
+       /root/gstreamer_cam_test_CAM2_CN9.sh 640x480
+       /root/gstreamer_cam_test_CAM3_CN10.sh 640x480      
        ```               
    - For RZ/V2N : Up to 2 MIPI cameras
      - 1 MIPI camera  
        ```sh
        su
-       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
        ```
      - 2 MIPI cameras 
        ```sh
        su
-       /root/gstreamer_cam_test_CAM0_CN*.sh 640x480
-       /root/gstreamer_cam_test_CAM1_CN*.sh 640x480
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
        ```        
    
 
