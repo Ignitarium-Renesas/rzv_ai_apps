@@ -219,12 +219,17 @@ Each folder contains following items.
     ```sh
     cd /home/weston/tvm
     ```
-2. If you use the MIPI camera, please enter commands below for Media Control settings.
+2. Switch to the root user with the 'su' command.
    ```sh
    su
+   ```
+   This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+   And you need the permission to set Media Control commands as well when you use the MIPI camera.  
+3. If you use the MIPI camera, please enter commands below for Media Control settings.
+   ```sh
    /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
    ```
-3. Run the application. 
+4. Run the application. 
 
     The 2nd argument means the camera position as seen from the driver’s perspective.  
     It is recommended to setup the camera as shown in the image below.  
@@ -284,17 +289,14 @@ Each folder contains following items.
     exit    # After pressing ENTER key to terminate the application.
     ```
 
->**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
-This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
-
-4. Following window shows up on HDMI screen.  
+5. Following window shows up on HDMI screen.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
      height=334px />  
     *Performance in the screenshot is for RZ/V2H EVK.
 
-5. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
+6. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
 ## Application: Configuration 
 ### AI Model
