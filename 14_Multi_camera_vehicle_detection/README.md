@@ -192,30 +192,31 @@ Each folder contains following items.
     ```sh
     cd /home/weston/tvm
     ```
-
-2. If you use MIPI cameras, please enter commands below for Media Control settings. 
+2. Switch to the root user with the 'su' command.
+   ```sh
+   su
+   ```
+   This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+   And you need the permission to set Media Control commands as well when you use the MIPI camera.  
+3. If you use MIPI cameras, please enter commands below for Media Control settings. 
    - For RZ/V2H : Up to 4 MIPI cameras
      - 1 MIPI camera  
        ```sh
-       su
        /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
        ```
      - 2 MIPI cameras 
        ```sh
-       su
        /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
        /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
        ```        
      - 3 MIPI cameras  
        ```sh
-       su
        /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
        /root/gstreamer_cam_test_CAM1_CN8.sh 640x480      
        /root/gstreamer_cam_test_CAM2_CN9.sh 640x480 
        ```
      - 4 MIPI cameras 
        ```sh
-       su
        /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
        /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
        /root/gstreamer_cam_test_CAM2_CN9.sh 640x480
@@ -224,18 +225,16 @@ Each folder contains following items.
    - For RZ/V2N : Up to 2 MIPI cameras
      - 1 MIPI camera  
        ```sh
-       su
        /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
        ```
      - 2 MIPI cameras 
        ```sh
-       su
        /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
        /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
        ```        
    
 
-3. Run the application. The 2nd argument (2) means the number of cameras.
+4. Run the application. The 2nd argument (2) means the number of cameras.
    - For RZ/V2H
       - Application with USB camera input
         ```sh
@@ -281,7 +280,7 @@ Each folder contains following items.
      >**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
          This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
 
-4. Following window shows up on HDMI screen*.  
+5. Following window shows up on HDMI screen*.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
@@ -294,7 +293,7 @@ Each folder contains following items.
 
    *Performance in the screenshot is for RZ/V2H EVK.
 
-5. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
+6. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
 ## Application: Configuration 
 ### AI Model
