@@ -223,7 +223,7 @@ Each folder contains following items.
    ```sh
    su
    ```
-   This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+   >**Note:** This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
    In addition, permission is also required to run the Media Control commands when using a MIPI camera.  
 3. If you use a MIPI camera, please enter commands below for Media Control settings.
    ```sh
