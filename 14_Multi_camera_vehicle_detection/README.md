@@ -196,8 +196,8 @@ Each folder contains following items.
    ```sh
    su
    ```
-   This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
-   And you need the permission to set Media Control commands as well when you use MIPI cameras.  
+   >**Note:** This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+   In addition, permission is also required to run the Media Control commands when using MIPI cameras.  
 3. If you use MIPI cameras, please enter commands below for Media Control settings. 
    - For RZ/V2H : Up to 4 MIPI cameras
      - 1 MIPI camera  
