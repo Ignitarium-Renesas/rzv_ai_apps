@@ -11,7 +11,9 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v6.00** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** | 
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) <br> RZ/V2N Fast Prototyping Board (FPB-RZ/V2N)| RZ/V2N AI SDK **v6.30** | 
+
+**Note:** In this document, any references to **"RZ/V2N EVK"** also apply to **"FPB-RZ/V2N"**, unless explicitly stated otherwise. 
 
  ### Sample Video for RZ/V2H on Youtube
  <a href="https://youtu.be/gsh461URVpY" target="_blank\">
@@ -25,13 +27,13 @@ Prepare the following equipments referring to [Getting Started](https://renesas-
 
 | Equipment | Details |
 | ---- | ---- |
-| RZ/V2H, RZ/V2N EVK | Evaluation Board Kit for RZ/V2H, RZ/V2N |
+| RZ/V2H EVK <br> RZ/V2N EVK or FPB-RZ/V2N | Evaluation Board Kit for RZ/V2H <br> Evaluation Board Kit for RZ/V2N|
 | USB camera | Used as a camera input source. <br> Up to 3cameras.<br> Recommended model number : Logicool c930e |
 | MIPI camera | Used as a camera input source. <br> RZ/V2H: Up to 4 cameras.<br> RZ/V2N: Up to 2 cameras.<br> To use MIPI camera, please refer to e-CAM22_CURZH provided by [e-con Systems](https://www.e-consystems.com/renesas/sony-starvis-imx462-ultra-low-light-camera-for-renesas-rz-v2h.asp).|
 | HDMI monitor | Used to display the graphics of the board. |
 | USB Cable Type-C | Connect AC adapter and the board. |
 | HDMI cable | Connect HDMI monitor and RZ/V2H, RZ/V2N Board. |
-| AC Adapter | USB Power Delivery adapter for the board power supply.<br>100W is required. |
+| AC Adapter | USB Power Delivery adapter for the board power supply.<br>100W is required for RZ/V2H EVK. <br> 60W is required for RZ/V2N EVK. <br> 45W is required for FPB-RZ/V2N.|
 | microSD Card | Must have over 16GB capacity of blank space.<br>Operating Environment: Transcend UHS-I microSD 300S 16GB |
 | Linux PC | Used to build application and setup microSD card.<br>Operating Environment: Ubuntu 22.04 |
 | SD card reader | Used for setting up microSD card. |
@@ -46,15 +48,15 @@ Regarding MIPI camera, please refer to the user manual of [e-con Systems](https:
 
 - For using MIPI camera
 
-|RZ/V2H EVK | RZ/V2N EVK |
-|:---|:---|
-|<img src=./img/hw_conf_mipi_v2h.png width=600>|<img src=./img/hw_conf_mipi_v2n.png width=600> |
+|RZ/V2H EVK | RZ/V2N EVK | FPB-RZ/V2N |
+|:---|:---|:---|
+|<img src=./img/hw_conf_mipi_v2h.png width=600>|<img src=./img/hw_conf_mipi_v2n.png width=600> | <img src=../10_Driver_monitoring_system/img/hw_conf_mipi_v2n_fpb.png width=600>|
 
 - For using USB camera  
 
-|RZ/V2H EVK | RZ/V2N EVK |
-|:---|:---|
-|<img src=./img/hw_conf_usb_v2h.png width=600>|<img src=./img/hw_conf_usb_v2n.png width=600> |
+|RZ/V2H EVK | RZ/V2N EVK | FPB-RZ/V2N |
+|:---|:---|:---|
+|<img src=./img/hw_conf_usb_v2h.png width=600>|<img src=./img/hw_conf_usb_v2n.png width=600> | <img src=./img/hw_conf_usb_v2n_fpb.png width=600>|
 
 When using the keyboard connected to RZ/V Evaluation Board, the keyboard layout and language are fixed to English.
 
