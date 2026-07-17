@@ -9,9 +9,9 @@ The AI model used for the sample application is [TINYYOLOV2](https://arxiv.org/p
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v6.00** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) <br> RZ/V2N Fast Prototyping Board (FPB-RZ/V2N) | RZ/V2N AI SDK **v6.30** |
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) <br> RZ/V2N Fast Prototyping Board (FPB-RZV2N) | RZ/V2N AI SDK **v6.30** |
 
-**Note:** In this document, any references to **"RZ/V2N EVK"** also apply to **"FPB-RZ/V2N"**, unless explicitly stated otherwise. 
+**Note:** In this document, any references to **"RZ/V2N EVK"** also apply to **"FPB-RZV2N"**, unless explicitly stated otherwise. 
 ### Sample Video for RZ/V2H on Youtube
 <a href="https://youtu.be/-euUDJJyUf0" target="_blank\">
   <img src="./img/thumbnail.png" alt="Elderly fall detection demo" width="400" />
@@ -23,12 +23,12 @@ The AI model used for the sample application is [TINYYOLOV2](https://arxiv.org/p
 Prepare the following equipments referring to [Getting Started](https://renesas-rz.github.io/rzv_ai_sdk/getting_started).
 | Equipment | Details |
 | ---- | ---- |
-| RZ/V2H EVK <br> RZ/V2N EVK or FPB-RZ/V2N| Evaluation Board Kit for RZ/V2H <br> Evaluation Board Kit for RZ/V2N|
+| RZ/V2H EVK <br> RZ/V2N EVK or FPB-RZV2N| Evaluation Board Kit for RZ/V2H <br> Evaluation Board Kit for RZ/V2N|
 | USB camera | Used as a camera input source. |
 | HDMI monitor | Used to display the graphics of the board. |
 | USB Cable Type-C | Connect AC adapter and the board. |
 | HDMI cable | Connect HDMI monitor and RZ/V2H, RZ/V2N Board. |
-| AC Adapter | USB Power Delivery adapter for the board power supply.<br>100W is required for RZ/V2H EVK. <br> 60W is required for RZ/V2N EVK. <br> 45W is required for FPB-RZ/V2N.|
+| AC Adapter | USB Power Delivery adapter for the board power supply.<br>100W is required for RZ/V2H EVK. <br> 60W is required for RZ/V2N EVK. <br> 45W is required for FPB-RZV2N.|
 | microSD Card | Must have over 16GB capacity of blank space.<br>Operating Environment: Transcend UHS-I microSD 300S 16GB |
 | Linux PC | Used to build application and setup microSD card.<br>Operating Environment: Ubuntu 22.04 |
 | SD card reader | Used for setting up microSD card. |
@@ -40,7 +40,7 @@ All external devices will be attached to the board and does not require any driv
 
 Connect the hardware as shown below.  
 
-|RZ/V2H EVK | RZ/V2N EVK | FPB-RZ/V2N |
+|RZ/V2H EVK | RZ/V2N EVK | FPB-RZV2N |
 |:---|:---|:---|
 |<img src=./img/hw_conf_v2h.png width=600>|<img src=./img/hw_conf_v2n.png width=600> | <img src=../01_Head_count/img/hw_conf_v2n_fpb.jpg width=600>|
 
