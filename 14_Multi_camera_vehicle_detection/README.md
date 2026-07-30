@@ -11,7 +11,9 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v6.00** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) | RZ/V2N AI SDK **v6.00** | 
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) <br> RZ/V2N Fast Prototyping Board (FPB-RZV2N)| RZ/V2N AI SDK **v6.30** | 
+
+**Note:** In this document, any references to **"RZ/V2N EVK"** also apply to **"FPB-RZV2N"**, unless explicitly stated otherwise. 
 
  ### Sample Video for RZ/V2H on Youtube
  <a href="https://youtu.be/gsh461URVpY" target="_blank\">
@@ -25,13 +27,13 @@ Prepare the following equipments referring to [Getting Started](https://renesas-
 
 | Equipment | Details |
 | ---- | ---- |
-| RZ/V2H, RZ/V2N EVK | Evaluation Board Kit for RZ/V2H, RZ/V2N |
+| RZ/V2H EVK <br> RZ/V2N EVK or FPB-RZV2N | Evaluation Board Kit for RZ/V2H <br> Evaluation Board Kit for RZ/V2N|
 | USB camera | Used as a camera input source. <br> Up to 3cameras.<br> Recommended model number : Logicool c930e |
 | MIPI camera | Used as a camera input source. <br> RZ/V2H: Up to 4 cameras.<br> RZ/V2N: Up to 2 cameras.<br> To use MIPI camera, please refer to e-CAM22_CURZH provided by [e-con Systems](https://www.e-consystems.com/renesas/sony-starvis-imx462-ultra-low-light-camera-for-renesas-rz-v2h.asp).|
 | HDMI monitor | Used to display the graphics of the board. |
 | USB Cable Type-C | Connect AC adapter and the board. |
 | HDMI cable | Connect HDMI monitor and RZ/V2H, RZ/V2N Board. |
-| AC Adapter | USB Power Delivery adapter for the board power supply.<br>100W is required. |
+| AC Adapter | USB Power Delivery adapter for the board power supply.<br>100W is required for RZ/V2H EVK. <br> 60W is required for RZ/V2N EVK. <br> 45W is required for FPB-RZV2N.|
 | microSD Card | Must have over 16GB capacity of blank space.<br>Operating Environment: Transcend UHS-I microSD 300S 16GB |
 | Linux PC | Used to build application and setup microSD card.<br>Operating Environment: Ubuntu 22.04 |
 | SD card reader | Used for setting up microSD card. |
@@ -46,15 +48,15 @@ Regarding MIPI camera, please refer to the user manual of [e-con Systems](https:
 
 - For using MIPI camera
 
-|RZ/V2H EVK | RZ/V2N EVK |
-|:---|:---|
-|<img src=./img/hw_conf_mipi_v2h.png width=600>|<img src=./img/hw_conf_mipi_v2n.png width=600> |
+|RZ/V2H EVK | RZ/V2N EVK | FPB-RZV2N |
+|:---|:---|:---|
+|<img src=./img/hw_conf_mipi_v2h.png width=600>|<img src=./img/hw_conf_mipi_v2n.png width=600> | <img src=../10_Driver_monitoring_system/img/hw_conf_mipi_v2n_fpb.png width=600>|
 
 - For using USB camera  
 
-|RZ/V2H EVK | RZ/V2N EVK |
-|:---|:---|
-|<img src=./img/hw_conf_usb_v2h.png width=600>|<img src=./img/hw_conf_usb_v2n.png width=600> |
+|RZ/V2H EVK | RZ/V2N EVK | FPB-RZV2N |
+|:---|:---|:---|
+|<img src=./img/hw_conf_usb_v2h.png width=600>|<img src=./img/hw_conf_usb_v2n.png width=600> | <img src=./img/hw_conf_usb_v2n_fpb.png width=600>|
 
 When using the keyboard connected to RZ/V Evaluation Board, the keyboard layout and language are fixed to English.
 
@@ -192,63 +194,95 @@ Each folder contains following items.
     ```sh
     cd /home/weston/tvm
     ```
+2. Switch to the root user with the 'su' command.
+   ```sh
+   su
+   ```
+   >**Note:** This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+   In addition, permission is also required to run the Media Control commands when using MIPI cameras.  
+3. If you use MIPI cameras, please enter commands below for Media Control settings. 
+   - For RZ/V2H : Up to 4 MIPI cameras
+     - 1 MIPI camera  
+       ```sh
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       ```
+     - 2 MIPI cameras 
+       ```sh
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
+       ```        
+     - 3 MIPI cameras  
+       ```sh
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN8.sh 640x480      
+       /root/gstreamer_cam_test_CAM2_CN9.sh 640x480 
+       ```
+     - 4 MIPI cameras 
+       ```sh
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
+       /root/gstreamer_cam_test_CAM2_CN9.sh 640x480
+       /root/gstreamer_cam_test_CAM3_CN10.sh 640x480      
+       ```               
+   - For RZ/V2N : Up to 2 MIPI cameras
+     - 1 MIPI camera  
+       ```sh
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       ```
+     - 2 MIPI cameras 
+       ```sh
+       /root/gstreamer_cam_test_CAM0_CN7.sh 640x480
+       /root/gstreamer_cam_test_CAM1_CN8.sh 640x480
+       ```        
+   
 
-2. Run the application. The 2nd argument (2) means the number of cameras.
+4. Run the application. The 2nd argument (2) means the number of cameras.
    - For RZ/V2H
-
-   - Application with USB camera input
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app USB 2
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with USB camera input with flip mode
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app USB 2 FLIP
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with MIPI camera input 
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app MIPI 2 
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with MIPI camera input with flip mode
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app MIPI 2 FLIP
-    exit    # After pressing ENTER key to terminate the application.
-    ```
+      - Application with USB camera input
+        ```sh
+        ./multi_camera_vehicle_detection_app USB 2
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with USB camera input with flip mode
+        ```sh
+        ./multi_camera_vehicle_detection_app USB 2 FLIP
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with MIPI camera input 
+        ```sh
+        ./multi_camera_vehicle_detection_app MIPI 2 
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with MIPI camera input with flip mode
+        ```sh
+        ./multi_camera_vehicle_detection_app MIPI 2 FLIP
+        exit    # After pressing ENTER key to terminate the application.
+        ```
     - For RZ/V2N
-    - Application with USB camera input
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app USB 2
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with USB camera input with flip mode
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app USB 2 FLIP
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with MIPI camera input 
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app MIPI 2 
-    exit    # After pressing ENTER key to terminate the application.
-    ```
-    - Application with MIPI camera input with flip mode
-    ```sh
-    su
-    ./multi_camera_vehicle_detection_app MIPI 2 FLIP
-    exit    # After pressing ENTER key to terminate the application.
-    ```  
->**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
-This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
+      - Application with USB camera input
+        ```sh
+        ./multi_camera_vehicle_detection_app USB 2
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with USB camera input with flip mode
+        ```sh
+        ./multi_camera_vehicle_detection_app USB 2 FLIP
+        exit    # After pressing ENTER key to terminate the application.
+        ```
+      - Application with MIPI camera input 
+        ```sh
+        ./multi_camera_vehicle_detection_app MIPI 2 
+        exit    # After pressing ENTER key to terminate the application.
+        ``` 
+      - Application with MIPI camera input with flip mode
+        ```sh
+        ./multi_camera_vehicle_detection_app MIPI 2 FLIP
+        exit    # After pressing ENTER key to terminate the application.
+        ```  
+     >**Note:** You need to switch to the root user with the 'su' command when running an application.<br>
+         This is because when you run an application from a weston-terminal, you are switched to the "weston" user, which does not have permission to run the /dev/xxx device used in the application.<br>
 
-3. Following window shows up on HDMI screen*.  
+5. Following window shows up on HDMI screen*.  
 <img src="./img/app_run.png" alt="Sample application output"
      margin-right=10px; 
      width=600px;
@@ -259,9 +293,9 @@ This is because when you run an application from a weston-terminal, you are swit
      width=600px;
     height=334px />
 
-*Performance in the screenshot is for RZ/V2H EVK.
+   *Performance in the screenshot is for RZ/V2H EVK.
 
-4. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
+6. To terminate the application, switch the application window to the terminal by using Super(windows key)+ Tab and press ENTER key on the terminal of the board.
 
 ## Application: Configuration 
 ### AI Model
