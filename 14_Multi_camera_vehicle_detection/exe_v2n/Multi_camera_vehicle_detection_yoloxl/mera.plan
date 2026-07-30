@@ -1,0 +1,119 @@
+{
+  "execution": {
+    "stages": [
+      [
+        [
+          [
+            {
+              "backend": "drp_tvm",
+              "binaries_location": "sub_0000__CPU_DRP_TVM",
+              "name": "sub_0000"
+            },
+            {
+              "input_buffers": {
+                "images": 0
+              },
+              "input_order": [
+                "images"
+              ],
+              "output_buffers": {
+                "_head_Concat_1_output_0_ce51cb_70679_70993": 2,
+                "_head_Concat_2_output_0_7d073c_70700_70994": 3,
+                "_head_Concat_output_0_eed783_70658_70995": 1
+              },
+              "output_order": [
+                "_head_Concat_output_0_eed783_70658_70995",
+                "_head_Concat_1_output_0_ce51cb_70679_70993",
+                "_head_Concat_2_output_0_7d073c_70700_70994"
+              ]
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  "memory": {
+    "buffers": [
+      {
+        "alignment": 256,
+        "alloc_mode": "linux_malloc",
+        "bytes_size": 1228800,
+        "data_type": "float32",
+        "name": "images",
+        "offset": 0,
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "size": 307200
+      },
+      {
+        "alignment": 256,
+        "alloc_mode": "linux_malloc",
+        "bytes_size": 44800,
+        "data_type": "float16",
+        "name": "_head_Concat_output_0_eed783_70658_70995",
+        "offset": 0,
+        "shape": [
+          1,
+          14,
+          40,
+          40
+        ],
+        "size": 22400
+      },
+      {
+        "alignment": 256,
+        "alloc_mode": "linux_malloc",
+        "bytes_size": 11200,
+        "data_type": "float16",
+        "name": "_head_Concat_1_output_0_ce51cb_70679_70993",
+        "offset": 0,
+        "shape": [
+          1,
+          14,
+          20,
+          20
+        ],
+        "size": 5600
+      },
+      {
+        "alignment": 256,
+        "alloc_mode": "linux_malloc",
+        "bytes_size": 2800,
+        "data_type": "float16",
+        "name": "_head_Concat_2_output_0_7d073c_70700_70994",
+        "offset": 0,
+        "shape": [
+          1,
+          14,
+          10,
+          10
+        ],
+        "size": 1400
+      }
+    ],
+    "input_buffers": [
+      [
+        "images",
+        0
+      ]
+    ],
+    "output_buffers": [
+      [
+        "_head_Concat_output_0_eed783_70658_70995",
+        1
+      ],
+      [
+        "_head_Concat_1_output_0_ce51cb_70679_70993",
+        2
+      ],
+      [
+        "_head_Concat_2_output_0_7d073c_70700_70994",
+        3
+      ]
+    ]
+  }
+}

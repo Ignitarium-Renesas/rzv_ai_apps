@@ -37,7 +37,7 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
 | Product | Supported AI SDK version |
 | ---- | ---- |
 | RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v6.00** |
-| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) <br> RZ/V2N Fast Prototyping Board (FPB-RZV2N)| RZ/V2N AI SDK **v6.30** | 
+| RZ/V2N Evaluation Board Kit (RZ/V2N EVK) <br> RZ/V2N Fast Prototyping Board (FPB-RZV2N)| RZ/V2N AI SDK **v8.00** | 
 
 **Note:** In this document, any references to **"RZ/V2N EVK"** also apply to **"FPB-RZV2N"**, unless explicitly stated otherwise. 
 
@@ -158,14 +158,20 @@ Each folder contains following items.
 1. Follow the steps below to deploy the project on the board. 
 
     1. Run the commands below to download the necessary file.
-    ```
-    cd ${PROJECT_PATH}/10_Driver_monitoring_system/<EXE_DIR>/dms_yolox-l_onnx
-    wget <URL>/<SO_FILE>
-    ```
-    |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
-    |:---|:---|:---|:---|:---|
-    |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2h-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.20)  |
-    |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2n-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.20)  |
+       - For RZ/V2H
+         ```
+         cd ${PROJECT_PATH}/10_Driver_monitoring_system/<EXE_DIR>/dms_yolox-l_onnx/
+         wget <URL>/<SO_FILE>
+         ```
+       - For RZ/V2N
+         ```sh
+         cd ${PROJECT_PATH}/10_Driver_monitoring_system/<EXE_DIR>/dms_yolox-l_onnx/sub_0000__CPU_DRP_TVM
+         wget <URL>/<SO_FILE>
+         ```
+       |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
+       |:---|:---|:---|:---|:---|
+       |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2h-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.20)  |
+       |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v8.00`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_ruhmi_2026-06_v2n.so`</span> |[Release v8.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v8.00)  |
 
     2. Rename the 10_Driver_monitoring_system_deploy_tvm*.so` to `deploy.so`.
     ```
@@ -176,38 +182,47 @@ Each folder contains following items.
         -  10_Driver_monitoring_system application file if you generated the file according to [Application File Generation](#application-file-generation)
 
 2. Folder structure in the rootfs (SD Card) is shown below.<br>
-   Check if `libtvm_runtime.so` exists in the rootfs directory (SD card) on the board.
-- For RZ/V2H
-```sh
-├── usr/
-│   └── lib/
-│       └── libtvm_runtime.so
-└── home/
-    └── weston/
-        └── tvm/ 
-            ├── dms_yolox-l_onnx/
-            │   ├── preprocess
-            │   ├── deploy.json
-            │   ├── deploy.params
-            │   └── deploy.so
-            └── dms_detection_app
-```
+   Check if the necessary files exist in the rootfs directory (SD card) on the board.
+   - For RZ/V2H
+     ```sh
+     |-- usr/
+     |   `-- lib/
+     |       `-- libtvm_runtime.so
+     |
+     `-- home/
+         `-- weston/
+             `-- tvm/ 
+                 |-- dms_yolox-l_onnx/
+                 |   |-- preprocess/
+                 |   |-- deploy.json
+                 |   |-- deploy.params
+                 |   `-- deploy.so
+                 `-- dms_detection_app
+     ```
    - For RZ/V2N
-```sh
-├── usr/
-│   └── lib/
-│       └── libtvm_runtime.so
-└── home/
-　　└── weston/
-　　　　└──  tvm/
-            ├── dms_yolox-l_onnx/
-            │   ├── preprocess
-            │   ├── deploy.json
-            │   ├── deploy.params
-            │   └── deploy.so
-            └── dms_detection_app
-```
-
+     ```sh
+     |-- usr/
+     |   `-- lib/
+     |       :    
+     |       |-- libmera2_runtime.so
+     |       :
+     |
+     `-- home/
+         `-- weston/
+             `-- tvm/ 
+                 |-- dms_yolox-l_onnx/
+                 |   |-- interpreter_out/
+                 |   |-- preprocess/
+                 |   |-- sub_0000__CPU_DRP_TVM/
+                 |   |   |-- deploy.json
+                 |   |   |-- deploy.params
+                 |   |   `-- deploy.so
+                 |   |-- input_0.bin
+                 |   |-- mera.plan
+                 |   |-- model_subgraphs.json
+                 |   `-- project.mdp
+                 `-- dms_detection_app
+     ```
 >**Note:** The directory name could be anything instead of `tvm`. If you copy the whole `EXE_DIR` folder on the board. You are not required to rename it `tvm`.
 
 ## Application: Run Stage
