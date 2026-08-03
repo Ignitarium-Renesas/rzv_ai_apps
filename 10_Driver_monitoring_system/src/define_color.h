@@ -13,6 +13,8 @@
 * color
 ******************************************/
 /* Pascal VOC dataset label list */
+#ifdef V2N
+
 const static std::vector<std::string> label_file_map =
 {
     "eyes_closed",
@@ -25,4 +27,22 @@ const static std::vector<std::string> label_file_map =
     "yawning"
 };
 
+#else
+
+const static std::vector<std::string> label_file_map =
+{
+    "eyes_closed",
+    "eyes_open",
+    "center",
+    "down",
+    "left",
+    "right",
+    "no_yawn",
+    "seatbelt",
+    "using_mobile",
+    "yawning"
+};
+
 #endif
+
+#endif // DEFINE_COLOR_H
