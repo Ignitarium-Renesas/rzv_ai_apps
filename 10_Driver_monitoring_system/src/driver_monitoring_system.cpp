@@ -471,7 +471,7 @@ void draw_bounding_box(void)
     { 
         int updated_class = head_class_tracker(tmp_buff[i].c); 
         tmp_buff[i].c = updated_class; 
-        if(tmp_buff[i].c == 9) 
+        if(tmp_buff[i].c == NUM_CLASS - 1) 
         { 
             stream.str(""); 
             stream << "Yawn Detected"; 
@@ -530,6 +530,9 @@ int DMS_detection()
 
     in_param.pre_in_addr = (uintptr_t) drpai_buf->phy_addr;
 
+    #ifdef V2N	/* V2N */
+    in_param.input_copy_enabled = false;
+    #endif
     ret = preruntime.Pre(&in_param, &output_ptr, &out_size);
     if (0 < ret)
     {

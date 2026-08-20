@@ -73,7 +73,12 @@ const static std::string pre_dir = model_dir + "/preprocess";
 * Macro for yolox
 ******************************************/
 /* Number of class to be detected */
+#ifdef V2N
+#define NUM_CLASS                   (8)
+#else
 #define NUM_CLASS                   (10)
+#endif
+
 /* Number for [region] layer num parameter */
 #define NUM_BB                      (1)
 /* Number of output layers. This value MUST match with the length of num_grids[] below */

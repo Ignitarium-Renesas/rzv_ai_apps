@@ -501,6 +501,10 @@ int Vehicle_Detection()
 
             in_param.pre_in_addr = (uintptr_t) drpai_buf->phy_addr;
 
+            #ifdef V2N	/* V2N */
+            in_param.input_copy_enabled = false;
+            #endif
+
             ret = preruntime.Pre(&in_param, &output_ptr, &out_size);
             if (0 < ret)
             {
@@ -585,6 +589,10 @@ int Vehicle_Detection()
 
             in_param.pre_in_addr = (uintptr_t) drpai_buf1->phy_addr;
 
+            #ifdef V2N	/* V2N */
+            in_param.input_copy_enabled = false;
+            #endif
+
             ret = preruntime.Pre(&in_param, &output_ptr1, &out_size1);
             if (0 < ret)
             {
@@ -666,6 +674,10 @@ int Vehicle_Detection()
             in_param.pre_in_shape_h = IMAGE_HEIGHT;
 
             in_param.pre_in_addr = (uintptr_t) drpai_buf2->phy_addr;
+
+            #ifdef V2N	/* V2N */
+            in_param.input_copy_enabled = false;
+            #endif
 
             ret = preruntime.Pre(&in_param, &output_ptr2, &out_size2);
             if (0 < ret)
@@ -749,6 +761,10 @@ int Vehicle_Detection()
             in_param.pre_in_shape_h = IMAGE_HEIGHT;
 
             in_param.pre_in_addr = (uintptr_t) drpai_buf3->phy_addr;
+
+            #ifdef V2N	/* V2N */
+            in_param.input_copy_enabled = false;
+            #endif
 
             ret = preruntime.Pre(&in_param, &output_ptr3, &out_size3);
             if (0 < ret)
