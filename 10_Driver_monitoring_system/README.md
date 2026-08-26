@@ -36,7 +36,7 @@ The AI model used for the sample application is [YOLOX-l](https://github.com/Meg
 ### Targeted product
 | Product | Supported AI SDK version |
 | ---- | ---- |
-| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v6.00** |
+| RZ/V2H Evaluation Board Kit (RZ/V2H EVK) | RZ/V2H AI SDK **v8.00** |
 | RZ/V2N Evaluation Board Kit (RZ/V2N EVK) <br> RZ/V2N Fast Prototyping Board (FPB-RZV2N)| RZ/V2N AI SDK **v8.00** | 
 
 **Note:** In this document, any references to **"RZ/V2N EVK"** also apply to **"FPB-RZV2N"**, unless explicitly stated otherwise. 
@@ -160,7 +160,7 @@ Each folder contains following items.
     1. Run the commands below to download the necessary file.
        - For RZ/V2H
          ```
-         cd ${PROJECT_PATH}/10_Driver_monitoring_system/<EXE_DIR>/dms_yolox-l_onnx/
+         cd ${PROJECT_PATH}/10_Driver_monitoring_system/<EXE_DIR>/dms_yolox-l_onnx/sub_0000__CPU_DRP_TVM
          wget <URL>/<SO_FILE>
          ```
        - For RZ/V2N
@@ -170,10 +170,10 @@ Each folder contains following items.
          ```
        |Board | `EXE_DIR` |`URL` |`SO_FILE` |File Location |
        |:---|:---|:---|:---|:---|
-       |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v6.20`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_tvm_v2h-v251.so`</span> |[Release v6.20](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v6.20)  |
+       |RZ/V2H EVK|[exe_v2h](./exe_v2h)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v8.10`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_ruhmi_2026-06_v2h.so`</span> |[Release v8.10](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v8.10)  |
        |RZ/V2N EVK|[exe_v2n](./exe_v2n)  |<span style="font-size: small">`https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/download/v8.00`</span>  |<span style="font-size: small">`10_Driver_monitoring_system_deploy_ruhmi_2026-06_v2n.so`</span> |[Release v8.00](https://github.com/Ignitarium-Renesas/rzv_ai_apps/releases/tag/v8.00)  |
 
-    2. Rename the 10_Driver_monitoring_system_deploy_tvm*.so` to `deploy.so`.
+    2. Rename the `10_Driver_monitoring_system_deploy_ruhmi_2026_06*.so` to `deploy.so`.
     ```
     mv <SO_FILE> deploy.so
     ```
@@ -183,23 +183,6 @@ Each folder contains following items.
 
 2. Folder structure in the rootfs (SD Card) is shown below.<br>
    Check if the necessary files exist in the rootfs directory (SD card) on the board.
-   - For RZ/V2H
-     ```sh
-     |-- usr/
-     |   `-- lib/
-     |       `-- libtvm_runtime.so
-     |
-     `-- home/
-         `-- weston/
-             `-- tvm/ 
-                 |-- dms_yolox-l_onnx/
-                 |   |-- preprocess/
-                 |   |-- deploy.json
-                 |   |-- deploy.params
-                 |   `-- deploy.so
-                 `-- dms_detection_app
-     ```
-   - For RZ/V2N
      ```sh
      |-- usr/
      |   `-- lib/
