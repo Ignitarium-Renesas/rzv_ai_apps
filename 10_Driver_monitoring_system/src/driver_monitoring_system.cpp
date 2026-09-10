@@ -530,9 +530,7 @@ int DMS_detection()
 
     in_param.pre_in_addr = (uintptr_t) drpai_buf->phy_addr;
 
-    #ifdef V2N	/* V2N */
     in_param.input_copy_enabled = false;
-    #endif
     ret = preruntime.Pre(&in_param, &output_ptr, &out_size);
     if (0 < ret)
     {
@@ -1213,19 +1211,11 @@ int main(int argc, char *argv[])
     }
 
     /*Disable OpenCV Accelerator due to the use of multithreading */
-    #ifdef V2N
-    unsigned long OCA_list[16];
-    for (int i=0; i < 16; i++)
-    {
-        OCA_list[i] = 0;
-    }
-    #else /*for V2H*/
     unsigned long OCA_list[OCA_LIST_NUM];
     for (int i=0; i < OCA_LIST_NUM; i++)
     {
         OCA_list[i] = 0;
     }
-    #endif
     OCA_Activate( &OCA_list[0] );
 
     if (strcmp(argv[1],"USB")==0 || strcmp(argv[1],"MIPI")==0)
